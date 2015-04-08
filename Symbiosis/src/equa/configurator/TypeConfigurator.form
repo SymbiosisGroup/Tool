@@ -13,7 +13,7 @@
       <SubComponents>
         <MenuItem class="javax.swing.JCheckBoxMenuItem" name="miDerivable">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Derivable"/>
+            <Property name="text" type="java.lang.String" value="Derivable Constraint"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
             <Property name="name" type="java.lang.String" value="miDerivable" noResource="true"/>
           </Properties>
@@ -284,14 +284,14 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miCompositionActionPerformed"/>
           </Events>
         </MenuItem>
-        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="miEventSource">
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="miChangeBySystemEvent">
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Change by System Event"/>
-            <Property name="name" type="java.lang.String" value="miEventSource" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="miChangeBySystemEvent" noResource="true"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miEventSourceActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miChangeBySystemEventActionPerformed"/>
           </Events>
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="miDeleteEventRule">

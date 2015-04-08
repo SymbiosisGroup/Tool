@@ -12,6 +12,8 @@ import equa.code.OperationHeader;
 import equa.code.operations.AccessModifier;
 import equa.code.operations.Param;
 import equa.meta.ChangeNotAllowedException;
+import equa.meta.classrelations.FactTypeRelation;
+import equa.meta.classrelations.ObjectTypeRelation;
 import equa.meta.requirements.Requirement;
 import equa.meta.traceability.ParentElement;
 import equa.util.Naming;
@@ -103,17 +105,21 @@ public class RoleEvent extends Constraint {
             code = new IndentedList();
         }
 
-        Role eventRole = (Role) getParent();
-        if (eventRole.getParent().isObjectType()) {
-            ObjectType type = eventRole.getParent().getObjectType();
-            params.add(new Param(Naming.withoutCapital(type.getName()), type, null));
-        } else {
-            Role cp = eventRole.getParent().counterpart(eventRole);
-            if (cp != null) {
-                params.add(new Param(Naming.withoutCapital(cp.getRoleName()), cp.getSubstitutionType(), null));
-            }
-        }
-        ot.addAlgorithm(handlerName, AccessModifier.PRIVATE, false, false, null, params, code, api);
+//        Role eventRole = (Role) getParent();
+//        if (eventRole.getParent().isObjectType()) {
+//            ObjectType type = (ObjectType) eventRole.getSubstitutionType();
+//            params.add(new Param(Naming.withoutCapital(type.getName()), type, new ObjectTypeRelation(type,eventRole)));
+//        } else {
+//            Role cp = eventRole.getParent().counterpart(eventRole);
+//            if (cp != null) {
+//                params.add(new Param(Naming.withoutCapital(cp.getRoleName()), cp.getSubstitutionType(), 
+//                    new FactTypeRelation((ObjectType) eventRole.getSubstitutionType(), eventRole)));
+//            }
+//        }
+        ObjectModel om = (ObjectModel) getParent().getParent().getParent();
+        Language l = om.getProject().getLastUsedLanguage();
+        ot.addAlgorithm(handlerName, AccessModifier.PRIVATE, false, false, null, params, code, api, false,
+            l, sources().get(0));
     }
 
     public String getText() {

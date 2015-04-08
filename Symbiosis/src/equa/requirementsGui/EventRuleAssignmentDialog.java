@@ -48,64 +48,61 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
     }
 
     private void initControls() {
-        cbExtending.setVisible(false);
+        // cbExtending.setVisible(false);
         cbExtending.setEnabled(false);
-        cbRemoving.setVisible(false);
+        //cbRemoving.setVisible(false);
         cbRemoving.setEnabled(false);
-        cbUpdating.setVisible(false);
+        // cbUpdating.setVisible(false);
         cbUpdating.setEnabled(false);
 
         responsibleRole = null;
         btRemove.setEnabled(false);
 
-        if (null == listFactTypes.getSelectedValue()) {
-            listBooleanFactTypes.setModel(new DefaultListModel());
-            pnEventCondition.setEnabled(false);
-        } else {
-            pnEventCondition.setEnabled(true);
-            FactType ft = om.getFactType((String) listFactTypes.getSelectedValue());
+        FactType ft = om.getFactType((String) listFactTypes.getSelectedValue());
 
-            FactTypeListModel model = new FactTypeListModel();
-            List<String> unaryFactTypes = new ArrayList<>();
-            responsibleRole = ft.getResponsibleRole();
-            if (responsibleRole != null) {
-                ObjectType ot = (ObjectType) responsibleRole.getSubstitutionType();
-                unaryFactTypes.add(ALWAYS);
-                for (FactType bft : ot.getBooleanFactTypes()) {
-                    unaryFactTypes.add(bft.getName());
+        FactTypeListModel model = new FactTypeListModel();
+        List<String> unaryFactTypes = new ArrayList<>();
+        responsibleRole = ft.getResponsibleRole();
+        if (responsibleRole != null) {
+            ObjectType ot = (ObjectType) responsibleRole.getSubstitutionType();
+            unaryFactTypes.add(ALWAYS);
+            for (FactType bft : ot.getBooleanFactTypes()) {
+                unaryFactTypes.add(bft.getName());
+            }
+            model.setFactTypes(unaryFactTypes);
+
+            if (responsibleRole.isMultiple()) {
+                if (responsibleRole.isAddable() || responsibleRole.isInsertable()
+                    || responsibleRole.isEventSource()) {
+                    cbExtending.setEnabled(true);
+                    //            cbExtending.setVisible(true);
                 }
-                model.setFactTypes(unaryFactTypes);
-                listBooleanFactTypes.setModel(model);
-                if (responsibleRole.isMultiple()) {
-                    if (responsibleRole.isAddable() || responsibleRole.isInsertable()) {
-                        cbExtending.setEnabled(true);
-                        cbExtending.setVisible(true);
-                    }
-                    if (responsibleRole.isRemovable()) {
-                        cbRemoving.setEnabled(true);
-                        cbRemoving.setVisible(true);
-                    }
-                } else {
-                    if (responsibleRole.isSettable() || responsibleRole.isAdjustable()) {
-                        cbUpdating.setEnabled(true);
-                        cbUpdating.setVisible(true);
-                    }
-                    if (!responsibleRole.isMandatory() && responsibleRole.isRemovable()) {
-                        cbRemoving.setEnabled(true);
-                    }
+                if (responsibleRole.isRemovable()) {
+                    cbRemoving.setEnabled(true);
+                    //            cbRemoving.setVisible(true);
                 }
-                if (unaryFactTypes.size() == 1) {
-                    listBooleanFactTypes.setSelectedIndex(0);
+            } else {
+                if (responsibleRole.isSettable() || responsibleRole.isAdjustable()
+                    || responsibleRole.isEventSource()) {
+                    cbUpdating.setEnabled(true);
+                    //            cbUpdating.setVisible(true);
+                }
+                if (!responsibleRole.isMandatory() && responsibleRole.isRemovable()
+                    || responsibleRole.isEventSource()) {
+                    cbRemoving.setEnabled(true);
+                    //            cbRemoving.setVisible(true);
                 }
             }
+
         }
+
     }
 
     private void initFactTypes() {
         FactTypeListModel model = new FactTypeListModel();
         List<String> factTypes = new ArrayList<>();
         for (FactType ft : om.getFactTypes()) {
-            if (ft.isMutable()) {
+            if (ft.hasMutableRole()) {
                 factTypes.add(ft.getName());
             }
         }
@@ -113,18 +110,6 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
         listFactTypes.setModel(model);
     }
 
-    public FactType getEventCondition() {
-        String ftName = (String) listBooleanFactTypes.getSelectedValue();
-        if (ftName != null) {
-            if (ftName.equals(ALWAYS)) {
-                return null;
-            } else {
-                return om.getFactType(ftName);
-            }
-        } else {
-            return null;
-        }
-    }
 
     public FactType getEventSource() {
         String ftName = (String) listFactTypes.getSelectedValue();
@@ -135,16 +120,16 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
         }
     }
 
-    public boolean isNegated() {
-        return cbNegation.isSelected();
-    }
-
-    public boolean checkExtendOrUpdate() {
+    public boolean checkExtend() {
         return cbExtending.isSelected();
     }
 
     public boolean checkRemove() {
         return cbRemoving.isSelected();
+    }
+
+    public boolean checkUpdate() {
+        return cbUpdating.isSelected();
     }
 
     public ObjectRole getResponsibleRole() {
@@ -213,28 +198,33 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         pnEvent = new javax.swing.JPanel();
+        pnEventHandler = new javax.swing.JPanel();
+        tfEventHandler = new javax.swing.JTextField();
+        lbEventHandler = new javax.swing.JLabel();
         pnEventSource = new javax.swing.JPanel();
         cbExtending = new javax.swing.JCheckBox();
         cbRemoving = new javax.swing.JCheckBox();
         cbUpdating = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         listFactTypes = new javax.swing.JList();
-        pnEventCondition = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        listBooleanFactTypes = new javax.swing.JList();
-        cbNegation = new javax.swing.JCheckBox();
         pnButtons = new javax.swing.JPanel();
         btOk = new javax.swing.JButton();
         btCancel = new javax.swing.JButton();
         btRemove = new javax.swing.JButton();
-        pnEventHandler = new javax.swing.JPanel();
-        tfEventHandler = new javax.swing.JTextField();
-        lbEventHandler = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         pnEvent.setName("pnEvent"); // NOI18N
         pnEvent.setLayout(new java.awt.BorderLayout());
+        getContentPane().add(pnEvent, java.awt.BorderLayout.NORTH);
+
+        pnEventHandler.setName("pnEventHandler"); // NOI18N
+        pnEventHandler.setPreferredSize(new java.awt.Dimension(220, 50));
+
+        tfEventHandler.setName("tfEventHandler"); // NOI18N
+
+        lbEventHandler.setText("Name of the Event Handler:");
+        lbEventHandler.setName("lbEventHandler"); // NOI18N
 
         pnEventSource.setBorder(javax.swing.BorderFactory.createTitledBorder("Select Event Source"));
         pnEventSource.setMinimumSize(new java.awt.Dimension(100, 100));
@@ -249,7 +239,7 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
             }
         });
 
-        cbRemoving.setText("rem");
+        cbRemoving.setText("remove");
         cbRemoving.setName("cbRemoving"); // NOI18N
         cbRemoving.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -257,7 +247,7 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
             }
         });
 
-        cbUpdating.setText("set/adj");
+        cbUpdating.setText("set/adjust");
         cbUpdating.setName("cbUpdating"); // NOI18N
 
         jScrollPane1.setMinimumSize(new java.awt.Dimension(100, 100));
@@ -283,15 +273,14 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
                 .addGroup(pnEventSourceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pnEventSourceLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnEventSourceLayout.createSequentialGroup()
-                        .addGroup(pnEventSourceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(cbUpdating, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnEventSourceLayout.createSequentialGroup()
-                                .addComponent(cbExtending)
-                                .addGap(18, 18, 18)
-                                .addComponent(cbRemoving)))
-                        .addGap(0, 20, Short.MAX_VALUE)))
+                        .addComponent(cbUpdating)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbExtending)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cbRemoving)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         pnEventSourceLayout.setVerticalGroup(
@@ -299,56 +288,12 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
             .addGroup(pnEventSourceLayout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cbUpdating)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnEventSourceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbUpdating)
                     .addComponent(cbExtending)
-                    .addComponent(cbRemoving)))
+                    .addComponent(cbRemoving))
+                .addGap(29, 29, 29))
         );
-
-        pnEvent.add(pnEventSource, java.awt.BorderLayout.CENTER);
-
-        pnEventCondition.setBorder(javax.swing.BorderFactory.createTitledBorder("Select Event Condition"));
-        pnEventCondition.setMinimumSize(new java.awt.Dimension(100, 120));
-        pnEventCondition.setName("pnEventCondition"); // NOI18N
-        pnEventCondition.setPreferredSize(new java.awt.Dimension(200, 260));
-
-        jScrollPane4.setName("jScrollPane4"); // NOI18N
-
-        listBooleanFactTypes.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        listBooleanFactTypes.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        listBooleanFactTypes.setName("listBooleanFactTypes"); // NOI18N
-        listBooleanFactTypes.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                listBooleanFactTypesValueChanged(evt);
-            }
-        });
-        jScrollPane4.setViewportView(listBooleanFactTypes);
-
-        cbNegation.setText("negated");
-        cbNegation.setName("cbNegation"); // NOI18N
-
-        javax.swing.GroupLayout pnEventConditionLayout = new javax.swing.GroupLayout(pnEventCondition);
-        pnEventCondition.setLayout(pnEventConditionLayout);
-        pnEventConditionLayout.setHorizontalGroup(
-            pnEventConditionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnEventConditionLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(cbNegation)
-                .addContainerGap())
-        );
-        pnEventConditionLayout.setVerticalGroup(
-            pnEventConditionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnEventConditionLayout.createSequentialGroup()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
-                .addComponent(cbNegation))
-        );
-
-        pnEvent.add(pnEventCondition, java.awt.BorderLayout.EAST);
-
-        getContentPane().add(pnEvent, java.awt.BorderLayout.NORTH);
 
         pnButtons.setName("pnButtons"); // NOI18N
 
@@ -384,7 +329,7 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
             .addGroup(pnButtonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btRemove)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 150, Short.MAX_VALUE)
                 .addComponent(btOk)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btCancel))
@@ -399,33 +344,34 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
                     .addComponent(btRemove)))
         );
 
-        getContentPane().add(pnButtons, java.awt.BorderLayout.SOUTH);
-
-        pnEventHandler.setName("pnEventHandler"); // NOI18N
-        pnEventHandler.setPreferredSize(new java.awt.Dimension(220, 50));
-
-        tfEventHandler.setName("tfEventHandler"); // NOI18N
-
-        lbEventHandler.setText("Name of the Event Handler:");
-        lbEventHandler.setName("lbEventHandler"); // NOI18N
-
         javax.swing.GroupLayout pnEventHandlerLayout = new javax.swing.GroupLayout(pnEventHandler);
         pnEventHandler.setLayout(pnEventHandlerLayout);
         pnEventHandlerLayout.setHorizontalGroup(
             pnEventHandlerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnEventHandlerLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(lbEventHandler)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(tfEventHandler, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(pnEventHandlerLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnEventHandlerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnEventSource, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
+                    .addGroup(pnEventHandlerLayout.createSequentialGroup()
+                        .addGroup(pnEventHandlerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(pnButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(pnEventHandlerLayout.createSequentialGroup()
+                                .addComponent(lbEventHandler)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(tfEventHandler, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         pnEventHandlerLayout.setVerticalGroup(
             pnEventHandlerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnEventHandlerLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(pnEventSource, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnEventHandlerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfEventHandler, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbEventHandler, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pnButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -439,7 +385,7 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_listFactTypesValueChanged
 
     private void btCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelActionPerformed
-        listBooleanFactTypes.getSelectionModel().clearSelection();
+
         setVisible(false);
     }//GEN-LAST:event_btCancelActionPerformed
 
@@ -447,23 +393,6 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
 
         if (listFactTypes.getSelectedValue() == null) {
             JOptionPane.showMessageDialog(getParent(), "Please select event source (fact type).");
-            return;
-        }
-
-//        if (listBooleanFactTypes.getModel().getSize() == 1) {
-//            String ftName = (String) listFactTypes.getSelectedValue();
-//
-//            FactType ft = om.getFactType(ftName);
-//            Role role = ft.getResponsibleRole();
-//            if (role != null) {
-//                JOptionPane.showMessageDialog(getParent(), "Perhaps you need to "
-//                    + "enter an example fact "
-//                    + "about the event condition of an object of "
-//                    + role.getSubstitutionType().getName());
-//            }
-//        }
-        if (listBooleanFactTypes.getSelectedValue() == null) {
-            JOptionPane.showMessageDialog(getParent(), "Please select the event condition.");
             return;
         }
 
@@ -494,58 +423,12 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(getParent(), "Please select event source (fact type).");
             return;
         }
-        if (listBooleanFactTypes.getSelectedValue() == null) {
-            JOptionPane.showMessageDialog(getParent(), "Please select the event condition.");
-            return;
-        }
 
-        String name = (String) listBooleanFactTypes.getSelectedValue();
-        FactType condition;
-        if (name.equals(ALWAYS)) {
-            condition = null;
-        } else {
-            condition = om.getFactType(name);
-        }
-
-        boolean removed = responsibleRole.removeEvent(condition, cbNegation.isSelected(), cbExtending.isSelected(),
+        boolean removed = responsibleRole.removeEvent(null, false, cbExtending.isSelected(),
             cbRemoving.isSelected(), cbUpdating.isSelected());
 
         btRemove.setEnabled(!removed);
     }//GEN-LAST:event_btRemoveActionPerformed
-
-    private void listBooleanFactTypesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listBooleanFactTypesValueChanged
-
-        if (responsibleRole == null) {
-            return;
-        }
-
-        cbNegation.setSelected(false);
-        tfEventHandler.setText("");
-
-        String selectedCondition = (String) listBooleanFactTypes.getSelectedValue();
-        if (selectedCondition == null) {
-            return;
-        }
-
-        for (RoleEvent event : responsibleRole.getEvents()) {
-            FactType condition = event.getCondition();
-            if (condition == null && selectedCondition.equals(ALWAYS)) {
-                btRemove.setEnabled(true);
-                cbNegation.setSelected(event.isNegation());
-                tfEventHandler.setText(event.getNameOfHandler());
-                return;
-            }
-            if (condition != null && condition.getName().equals(selectedCondition)) {
-                btRemove.setEnabled(true);
-                cbNegation.setSelected(event.isNegation());
-                tfEventHandler.setText(event.getNameOfHandler());
-                return;
-            }
-
-        }
-
-        btRemove.setEnabled(false);
-    }//GEN-LAST:event_listBooleanFactTypesValueChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -553,17 +436,13 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
     private javax.swing.JButton btOk;
     private javax.swing.JButton btRemove;
     private javax.swing.JCheckBox cbExtending;
-    private javax.swing.JCheckBox cbNegation;
     private javax.swing.JCheckBox cbRemoving;
     private javax.swing.JCheckBox cbUpdating;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel lbEventHandler;
-    private javax.swing.JList listBooleanFactTypes;
     private javax.swing.JList listFactTypes;
     private javax.swing.JPanel pnButtons;
     private javax.swing.JPanel pnEvent;
-    private javax.swing.JPanel pnEventCondition;
     private javax.swing.JPanel pnEventHandler;
     private javax.swing.JPanel pnEventSource;
     private javax.swing.JTextField tfEventHandler;

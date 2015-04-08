@@ -93,8 +93,11 @@ import equa.meta.classrelations.ObjectTypeRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.requirements.FactRequirement;
 import equa.meta.requirements.Requirement;
+import equa.meta.traceability.ExternalInput;
 import equa.meta.traceability.ModelElement;
 import equa.meta.traceability.ParentElement;
+import equa.meta.traceability.Source;
+import equa.project.Project;
 import equa.util.Naming;
 import fontys.observer.BasicPublisher;
 import fontys.observer.PropertyListener;
@@ -142,7 +145,9 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     protected List<Relation> relations;
 
     private final Map<OperationHeader, Algorithm> algorithms = new HashMap<>();
-    private final Set<String> imports = new HashSet<>();
+    private Set<String> importsAlgorithms = new HashSet<>();
+    private Set<String> fieldsAlgorithms;
+    private Set<String> constantsAlgorithms;
     private Initializer initializer;
 
     public Initializer getInitializer() {
@@ -169,9 +174,6 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         initializer = null;
     }
 
-    public ObjectType() {
-    }
-
     /**
      * objecttype with OTE based on constants will be created; objecttype will
      * be not abstract; it plays no where a role; it has no super- and subtype
@@ -185,6 +187,8 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     ObjectType(FactType parent, List<String> constants, List<Integer> roleNumbers) {
         super(parent, parent);
         init(parent, constants, roleNumbers);
+        this.fieldsAlgorithms = new HashSet<>();
+        this.constantsAlgorithms = new HashSet<>();
     }
 
     /**
@@ -198,6 +202,8 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         ArrayList<String> constants = new ArrayList<>();
         constants.add(Naming.withoutCapital(constant.trim()));
         init(parent, constants, null);
+        this.fieldsAlgorithms = new HashSet<>();
+        this.constantsAlgorithms = new HashSet<>();
     }
 
     ObjectType(FactType parent, int kind) {
@@ -209,6 +215,8 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             constants.add("");
         }
         init(parent, constants, null);
+        this.fieldsAlgorithms = new HashSet<>();
+        this.constantsAlgorithms = new HashSet<>();
     }
 
     ObjectType(FactType parent) {
@@ -226,6 +234,8 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         codeClass = new CodeClass(this, null);
         publisher = new BasicPublisher(new String[]{"subtypesIterator", "supertypesIterator", "behavior", "ote", "abstract", "ordered",
             "valueType"});
+        this.fieldsAlgorithms = new HashSet<>();
+        this.constantsAlgorithms = new HashSet<>();
     }
 
     ObjectType(FactType parent, CollectionTypeExpression ote) {
@@ -243,6 +253,8 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         codeClass = new CodeClass(this, null);
         publisher = new BasicPublisher(new String[]{"subtypesIterator", "supertypesIterator", "behavior", "ote", "abstract", "ordered",
             "valueType"});
+        this.fieldsAlgorithms = new HashSet<>();
+        this.constantsAlgorithms = new HashSet<>();
     }
 
     private boolean isNotConstructor(Entry<OperationHeader, ImportedOperation> e, Language l) {
@@ -250,34 +262,73 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     }
 
     public Set<String> getImports() {
-        return imports;
+        return importsAlgorithms;
+    }
+    
+    public Set<String> getFields() {
+        return fieldsAlgorithms;
+    }
+    
+    public Set<String> getConstants() {
+        return constantsAlgorithms;
     }
 
-    public void addImports(List<String> imports) {
-        this.imports.clear();
-        this.imports.addAll(imports);
+    private void addImports(List<String> imports) {
+        if (importsAlgorithms==null){
+           importsAlgorithms = new HashSet<>(); 
+        }
+        this.importsAlgorithms.clear();
+        this.importsAlgorithms.addAll(imports);
+    }
+    
+    private void addFields(Set<String> fields) {
+        if (fieldsAlgorithms==null){
+           fieldsAlgorithms = new HashSet<>(); 
+        }
+        this.fieldsAlgorithms.clear();
+        this.fieldsAlgorithms.addAll(fields);
+    }
+    
+    private void addConstants(Set<String> constants) {
+        if (constantsAlgorithms==null){
+           constantsAlgorithms = new HashSet<>(); 
+        }
+        this.constantsAlgorithms.clear();
+        this.constantsAlgorithms.addAll(constants);
     }
 
     public void importAlgorithms(File f) throws SyntaxException {
         String filetext = Util.getString(f);
-        Language l = ((ObjectModel) getParent().getParent()).getProject().getLastUsedLanguage();
-        Map<OperationHeader, ImportedOperation> map = l.getOperations(filetext, getName() + TEMPLATE);
-        addImports(l.getImports(filetext));
+        Project project = ((ObjectModel) getParent().getParent()).getProject();
+        ExternalInput source;
+        source = new ExternalInput("", project.getCurrentUser());
+        Language l = project.getLastUsedLanguage();
 
+        addImports(l.getImports(filetext));
+        addConstants(l.getConstants(filetext));
+        addFields(l.getFields(filetext));
+        
+        Map<OperationHeader, ImportedOperation> map = l.getOperations(filetext, getName() + TEMPLATE);
         Map<OperationHeader, Algorithm> algorithmsOld = new HashMap<>(algorithms);
         //removeLanguageAlgorithms();
         algorithms.clear();
         for (Entry<OperationHeader, ImportedOperation> e : map.entrySet()) {
             if (isNotConstructor(e, l)) {
-                addAlgorithm(e.getKey(), e.getValue().getBody(), e.getValue().getApi());
-                algorithmsOld.remove(e.getKey());
+                if (algorithmsOld.containsKey(e.getKey())) {
+                    addAlgorithm(e.getKey(), e.getValue().getBody(), e.getValue().getApi(), algorithmsOld.get(e.getKey()).isRemovable(),
+                        l, source);
+                    algorithmsOld.remove(e.getKey());
+                } else {
+                    addAlgorithm(e.getKey(), e.getValue().getBody(), e.getValue().getApi(), true, l, source);
+                }
             }
         }
 
         // adding non-removable algorithms
         for (Entry<OperationHeader, Algorithm> e : algorithmsOld.entrySet()) {
             if (!e.getValue().isRemovable()) {
-                addAlgorithm(e.getKey(), e.getValue().getCode(), e.getValue().getAPI());
+                addAlgorithm(e.getKey(), new IndentedList(), e.getValue().getAPI(), false, e.getValue().getLanguage(),
+                    e.getValue().sources().get(0));
             }
         }
 
@@ -319,17 +370,8 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     }
 
     public Algorithm removeAlgorithm(OperationHeader header) {
+        // algorithms.clear(); return null;
         return algorithms.remove(header);
-    }
-
-    public boolean addEmptyAlgorithm(OperationHeader oh, IndentedList api) {
-        if (algorithms.get(oh) == null) {
-            algorithms.put(oh, new Algorithm());
-            algorithms.get(oh).setAPI(api);
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public void removeLanguageAlgorithms() {
@@ -346,21 +388,23 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         }
     }
 
-    Algorithm addAlgorithm(OperationHeader oh, IndentedList code, IndentedList api) {
+    Algorithm addAlgorithm(OperationHeader oh, IndentedList code, IndentedList api, boolean removable, Language l, Source source) {
         Algorithm a = algorithms.get(oh);
         if (a == null) {
-            a = new Algorithm();
+            a = new Algorithm(this, source, l);
             algorithms.put(oh, a);
         }
-        a.setCode(code);
+        a.setCode(code, source);
         a.setAPI(api);
+        a.setRemovable(removable);
         return a;
     }
 
     public OperationHeader addAlgorithm(String name, AccessModifier access, boolean property, boolean classMethod,
-        STorCT returnType, List<Param> params, IndentedList code, IndentedList api) {
+        STorCT returnType, List<Param> params, IndentedList code, IndentedList api, boolean removable,
+        Language l, Source source) {
         OperationHeader oh = new MetaOH(name, access, property, classMethod, returnType, params);
-        addAlgorithm(oh, code, api);
+        addAlgorithm(oh, code, api, removable, l, source);
         return oh;
     }
 
@@ -1168,6 +1212,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
      * @return the resulting class of this objecttype, could be undefined = null
      */
     public CodeClass getCodeClass() {
+        //algorithms.clear();
         return codeClass;
     }
 
@@ -1210,9 +1255,12 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         Iterator<Field> it = codeClass.getFields();
         ObjectType responsible = getResponsible();
         while (it.hasNext()) {
-            SubstitutionType type = it.next().getRelation().targetType();
-            if (!type.isValueType() && !type.equals(responsible) && !type.isSingleton()) {
-                return true;
+            Relation relation = it.next().getRelation();
+            if (relation != null) {
+                SubstitutionType type = relation.targetType();
+                if (!type.isValueType() && !type.equals(responsible) && !type.isSingleton()) {
+                    return true;
+                }
             }
         }
         if (supertypes.isEmpty()) {

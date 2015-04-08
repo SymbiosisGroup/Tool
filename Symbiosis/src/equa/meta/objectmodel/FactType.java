@@ -636,7 +636,7 @@ public class FactType extends ParentElement implements Type, ITerm,
             role.removePermissions();
         }
         fireListChanged();
-        publisher.inform(this, "derivable", null, derivableConstraint.getText());
+        publisher.inform(this, "derivable", null, derivableConstraint.getSpec());
     }
 
     public DerivableConstraint getDerivableConstraint() {
@@ -1815,7 +1815,7 @@ public class FactType extends ParentElement implements Type, ITerm,
         if (derivableConstraint == null) {
             return null;
         }
-        return derivableConstraint.getText();
+        return derivableConstraint.getRequirementText();
     }
 
     /**

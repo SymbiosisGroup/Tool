@@ -421,17 +421,17 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
                     FactType changingFT = dialog.getEventSource();
                     if (changingFT != null) {
 
-                        FactType booleanFT = dialog.getEventCondition();
+                        FactType booleanFT = null;
                         String eventHandler = dialog.getEventHandler();
-                        boolean negation = dialog.isNegated();
+                        boolean negation = false;
                         ObjectRole role = dialog.getResponsibleRole();
                         try {
                             if (role.isMultiple()) {
-                                role.addEvent(req, booleanFT, negation, dialog.checkExtendOrUpdate(),
+                                role.addEvent(req, booleanFT, negation, dialog.checkExtend(),
                                     dialog.checkRemove(), false, eventHandler);
                             } else {
                                 role.addEvent(req, booleanFT, negation, false,
-                                    dialog.checkRemove(), dialog.checkExtendOrUpdate(), eventHandler);
+                                    dialog.checkRemove(), dialog.checkUpdate(), eventHandler);
                             }
                         } catch (ChangeNotAllowedException ex) {
                             JOptionPane.showMessageDialog(RequirementConfigurator.this, ex.getMessage());

@@ -16,6 +16,7 @@ import equa.meta.objectmodel.BaseType;
 import equa.meta.objectmodel.BaseValueRole;
 import equa.meta.objectmodel.CBTRole;
 import equa.meta.objectmodel.ConstrainedBaseType;
+import equa.meta.objectmodel.DerivableConstraint;
 import equa.meta.objectmodel.ElementsFactType;
 import equa.meta.objectmodel.RoleEvent;
 import equa.meta.objectmodel.FactType;
@@ -30,6 +31,7 @@ import equa.meta.objectmodel.TypeExpression;
 import equa.meta.objectmodel.UniquenessConstraint;
 import equa.meta.objectmodel.Value;
 import equa.meta.requirements.ActionRequirement;
+import equa.meta.requirements.Requirement;
 import equa.meta.requirements.RequirementModel;
 import equa.meta.requirements.RuleRequirement;
 import equa.meta.traceability.Category;
@@ -163,7 +165,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         miInsertable = new javax.swing.JCheckBoxMenuItem();
         miRemovable = new javax.swing.JCheckBoxMenuItem();
         miComposition = new javax.swing.JCheckBoxMenuItem();
-        miEventSource = new javax.swing.JCheckBoxMenuItem();
+        miChangeBySystemEvent = new javax.swing.JCheckBoxMenuItem();
         miDeleteEventRule = new javax.swing.JMenuItem();
         sRole3 = new javax.swing.JPopupMenu.Separator();
         miNavigable = new javax.swing.JCheckBoxMenuItem();
@@ -198,7 +200,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 
         factTypePopup.setName("factTypePopup"); // NOI18N
 
-        miDerivable.setText("Derivable");
+        miDerivable.setText("Derivable Constraint");
         miDerivable.setToolTipText("");
         miDerivable.setName("miDerivable"); // NOI18N
         miDerivable.addActionListener(new java.awt.event.ActionListener() {
@@ -454,15 +456,15 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         });
         rolePopup.add(miComposition);
 
-        miEventSource.setSelected(true);
-        miEventSource.setText("Change by System Event");
-        miEventSource.setName("miEventSource"); // NOI18N
-        miEventSource.addActionListener(new java.awt.event.ActionListener() {
+        miChangeBySystemEvent.setSelected(true);
+        miChangeBySystemEvent.setText("Change by System Event");
+        miChangeBySystemEvent.setName("miChangeBySystemEvent"); // NOI18N
+        miChangeBySystemEvent.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                miEventSourceActionPerformed(evt);
+                miChangeBySystemEventActionPerformed(evt);
             }
         });
-        rolePopup.add(miEventSource);
+        rolePopup.add(miChangeBySystemEvent);
 
         miDeleteEventRule.setText("Delete Event Rule");
         miDeleteEventRule.setName("miDeleteEventRule"); // NOI18N
@@ -909,33 +911,51 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (ft == null) {
             return;
         }
+        
+        DerivableDialog dialog = new DerivableDialog(parent, ft);
+        dialog.setVisible(true);
+        reliableClasses=false;
+        refresh();
 
-        if (ft.isDerivable()) {
-
-            ft.getDerivableConstraint().remove();
-            refresh();
-
-        } else {
-            if (!ft.isElementary()) {
-                JOptionPane.showMessageDialog(this, ft.getName() + " is not elementary");
-                return;
-            }
-            if (ft.getNavigableRole() == null) {
-                JOptionPane.showMessageDialog(this, ft.getName() + " doesn't possess a single navigable role");
-                return;
-            }
-            String text = JOptionPane.showInputDialog(this,
-                "please enter the derivation rule");
-            if (text == null || text.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "description of "
-                    + "derivation rule cannot be empty");
-            } else {
-                RuleRequirement rule = createRuleRequirement(text, ft.getCategory());
-                ft.addDerivableConstraint(rule, text);
-                reliableClasses = false;
-                refresh();
-            }
-        }
+//        if (ft.isDerivable()) {
+//            DerivableConstraint dc = ft.getDerivableConstraint();
+//            Requirement req = (Requirement) dc.creationSource();
+//            String text = JOptionPane.showInputDialog(this,
+//                "edit the derivation rule", req.getText());
+//            if (text != null && text.isEmpty()) {
+//                JOptionPane.showMessageDialog(this, "description of "
+//                    + "derivation rule cannot be empty");
+//            } else {
+//                ProjectRole currentUser = om.getProject().getCurrentUser();
+//
+//                try {
+//                    req.setText(new ExternalInput("", currentUser), text);
+//                } catch (ChangeNotAllowedException ex) {
+//                    JOptionPane.showMessageDialog(parent, ex.getMessage());
+//                }
+//            }
+//
+//        } else {
+//            if (!ft.isElementary()) {
+//                JOptionPane.showMessageDialog(this, ft.getName() + " is not elementary");
+//                return;
+//            }
+//            if (ft.getNavigableRole() == null) {
+//                JOptionPane.showMessageDialog(this, ft.getName() + " doesn't possess a single navigable role");
+//                return;
+//            }
+//            String text = JOptionPane.showInputDialog(this,
+//                "please enter the derivation rule");
+//            if (text == null || text.isEmpty()) {
+//                JOptionPane.showMessageDialog(this, "description of "
+//                    + "derivation rule cannot be empty");
+//            } else {
+//                RuleRequirement rule = createRuleRequirement(text, ft.getCategory());
+//                ft.addDerivableConstraint(rule, text);
+//                reliableClasses = false;
+//                refresh();
+//            }
+//        }
     }//GEN-LAST:event_miDerivableActionPerformed
 
     private void miUniquenessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miUniquenessActionPerformed
@@ -1119,10 +1139,10 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                         candidates.add(candidate);
                     }
                 }
-                if (candidates.isEmpty()){
+                if (candidates.isEmpty()) {
                     //searching for qualified role without uniqueness
                     Role cp = qualifierRole.getParent().counterpart(qualifierRole);
-                    if (cp!=null && cp.isMultiple()){
+                    if (cp != null && cp.isMultiple()) {
                         candidates.add(cp);
                     }
                 }
@@ -1798,14 +1818,16 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         }
     }//GEN-LAST:event_miDeleteInitializerActionPerformed
 
-    private void miEventSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miEventSourceActionPerformed
+    private void miChangeBySystemEventActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miChangeBySystemEventActionPerformed
         Role role = getSelectedRole();
-        if (role == null) return;
-        if (role instanceof ObjectRole){ 
-            ObjectRole objectRole = (ObjectRole)role;
+        if (role == null) {
+            return;
+        }
+        if (role instanceof ObjectRole) {
+            ObjectRole objectRole = (ObjectRole) role;
             objectRole.setIsEventSource(!objectRole.isEventSource());
         }
-    }//GEN-LAST:event_miEventSourceActionPerformed
+    }//GEN-LAST:event_miChangeBySystemEventActionPerformed
 
     private FactType getSelectedFactType() {
         int row = tbFactTypes.getEditingRow();
@@ -1888,8 +1910,8 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                         miMandatory.setEnabled(cp != null && cp.getSubstitutionType().isValueType());
                     } else {
                         miMandatory.setEnabled(true);
-                        miEventSource.setEnabled(objectRole.isCandidateEventSource());
-                        miEventSource.setSelected(objectRole.isEventSource());
+                        miChangeBySystemEvent.setEnabled(objectRole.isCandidateEventSource());
+                        miChangeBySystemEvent.setSelected(objectRole.isEventSource());
                     }
 
                     miSettable.setEnabled(objectRole.isCandidateSettable());
@@ -1948,7 +1970,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         showPopupText(miNavigable);
         showPopupText(miComposition);
         showPopupText(miFrequency);
-        showPopupText(miEventSource);
+        showPopupText(miChangeBySystemEvent);
 
         // 
         if (ft.isCollectionType()) {
@@ -2032,7 +2054,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         miReplaceWithSubType.setEnabled(false);
         miDeobjectifyRole.setEnabled(false);
         miAuto_Incr.setEnabled(false);
-        miEventSource.setEnabled(false);
+        miChangeBySystemEvent.setEnabled(false);
 
         miUniqueness.setSelected(false);
         miMandatory.setSelected(false);
@@ -2048,7 +2070,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         miDefault_Value.setSelected(false);
         miFrequency.setSelected(false);
         miAuto_Incr.setSelected(false);
-        miEventSource.setSelected(false);
+        miChangeBySystemEvent.setSelected(false);
     }
 
     private RuleRequirement createRuleRequirement(String text, Category cat) {
@@ -2130,10 +2152,10 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                 miDeobjectifyFT.setEnabled(!factType.isConstrainedBaseType());
                 miValueType.setEnabled(!(factType.isConstrainedBaseType() && factType.isObjectifiable()));
             } else {
-                miObjectifyFT.setEnabled( factType.isObjectifiable());
+                miObjectifyFT.setEnabled(factType.isObjectifiable());
                 miDerivable.setEnabled(true);
                 miDerivable.setSelected(factType.isDerivable());
-                miDefault_Boolean.setEnabled(factType.nonQualifierSize()== 1);
+                miDefault_Boolean.setEnabled(factType.nonQualifierSize() == 1);
                 miDefault_Boolean.setSelected(factType.getDefaultValue() != null);
             }
 
@@ -2141,7 +2163,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 
         }
 
-        showPopupText(miDerivable);
         showPopupText(miValueType);
         // showPopupText(miComparable);
         if (factType.isObjectType()) {
@@ -2154,7 +2175,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             showPopupText(miChangeId);
         }
         showPopupText(miDefault_Boolean);
-        showPopupText(miDerivable);
 
         if (factType instanceof ElementsFactType) {
             switchOffFactTypeMenuItems();
@@ -2177,6 +2197,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     private javax.swing.JCheckBoxMenuItem miAddable;
     private javax.swing.JCheckBoxMenuItem miAdjustable;
     private javax.swing.JCheckBoxMenuItem miAuto_Incr;
+    private javax.swing.JCheckBoxMenuItem miChangeBySystemEvent;
     private javax.swing.JCheckBoxMenuItem miChangeId;
     private javax.swing.JCheckBoxMenuItem miComparable;
     private javax.swing.JCheckBoxMenuItem miComposition;
@@ -2189,7 +2210,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     private javax.swing.JMenuItem miDeobjectifyRole;
     private javax.swing.JCheckBoxMenuItem miDerivable;
     private javax.swing.JMenuItem miEdit_ValueConstraint;
-    private javax.swing.JCheckBoxMenuItem miEventSource;
     private javax.swing.JCheckBoxMenuItem miFrequency;
     private javax.swing.JCheckBoxMenuItem miHidden;
     private javax.swing.JMenuItem miInheritance;

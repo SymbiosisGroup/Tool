@@ -79,6 +79,9 @@ public class LanguageOH extends OperationHeader {
         if (this == obj) {
             return true;
         }
+        if (obj == null) {
+            return false;
+        }
         if (obj instanceof OperationHeader) {
             OperationHeader other = (OperationHeader) obj;
 

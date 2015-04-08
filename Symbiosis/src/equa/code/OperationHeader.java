@@ -3,6 +3,7 @@ package equa.code;
 import equa.code.operations.Operation;
 import equa.code.operations.OperationWithParams;
 import equa.code.operations.Param;
+import equa.meta.objectmodel.ObjectModel;
 import java.io.Serializable;
 import java.util.List;
 
@@ -35,7 +36,8 @@ public abstract class OperationHeader implements Serializable {
         result += prime * result + ((getParamTypes(Language.JAVA) == null) ? 0 : getParamTypes(Language.JAVA).hashCode());
         return result;
     }
-
+    
+    
     abstract boolean sameParamTypes(OperationWithParams o) ;
     
 }

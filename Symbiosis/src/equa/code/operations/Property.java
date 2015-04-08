@@ -63,6 +63,9 @@ public class Property extends Operation implements IRelationalOperation {
                     } else {
                         setSetter(false);
                     }
+                } else if (relation.isEventSource()) {
+                    setSetter(true);
+                    setAccessSetter(AccessModifier.NAMESPACE);
                 } else {
                     setSetter(false);
                     Relation inverse = relation.inverse();
@@ -365,6 +368,9 @@ public class Property extends Operation implements IRelationalOperation {
         }
         returnType.setSpec(returnSpec.toString());
 
+        /**
+         * ****************************************SETTER*******************************
+         */
         if (isSetter()) {
 
             List<ActualParam> actualParams = new ArrayList<>();
@@ -377,13 +383,14 @@ public class Property extends Operation implements IRelationalOperation {
 //                IFormalPredicate predicate = bc;
 //                setEscape(predicate, new InformalPredicate(self() + " stays unchanged"));
 //            } else 
-                if (relation.targetType() instanceof BaseType) {
+            if (relation.targetType() instanceof BaseType) {
                 BaseType bt = (BaseType) relation.targetType();
                 if (bt.equals(BaseType.NATURAL)) {
                     IBooleanOperation isNatural = getObjectModel().getIsNaturalMethod();
                     IFormalPredicate predicate = new BooleanCall(isNatural, actualParams, true);
                     setEscape(predicate, new InformalPredicate(self() + " stays unchanged"));
                 }
+                
             }
 
             setter.setPostSpec(new InformalPredicate(relation.roleName() + " of this "
@@ -472,9 +479,8 @@ public class Property extends Operation implements IRelationalOperation {
         return ((ObjectType) getParent()).getCodeClass();
     }
 
-
     public boolean canTrigger(RoleEvent e) {
-        if (isSetter() && getAccessSetter().equals(AccessModifier.PUBLIC)) {
+        if (isSetter()) {
 
             return e.isNeededWhileUpdating() || e.isNeededWhileExtending();
 
@@ -492,9 +498,8 @@ public class Property extends Operation implements IRelationalOperation {
         }
     }
 
-    
     @Override
     public boolean isAbstract() {
-       return getRelation().getOwner().isAbstract() && getRelation().isDerivable();
+        return getRelation().getOwner().isAbstract() && getRelation().isDerivable();
     }
 }

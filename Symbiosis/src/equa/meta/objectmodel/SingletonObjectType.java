@@ -33,8 +33,6 @@ public class SingletonObjectType extends ObjectType {
     @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Singleton singleton;
 
-    public SingletonObjectType() {
-    }
 
     /**
      * creation of a singleton objecttype which refers to parent and contains

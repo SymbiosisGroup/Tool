@@ -86,7 +86,7 @@ public class FactTypeRelation extends Relation {
         if (hasMultipleTarget()) {
             return true;
         }
-        if (getParent().isMutable()) {
+        if (getParent().hasMutableRole()) {
             return false;
         }
         if (isMandatory()) {

@@ -155,7 +155,7 @@ public class ObjectRole extends Role {
             }
         }
         events.add(new RoleEvent(rule, this, eventCondition, negation,
-            extending, removing, updating, eventHandler));
+            extending,  updating, removing, eventHandler));
     }
 
     public boolean removeEvent(FactType condition, boolean negation,
@@ -754,7 +754,7 @@ public class ObjectRole extends Role {
 
             }
         } else {
-            String eventSource = "cha ";
+            String eventSource = "sys ";
 
             if (isHidden()) {
                 sb.append("hid ");
@@ -875,7 +875,7 @@ public class ObjectRole extends Role {
         }
         Role counterpart = getParent().counterpart(this);
         if (counterpart != null) {
-            if (!counterpart.isNavigable()) {
+            if (!counterpart.isNavigable() && isNavigable()) {
                 return true;
             }
         }

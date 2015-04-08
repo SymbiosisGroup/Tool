@@ -21,9 +21,7 @@ public class UnidentifiedObjectType extends ObjectType {
     @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private UnidentifiedObject unidentifiedObject;
 
-    public UnidentifiedObjectType() {
-    }
-
+    
     /**
      *
      * @param parent

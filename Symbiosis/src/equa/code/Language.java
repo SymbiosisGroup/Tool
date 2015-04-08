@@ -561,8 +561,15 @@ public interface Language extends Serializable {
     //TODO JH
     Map<OperationHeader, ImportedOperation> getOperations(String s, String className);
 
-    //TODO JH
+    Set<String> getFields(String s);
+    
+    Set<String> getConstants(String s);
+    
+     //TODO JH
 
+    List<String> getImports(String s);
+    
+    //TODO JH
     String adjustMap(Relation r, String key, String amount);
 
     //TODO JH
@@ -581,9 +588,7 @@ public interface Language extends Serializable {
 
     IndentedList constructorTemplate(Constructor c);
 
-    //TODO JH
-
-    List<String> getImports(String s);
+   
 
     //TODO JH
 

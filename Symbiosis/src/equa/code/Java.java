@@ -74,6 +74,7 @@ import equa.meta.objectmodel.FactType;
 import equa.meta.objectmodel.ObjectModel;
 import equa.meta.objectmodel.ObjectType;
 import equa.util.Naming;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -619,6 +620,9 @@ public class Java implements Language {
 
     private IndentedList importsManuallyAddedCode(Set<String> imports) {
         IndentedList list = new IndentedList();
+        if (imports == null) {
+            imports = new HashSet<>();
+        }
         for (String imp : imports) {
             list.addLineAtCurrentIndentation("import " + imp + ";");
         }
@@ -934,6 +938,7 @@ public class Java implements Language {
                     list.addLineAtCurrentIndentation(returnStatement(p.getRelation().fieldName()));
                 }
             }
+            //list.addLinesAtCurrentIndentation(postProcessing(p));
             list.addLinesAtCurrentIndentation(bodyClosure());
         }
 
@@ -1429,25 +1434,21 @@ public class Java implements Language {
             endOfLine = text.substring(start).indexOf(System.getProperty("line.separator"));
         }
         text = text.substring(start);
-        start = 0;
-        int tag = text.indexOf("@");
-        if (tag != -1) {
-            start += tag + 9; // length of '@Override' is 9
-        }
-        text = text.substring(start);
+//        start = 0;
+//        int tag = text.indexOf("@");
+//        if (tag != -1) {
+//            start += tag + 9; // length of '@Override' is 9
+//        }
+//        text = text.substring(start);
         start = 0;
         endOfLine = text.indexOf(System.getProperty("line.separator"));
         while (endOfLine != -1 && text.substring(start, start + endOfLine).trim().isEmpty()) {
             start += endOfLine + endOfLineLength;
             endOfLine = text.substring(start).indexOf(System.getProperty("line.separator"));
         }
-//        text = text.substring(start);
-//        start = 0;
-//        while (start < text.length() && text.charAt(start) == ' ') {
-//            start++;
-//        }
 
-        return text.substring(start);
+
+        return text.substring(start).replace("@Override", "");
     }
 
     IndentedList getDocumentation(String sourcecode) {
@@ -1746,6 +1747,61 @@ public class Java implements Language {
     }
 
     @Override
+    public Set<String> getFields(String s) {
+        int fieldIndex = s.indexOf("class ");
+        if (fieldIndex == -1) {
+            return new HashSet<>();
+        }
+        fieldIndex += s.substring(fieldIndex).indexOf("{");
+        Set<String> fields = new HashSet<>();
+        String remainingText = skipComment(s.substring(fieldIndex + 1));
+        fieldIndex = remainingText.indexOf(";");
+        boolean endOfFieldsSection = fieldIndex == -1 || remainingText.substring(0, fieldIndex).contains("(");
+        while (!endOfFieldsSection) {
+            if (isField(remainingText.substring(0, fieldIndex), false)) {
+                fields.add(remainingText.substring(0, fieldIndex+1).trim());
+            }
+            remainingText = skipComment(remainingText.substring(fieldIndex + 1));
+            fieldIndex = remainingText.indexOf(";");
+            endOfFieldsSection = fieldIndex == -1 || remainingText.substring(0, fieldIndex).contains("(");
+        }
+        return fields;
+    }
+
+    boolean isField(String s, boolean constant) {
+        String trimmed = skipComment(s.trim());
+        if (trimmed.isEmpty()) {
+            return false;
+        }
+        if (constant) {
+            return trimmed.contains("static ");
+        } else {
+            return !trimmed.contains("static ");
+        }
+    }
+
+    @Override
+    public Set<String> getConstants(String s) {
+        int fieldIndex = s.indexOf("class ");
+        if (fieldIndex == -1) {
+            return new HashSet<>();
+        }
+        fieldIndex += s.substring(fieldIndex).indexOf("{");
+        Set<String> constants = new HashSet<>();
+        String remainingText = s.substring(fieldIndex + 1);
+        fieldIndex = remainingText.indexOf(";");
+        boolean endOfFieldsSection = fieldIndex != -1 || remainingText.substring(0, fieldIndex).contains("(");
+        while (!endOfFieldsSection) {
+            if (isField(remainingText.substring(0, fieldIndex), true)) {
+                constants.add(remainingText.substring(0, fieldIndex).trim());
+            }
+            remainingText = remainingText.substring(fieldIndex + 1);
+            fieldIndex = remainingText.indexOf(";");
+        }
+        return constants;
+    }
+
+    @Override
     public String putStatement(String name, String key, String value) {
         StringBuilder sb = new StringBuilder(name);
         sb.append(memberOperator());
@@ -1768,8 +1824,7 @@ public class Java implements Language {
             if (operation.canTrigger(e)) {
                 FactType booleanFT = e.getCondition();
                 IndentedList trueStatement = new IndentedList();
-                trueStatement.addLineAtCurrentIndentation("this." + e.getNameOfHandler() + "("
-                    + o.getIntendedValue() + ");");
+                trueStatement.addLineAtCurrentIndentation("this." + e.getNameOfHandler() + "();");
                 if (booleanFT != null) {
                     Relation booleanRelation = new BooleanRelation((ObjectType) cc.getParent(), booleanFT.getResponsibleRole());
 

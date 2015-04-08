@@ -304,7 +304,8 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
             } else if (itOH != null && itOH.hasNext()) {
                 ObjectType ot = ((ObjectType) getParent());
                 OperationHeader oh = itOH.next();
-                return new ManuallyAddedMethod(ot, oh, ot.getAlgorithm(oh), oh.isClassMethod(), null);
+                Algorithm alg = ot.getAlgorithm(oh);
+                return new ManuallyAddedMethod(ot, oh, alg, oh.isClassMethod(), alg);
             }
             throw new java.util.NoSuchElementException();
         }
@@ -604,6 +605,7 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
     public String getCode(Language l, boolean withOrm) {
         Set<ImportType> imports = new HashSet();
         IndentedList list = new IndentedList();
+        boolean editable = hasEditableOperation();
 
         Iterator<Field> fields = getFields();
         while (fields.hasNext()) {
@@ -633,10 +635,23 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
             list.addLinesAtCurrentIndentation(l.systemClassHeader());
         }
 
-        boolean editable = hasEditableOperation();
+        list.addLineAtCurrentIndentation("");
+
+        if (getParent() instanceof ObjectType && editable) {
+            ObjectType ot = (ObjectType) getParent();
+            if (ot.getConstants() != null && !ot.getConstants().isEmpty()) {
+                for (String constant : ot.getConstants()) {
+                    list.addLineAtCurrentIndentation(constant);
+                }
+            }
+            if (ot.getFields() != null && !ot.getFields().isEmpty()) {
+                for (String field : ot.getFields()) {
+                    list.addLineAtCurrentIndentation(field);
+                }
+            }
+        }
         fields = getFields();
         if (fields.hasNext()) {
-            list.addLineAtCurrentIndentation("");
             do {
                 Field f = fields.next();
                 list.addLinesAtCurrentIndentation(f.getCode(l, withOrm, editable));
@@ -672,7 +687,7 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
                     list.addLineAtCurrentIndentation(l.overrideModifier());
                 }
                 if (a.isEmpty()) {
-                    list.addLinesAtCurrentIndentation(l.operationTemplate(e.getKey(), false, a.getCode() == null));
+                    list.addLinesAtCurrentIndentation(l.operationTemplate(e.getKey(), false, a.getCode() == null && ot.isAbstract()));
                 } else {
                     list.addLinesAtCurrentIndentation(a.getCode());
                 }
@@ -693,8 +708,8 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
         list.addLineAtCurrentIndentation(l.docLine("of included operations or add/remove (non final) operations of the"));
         list.addLineAtCurrentIndentation(l.docLine(getParent().getName() + "-class."));
 
-        list.addLineAtCurrentIndentation(l.docLine("Please do not add constructors, (inner) classes or data fields."
-            + "Use the indenting and new line rules for your language."));
+        list.addLineAtCurrentIndentation(l.docLine("Please do not add constructors or non-anonymous classes."));
+        list.addLineAtCurrentIndentation(l.docLine("Use the indenting and new line rules for your language."));
         list.addLineAtCurrentIndentation(l.docLine("Do not put line breaks where the line is not finished."));
         list.addLineAtCurrentIndentation(l.docEnd());
 
@@ -702,6 +717,9 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
         list.addLineAtCurrentIndentation("");
 
         Set<String> imports = ot.getImports();
+        if (imports == null) {
+            imports = new HashSet<>();
+        }
         for (String imp : imports) {
             list.addLineAtCurrentIndentation("import " + imp + ";");
         }
@@ -709,7 +727,26 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
         list.addLineAtCurrentIndentation("");
         list.addLinesAtCurrentIndentation(l.classHeader(AccessModifier.PUBLIC, ot, true, false));
         ObjectType parent = (ObjectType) this.getParent();
+
+        list.addLineAtCurrentIndentation("// Required Fields and Constants should be placed here:");
         list.addLineAtCurrentIndentation("");
+        boolean extraLine = false;
+        if (ot.getConstants() != null && !ot.getConstants().isEmpty()) {
+            extraLine = true;
+            for (String constant : ot.getConstants()) {
+                list.addLineAtCurrentIndentation(constant);
+            }
+        }
+        if (ot.getFields() != null && !ot.getFields().isEmpty()) {
+            extraLine = true;
+            for (String field : ot.getFields()) {
+                list.addLineAtCurrentIndentation(field);
+            }
+        }
+        if (extraLine) {
+            list.addLineAtCurrentIndentation("");
+        }
+
         list.addLinesAtCurrentIndentation(l.constructorTemplate(getConstructor()));
 
         for (Entry<OperationHeader, Algorithm> e : ot.algorithmsMap().entrySet()) {

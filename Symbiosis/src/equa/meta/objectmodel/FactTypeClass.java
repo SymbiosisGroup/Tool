@@ -20,8 +20,7 @@ import equa.meta.requirements.Requirement;
 @Entity
 public class FactTypeClass extends ObjectType {
 
-    public FactTypeClass() {
-    }
+    
 
     private static final long serialVersionUID = 1L;
 

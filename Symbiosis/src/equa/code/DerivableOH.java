@@ -8,6 +8,7 @@ package equa.code;
 import equa.code.operations.AccessModifier;
 import equa.code.operations.CT;
 import equa.code.operations.CollectionKind;
+import equa.code.operations.JavaType;
 import equa.code.operations.OperationWithParams;
 import equa.code.operations.Param;
 import equa.code.operations.STorCT;
@@ -16,6 +17,7 @@ import equa.meta.classrelations.FactTypeRelation;
 import equa.meta.classrelations.QualifierRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.FactType;
+import equa.meta.objectmodel.ObjectModel;
 import equa.meta.objectmodel.ObjectRole;
 import equa.meta.objectmodel.ObjectType;
 import equa.meta.objectmodel.Role;
@@ -119,13 +121,16 @@ public class DerivableOH extends OperationHeader {
         if (obj == null) {
             return false;
         }
-        if (obj instanceof DerivableOH) {
-            DerivableOH other = (DerivableOH) obj;
-            Language l;
-            if (!getName().equals(other.getName())) {
+        if (obj instanceof OperationHeader) {
+            OperationHeader other = (OperationHeader) obj;
+            Language l = ((ObjectModel) ft.getParent()).getProject().getLastUsedLanguage();
+            if (l == null) {
+                l = Language.JAVA;
+            }
+            if (!getName(l).equals(other.getName(l))) {
                 return false;
             }
-            return getParams().equals(other.getParams());
+            return getParams(l).equals(other.getParams(l));
         } else {
             return false;
         }
@@ -133,7 +138,14 @@ public class DerivableOH extends OperationHeader {
 
     @Override
     public List<Param> getParams(Language l) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Param> params = new ArrayList<>();
+        List<String> paramNames = getParamNames(l);
+        List<String> paramTypes = getParamTypes(l);
+        for (int i = 0; i < paramTypes.size(); i++) {
+            // temporary language dependent solution:
+            params.add(new Param(paramNames.get(i), new JavaType(paramTypes.get(i)), null));
+        }
+        return params;
     }
 
     @Override

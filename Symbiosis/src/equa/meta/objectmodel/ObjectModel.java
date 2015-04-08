@@ -670,7 +670,7 @@ public class ObjectModel extends Model implements
 //                    }
                     if (!facttype.hasNavigableRoles() && facttype.size() > 0) {
                         messages.add(new Message("error: " + facttype.getName()
-                            + " does not have a navigable role.", true));
+                            + " does not have exactly one navigable role.", true));
                         error = true;
                     }
                     if (facttype.isSuspiciousCandidateClass()) {

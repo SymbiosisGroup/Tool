@@ -6,13 +6,16 @@ import equa.code.Language;
 import equa.code.MetaOH;
 import equa.code.OperationHeader;
 import equa.code.operations.AccessModifier;
+import equa.code.operations.BooleanCall;
 import equa.code.operations.CT;
 import equa.code.operations.CollectionKind;
+import equa.code.operations.IBooleanOperation;
 import equa.code.operations.Param;
 import equa.code.operations.STorCT;
 import equa.meta.ChangeNotAllowedException;
 import equa.meta.classrelations.BooleanRelation;
 import equa.meta.classrelations.FactTypeRelation;
+import equa.meta.classrelations.IdRelation;
 import equa.meta.classrelations.QualifierRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.requirements.Requirement;
@@ -48,14 +51,32 @@ public class DerivableConstraint extends StaticConstraint {
     }
 
     public void setText(ExternalInput source, String text) throws ChangeNotAllowedException {
-        if (text.equals(getText())) {
+        if (text.equals(getSpec())) {
         } else {
-            getFactType().getDerivableConstraint().setText(source, text);
+            ((Requirement) this.creationSource()).setText(source, text);
         }
     }
 
-    public String getText() {
-        return ((Requirement) this.creationSource()).getText();
+    public String getSpec() {
+        StringBuilder returnSpec = new StringBuilder();
+        ObjectRole role = getFactType().getNavigableRole();
+        if (role == null) {
+            return "error (undefined navigable role)";
+        }
+
+        returnSpec.append(((Requirement) this.creationSource()).getText()).append("\"");
+
+        if (!role.isMandatory() && !role.isMultiple()) {
+            Role cp = getFactType().counterpart(role);
+            if (cp != null) {
+                String undefined = cp.getSubstitutionType().getUndefinedString();
+                if (undefined != null) {
+                    returnSpec.append("; the value could be undefined, " + "in that case ").append(undefined).append(" will be returned");
+                }
+            }
+        }
+
+        return returnSpec.toString();
 
     }
 
@@ -105,7 +126,7 @@ public class DerivableConstraint extends StaticConstraint {
         IndentedList api;
         api = new IndentedList();
         api.addLineAtCurrentIndentation(Language.JAVA.docStart());
-        api.addLineAtCurrentIndentation(Language.JAVA.docLine("Returns:\t" + getText()));
+        api.addLineAtCurrentIndentation(Language.JAVA.docLine("Returns:\t" + getSpec()));
         api.addLineAtCurrentIndentation(Language.JAVA.docEnd());
 
         oh = new DerivableOH(ft);
@@ -115,14 +136,9 @@ public class DerivableConstraint extends StaticConstraint {
         } else {
             code = new IndentedList();
         }
-//        if (oh != null) {
-//            if (!oh.equals(oh2)) {
-//                code = ot.getAlgorithm(oh).getCode();
-//                ot.removeAlgorithm(oh);
-//            }
-//        } 
-        ot.addAlgorithm(oh, code, api);
-        //oh = oh2;
+
+        Algorithm alg = ot.addAlgorithm(oh, code, api, false, null, sources().get(0));
+        
     }
 
     /**
@@ -154,7 +170,7 @@ public class DerivableConstraint extends StaticConstraint {
 
     @Override
     public String getRequirementText() {
-        return getText();
+        return ((Requirement) this.creationSource()).getText();
     }
 
     @Override

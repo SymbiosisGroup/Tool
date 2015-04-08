@@ -183,14 +183,14 @@ public class LoginDialog extends javax.swing.JDialog implements IView {
     }//GEN-LAST:event_btOKActionPerformed
 
     private void btCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelActionPerformed
-        cbProjectRoles.setSelectedItem(null);
+       // cbProjectRoles.setSelectedItem(null);
         projectController.removeView(this);
         setVisible(false);
     }//GEN-LAST:event_btCancelActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
     {//GEN-HEADEREND:event_formWindowClosing
-        cbProjectRoles.setSelectedItem(null);
+      //  cbProjectRoles.setSelectedItem(null);
         projectController.removeView(this);
         setVisible(false);
     }//GEN-LAST:event_formWindowClosing
