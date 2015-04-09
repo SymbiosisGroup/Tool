@@ -644,6 +644,10 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             throw new ChangeNotAllowedException(("SUPERTYPE ") + supertype.getName() + (" IS A SUBTYPE OF") + (" THIS OBJECTTYPE ")
                 + getName());
         }
+        if(supertype.equals(this)){
+             throw new ChangeNotAllowedException(("SUPERTYPE ") + supertype.getName() + (" EQUALS ") + (" THIS OBJECTTYPE ")
+                + getName());
+        }
 
         supertype.addSubType(this);
         this.supertypes.add(supertype);

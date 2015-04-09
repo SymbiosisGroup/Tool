@@ -680,6 +680,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         tbFactTypes.setMinimumSize(null);
         tbFactTypes.setName("tbFactTypes"); // NOI18N
         tbFactTypes.setPreferredSize(null);
+        tbFactTypes.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tbFactTypes.addContainerListener(new java.awt.event.ContainerAdapter() {
             public void componentAdded(java.awt.event.ContainerEvent evt) {
                 tbFactTypesComponentAdded(evt);

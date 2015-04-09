@@ -569,9 +569,9 @@ public class ObjectModel extends Model implements
                                     && (!target.equals(responsible) && !responsible.hasSubType(target))
                                     && !target.equals(ot) && !target.hasSubType(ot)) {
                                     StringBuilder messageText = new StringBuilder();
-                                    
+
                                     messageText.append("Error: removing of a(n) ").append(ot.getName()).
-                                        append(" can lead to a dangling ").append(relation.getParent().getName()+"."+inverse.name()).
+                                        append(" can lead to a dangling ").append(relation.getParent().getName() + "." + inverse.name()).
                                         append("-object;\n");
                                     messageText.append("\t\tadvice: perhaps you need to open the navigability from ").
                                         append(ot.getName()).append(" to ").append(relation.getParent().getName()).append(".").append(inverse.name()).
@@ -1142,7 +1142,7 @@ public class ObjectModel extends Model implements
      * @param fn all objectnodes of fn are already registered
      * @throws equa.meta.MismatchException
      */
-    public void addFact(FactNode fn) throws MismatchException {
+    public void addFact(FactNode fn) throws MismatchException, ChangeNotAllowedException {
         FactType ft = getFactType(fn.getTypeName());
         if (ft == null) {
             throw new RuntimeException("facttype " + fn.getTypeName() + " is unknown at objectmodel");
@@ -1298,7 +1298,7 @@ public class ObjectModel extends Model implements
      *
      * @param on all including objectnodes of on are allready registered
      */
-    public void addObject(ObjectNode on) throws MismatchException {
+    public void addObject(ObjectNode on) throws MismatchException, ChangeNotAllowedException {
         FactType ft = getFactType(on.getTypeName());
         if (ft == null) {
             throw new RuntimeException("objecttype " + on.getTypeName() + " is unknown at objectmodel");
@@ -1322,7 +1322,7 @@ public class ObjectModel extends Model implements
      */
     public FactType addSuperType(String nameSupertype, String nameSubtype,
         ExternalInput source)
-        throws DuplicateException {
+        throws DuplicateException, ChangeNotAllowedException {
         if (nameSubtype.isEmpty() || nameSupertype.isEmpty()) {
             return null;
         }
@@ -1338,12 +1338,8 @@ public class ObjectModel extends Model implements
             typeRepository.putFactType(supertype);
             publisher.inform(this, "newType", null, supertype);
         }
-        try {
-            subtype.getObjectType().addSuperType(supertype.getObjectType());
 
-        } catch (ChangeNotAllowedException ex) {
-            Logger.getLogger(ObjectModel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        subtype.getObjectType().addSuperType(supertype.getObjectType());
 
         fireListChanged();
         return supertype;

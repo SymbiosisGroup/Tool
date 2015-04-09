@@ -743,7 +743,7 @@ public class FactType extends ParentElement implements Type, ITerm,
      * @param fn all including objectnodes are allready registered
      * @return the resulting tuple
      */
-    public Tuple addFact(FactNode fn) throws MismatchException {
+    public Tuple addFact(FactNode fn) throws MismatchException, ChangeNotAllowedException {
         List<Integer> roleNumbers;
         if (fn instanceof ObjectNode) {
             roleNumbers = getObjectType().getOTE().cloneRoleNumbers();
@@ -1617,7 +1617,7 @@ public class FactType extends ParentElement implements Type, ITerm,
     }
 
     void checkMatch(List<SubstitutionType> types, boolean exactTypeMatch)
-        throws MismatchException {
+        throws MismatchException, ChangeNotAllowedException {
 
         for (int i = 0; i < roles.size(); i++) {
             Role role = roles.get(i);
@@ -1644,11 +1644,9 @@ public class FactType extends ParentElement implements Type, ITerm,
                         if (common != null) {
                             role.expandSubstitutionType(common);
                         } else {
-                            try {
-                                otConcrete.addSuperType(otDefined);
-                            } catch (ChangeNotAllowedException ex) {
-                                Logger.getLogger(FactType.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+
+                            otConcrete.addSuperType(otDefined);
+
                         }
 
                     } else {
