@@ -911,7 +911,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 Project project = projectController.getProject();
                 if (project != null) {
                     String name = JOptionPane.showInputDialog("Change of project name", project.getName());
-                    if (name != null && !name.isEmpty()) {
+                    if (name != null && !name.isEmpty() && !name.trim().isEmpty()) {
                         project.setName(name);
                         Desktop.this.getFrame().setTitle(project.getName()
                             + "\t\tlogged: " + project.getCurrentUser().toString());
