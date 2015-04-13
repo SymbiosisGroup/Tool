@@ -54,6 +54,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
@@ -1225,16 +1226,20 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 
     private void lsOperationsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lsOperationsValueChanged
 
-        spSpecification.setVisible(false);
+//        spSpecification.setVisible(false);
         Operation feature = (Operation) lsOperations.getSelectedValue();
         if (feature != null) {
-            taSpecification.setText(feature.getSpec());
-            ((TitledBorder) spSpecification.getBorder()).setTitle("Specification of " + getSelectedFactType().getName() + " :: " + feature.callString());
+            //taSpecification.setText(feature.getSpec());
+            //((TitledBorder) spSpecification.getBorder()).setTitle("Specification of " + getSelectedFactType().getName() + " :: " + feature.callString());
+            JOptionPane jDoc = new JOptionPane(feature.getSpec());
+            JDialog dialog = jDoc.createDialog(parent, "Specification of " + getSelectedFactType().getName() + " :: " + feature.callString());
+            dialog.setModal(false);
+            dialog.setVisible(true);
         } else {
-            taSpecification.setText("");
-            ((TitledBorder) spSpecification.getBorder()).setTitle("Specification of Selected Operation");
+//            taSpecification.setText("");
+//            ((TitledBorder) spSpecification.getBorder()).setTitle("Specification of Selected Operation");
         }
-        spSpecification.setVisible(true);
+//        spSpecification.setVisible(true);
 
     }//GEN-LAST:event_lsOperationsValueChanged
 
