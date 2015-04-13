@@ -24,6 +24,7 @@ import equa.diagram.cd.ClassDiagramPanel;
 import equa.factbreakdown.gui.FactBreakdown;
 import equa.factbreakdown.gui.Node;
 import equa.factbreakdown.gui.RequirementsBreakdownPanel;
+import equa.gui.edit.NewProject;
 import equa.inspector.InspectorTreeNode;
 import equa.inspector.ProjectInspector;
 import equa.meta.DuplicateException;
@@ -602,6 +603,11 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         return result;
     }
 
+    private boolean setSaveLocation() {
+        saveProject(true);
+        return projectController.getProject().getFile() != null;
+    }
+
     /**
      * Saves the current project and shows a save dialog when this is required.
      *
@@ -689,6 +695,10 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
      * project and refreshes the UI.
      */
     private void createNewProject() {
+        /*
+         NewProject newProject = new NewProject(Desktop.this);
+         newProject.setVisible(true);
+         */
         NewProjectWizardProvider provider = new NewProjectWizardProvider();
         Wizard wizard = provider.createWizard();
         Point point = getFrame().getLocation();
@@ -700,8 +710,19 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             AddParticipantDialog dialog = new AddParticipantDialog(getFrame(), null, projectController);
 
             dialog.setVisible(true);
-            refresh();
+            if (setSaveLocation()) {
+                refresh();
+            }
         }
+
+    }
+
+    public void createdNewProject(Project project, File file) {
+        projectController.createNewProject(project);
+        projectController.setCurrentUser(project.getCurrentUser());
+        projectController.getProject().setFile(file);
+        saveProject(false);
+        refresh();
     }
 
     /**
