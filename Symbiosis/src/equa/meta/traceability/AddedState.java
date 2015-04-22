@@ -78,7 +78,7 @@ public class AddedState extends ReviewState {
 
     @Override
     public boolean isRollBackable(ProjectRole projectRole) {
-        if (externalInput.getFrom()==null) return true;
+        if (externalInput.getFrom()==null) return false;
         return externalInput.getFrom().getName().equalsIgnoreCase(projectRole.getName());
     }
 

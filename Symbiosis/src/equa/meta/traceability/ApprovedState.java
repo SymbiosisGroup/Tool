@@ -76,7 +76,8 @@ public class ApprovedState extends ReviewState {
 
     @Override
     public void remove(ExternalInput source) {
-        if (reviewable.isManuallyCreated()) {
+        //if (reviewable.isManuallyCreated()) 
+        {
             if (reviewable.isOwner(source.getFrom())) {
 
                 reviewable.remove();

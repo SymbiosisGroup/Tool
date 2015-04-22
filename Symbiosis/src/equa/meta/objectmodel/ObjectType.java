@@ -648,6 +648,21 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
              throw new ChangeNotAllowedException(("SUPERTYPE ") + supertype.getName() + (" EQUALS ") + (" THIS OBJECTTYPE ")
                 + getName());
         }
+        
+        if (supertype.isSingleton()){
+             throw new ChangeNotAllowedException("A SINGLETON AS SUPERTYPE IS NOT ALLOWED.");
+        }
+        
+        List<Relation> idSuper = supertype.identifyingRelations();
+        if (!idSuper.isEmpty()){
+            List<Relation> idSub = identifyingRelations();
+            if (!idSub.isEmpty()){
+                throw new ChangeNotAllowedException("Super- and subtype do have both identifying relations; "
+                    + "they need to be identical; "
+                    + "unfortunately, if identical, this situation is still not supported");
+                // check on equal roles --> removing of roles of subtype; migrating population of subtype
+            }
+        }
 
         supertype.addSubType(this);
         this.supertypes.add(supertype);

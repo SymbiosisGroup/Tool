@@ -90,18 +90,21 @@ public class EditTypeExpressionDialog extends javax.swing.JDialog {
     }
 
     private String withoutDelimiters(String text) {
-        if (text.length() < 2) {
-            te = null;
-            return "";
-        } else {
-            if (text.charAt(0) != LEFT || text.charAt(text.length() - 1) != RIGHT) {
-                te = null;
-                return "";
-            } else {
-                return text.substring(1, text.length() - 1);
-            }
+        int length = text.length();
+        int from = 0;
+        while (from < length && text.charAt(from) == LEFT) {
+            from++;
+        }
+        int until = length;
+        while (until >= 0 & text.charAt(until-1) == RIGHT) {
+            until--;
         }
 
+        if (from <= until) {
+            return text.substring(from, until);
+        } else {
+            return "ERROR";
+        }
     }
 
     public List<Role> getRoles() {
@@ -181,7 +184,7 @@ public class EditTypeExpressionDialog extends javax.swing.JDialog {
                 Logger.getLogger(EditTypeExpressionDialog.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-        } 
+        }
 
         setVisible(false);
     }//GEN-LAST:event_btOkActionPerformed
