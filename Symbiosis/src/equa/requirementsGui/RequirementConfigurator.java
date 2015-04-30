@@ -417,6 +417,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
                 if (req instanceof RuleRequirement) {
                     EventRuleAssignmentDialog dialog;
                     dialog = new EventRuleAssignmentDialog(null, true, projectController.getProject().getObjectModel());
+                    dialog.setTitle(req.getText());
                     dialog.setVisible(true);
                     FactType changingFT = dialog.getEventSource();
                     if (changingFT != null) {

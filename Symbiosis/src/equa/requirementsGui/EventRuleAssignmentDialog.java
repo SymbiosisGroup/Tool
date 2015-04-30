@@ -58,6 +58,8 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
         responsibleRole = null;
         btRemove.setEnabled(false);
 
+        if (listFactTypes.getSelectedValue() == null) return;
+        
         FactType ft = om.getFactType((String) listFactTypes.getSelectedValue());
 
         FactTypeListModel model = new FactTypeListModel();
@@ -197,7 +199,6 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        pnEvent = new javax.swing.JPanel();
         pnEventHandler = new javax.swing.JPanel();
         tfEventHandler = new javax.swing.JTextField();
         lbEventHandler = new javax.swing.JLabel();
@@ -213,10 +214,7 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
         btRemove = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        pnEvent.setName("pnEvent"); // NOI18N
-        pnEvent.setLayout(new java.awt.BorderLayout());
-        getContentPane().add(pnEvent, java.awt.BorderLayout.NORTH);
+        setPreferredSize(new java.awt.Dimension(500, 350));
 
         pnEventHandler.setName("pnEventHandler"); // NOI18N
         pnEventHandler.setPreferredSize(new java.awt.Dimension(220, 50));
@@ -402,7 +400,7 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
         }
 
         if (!cbExtending.isSelected() && !cbRemoving.isSelected() && !cbUpdating.isSelected()) {
-            JOptionPane.showMessageDialog(getParent(), "Please select one (or more) checkboxes in the left panel about the event source.");
+            JOptionPane.showMessageDialog(getParent(), "Please select one (or more) checkboxes.");
             return;
         }
 
@@ -442,7 +440,6 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
     private javax.swing.JLabel lbEventHandler;
     private javax.swing.JList listFactTypes;
     private javax.swing.JPanel pnButtons;
-    private javax.swing.JPanel pnEvent;
     private javax.swing.JPanel pnEventHandler;
     private javax.swing.JPanel pnEventSource;
     private javax.swing.JTextField tfEventHandler;
