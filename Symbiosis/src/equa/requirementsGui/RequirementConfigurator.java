@@ -90,7 +90,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
     private JMenuItem mntmActionRuleAssignment;
     private JMenuItem mntmEventRuleAssignment;
     private JMenuItem mntmInitializeAssignment;
-    JScrollPane scrollPane_3;
+    private JScrollPane spRequirements;
 
     public RequirementConfigurator(ProjectController controller) {
         dockKey = new DockKey("ReqModel Configurator");
@@ -107,9 +107,22 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
             Project p = projectController.getProject();
             p.addListener(this, "currentUser");
             initView();
-            // tblRequirements.setAutoCreateRowSorter(true);
-            refresh();
+            initCategories();
+            
+            // tblRequirements.setAutoCreateRowSorter(true);    
         }
+        deselectSYS();
+        refresh();
+    }
+    
+    
+    @Override
+    public void refresh() {
+        selectFilteredRequirements();
+        SwingUtils.resize(tblRequirements);
+        tblRequirements.setVisible(true);
+        spRequirements.updateUI();
+        initPopup();
     }
 
     private void initPopup() {
@@ -163,7 +176,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         }
     }
 
-    public void initView() {
+    private void initView() {
         filterTables = new JTable[5];
 
         setMinimumSize(new Dimension(737, 1500));
@@ -209,9 +222,9 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         tblRequirements = new RequirementsTable(new RequirementsTableModel(filteredRequirements));
 
         panelRequirements.setLayout(new BoxLayout(panelRequirements, BoxLayout.X_AXIS));
-        scrollPane_3 = new JScrollPane(tblRequirements, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane_3.setMinimumSize(new Dimension(600, 1500));
-        panelRequirements.add(scrollPane_3);
+        spRequirements = new JScrollPane(tblRequirements, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        spRequirements.setMinimumSize(new Dimension(1000, 1500));
+        panelRequirements.add(spRequirements);
 
         //tblRequirements.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         //tca = new TableColumnAdjuster(tblRequirements);
@@ -523,9 +536,6 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
             }
         });
         requirementPopupMenu.add(mntmRollbackRequirement);
-
-        deselectSYS();
-        selectFilteredRequirements();
     }
 
     private void initCategories() {
@@ -696,15 +706,9 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         }
     }
 
-    @Override
-    public void refresh() {
-        initCategories();
-        deselectSYS();
-        selectFilteredRequirements();
-        initPopup();
-    }
+    
 
-    public void selectFilteredRequirements() {
+    private void selectFilteredRequirements() {
         Project p = projectController.getProject();
         if (p == null) {
             return;
@@ -719,10 +723,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
             }
         }
         tblRequirements.setModel(new RequirementsTableModel(filteredRequirements));
-        //tca.adjustColumns();
-        SwingUtils.resize(tblRequirements);
-        tblRequirements.setVisible(true);
-        scrollPane_3.updateUI();
+        //(new TableColumnAdjuster(tblRequirements)).adjustColumns();
     }
 
     public void openEnterRequirementDialog() {

@@ -19,7 +19,7 @@ public class SwingUtils {
 
     public static final int ROWHEIGHT = 16;
     public static final int MINWIDTH = 35;
-    public static final int MAXWIDTH = 1000;
+    public static final int MAXWIDTH = 1500;
 
     public static void resize(JTable table) {
         Dimension d = new Dimension(table.getParent().getParent().getWidth(),

@@ -114,7 +114,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     private ProjectNavigator projectNavigator;
     private ProjectInspector projectInspector;
     private FactBreakdown factBreakdown;
-    private RequirementConfigurator requirementViewer;
+    private RequirementConfigurator requirementConfigurator;
     //private RequirementsBreakdownPanel requirementsBreakdownPanel;
     private TypeConfigurator typeConfigurator;
     private java.util.Timer autoSaveTimer;
@@ -255,25 +255,25 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         }
         //projectInspector = new ProjectInspector(this);
 
-        if (requirementViewer != null) {
-            projectController.removeView(requirementViewer);
-            dockingRoot.close(requirementViewer);
+        if (requirementConfigurator != null) {
+            projectController.removeView(requirementConfigurator);
+            dockingRoot.close(requirementConfigurator);
         }
-        requirementViewer = new RequirementConfigurator(projectController);
-        dockingRoot.addDockable(requirementViewer);
+        requirementConfigurator = new RequirementConfigurator(projectController);
+        dockingRoot.addDockable(requirementConfigurator);
 
         if (factBreakdown != null) {
             dockingRoot.close(factBreakdown);
         }
         factBreakdown = new FactBreakdown(projectController);
-        dockingRoot.createTab(requirementViewer, factBreakdown, 1, false);
+        dockingRoot.createTab(requirementConfigurator, factBreakdown, 1, false);
 
         if (typeConfigurator != null) {
 
             dockingRoot.close(typeConfigurator);
         }
         typeConfigurator = new TypeConfigurator(getFrame(), projectController.getProject().getObjectModel());
-        dockingRoot.createTab(requirementViewer, typeConfigurator, 2, false);
+        dockingRoot.createTab(requirementConfigurator, typeConfigurator, 2, false);
 
         dockingRoot.addHiddenDockable(projectNavigator, RelativeDockablePosition.LEFT);
         dockingRoot.setDockableWidth(projectNavigator, 0.1);
@@ -289,8 +289,8 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 if (dockable == typeConfigurator) {
                     typeConfigurator.refresh();
                 }
-                if (dockable == requirementViewer) {
-                    requirementViewer.refresh();
+                if (dockable == requirementConfigurator) {
+                    requirementConfigurator.refresh();
                 }
             }
         };
@@ -407,13 +407,13 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 
         } catch (IOException ex) {
             Logger.getLogger(Desktop.class
-                    .getName()).log(Level.SEVERE, null, ex);
+                .getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 out.close();
             } catch (IOException ex) {
                 Logger.getLogger(Desktop.class
-                        .getName()).log(Level.SEVERE, null, ex);
+                    .getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -436,7 +436,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 }
             } catch (ParserConfigurationException | SAXException | IOException ex) {
                 Logger.getLogger(Desktop.class
-                        .getName()).log(Level.SEVERE, null, ex);
+                    .getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -509,8 +509,8 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             changeProjectRoleMenuItem.setEnabled(true);
 
         }
-        if (requirementViewer != null) {
-            requirementViewer.refresh();
+        if (requirementConfigurator != null) {
+            requirementConfigurator.refresh();
         }
     }
 
@@ -657,7 +657,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             }
         } catch (IOException ex) {
             Logger.getLogger(Desktop.class
-                    .getName()).log(Level.SEVERE, null, ex);
+                .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -826,30 +826,30 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(equa.desktop.Symbiosis.class).getContext().getResourceMap(Desktop.class);
         projectMenu.setText(resourceMap.getString("projectMenu.text")); // NOI18N
         projectMenu.setName(
-                "projectMenu"); // NOI18N
+            "projectMenu"); // NOI18N
 
         newMenuItem.setText(resourceMap.getString("newMenuItem.text")); // NOI18N
         newMenuItem.setName(
-                "newMenuItem"); // NOI18N
+            "newMenuItem"); // NOI18N
         newMenuItem.addActionListener(
-                new java.awt.event.ActionListener() {
-                    @Override
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        newMenuItemActionPerformed(evt);
-                    }
-                });
+            new java.awt.event.ActionListener() {
+                @Override
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    newMenuItemActionPerformed(evt);
+                }
+            });
         projectMenu.add(newMenuItem);
 
         openMenuItem.setText(resourceMap.getString("openMenuItem.text")); // NOI18N
         openMenuItem.setName(
-                "openMenuItem"); // NOI18N
+            "openMenuItem"); // NOI18N
         openMenuItem.addActionListener(
-                new java.awt.event.ActionListener() {
-                    @Override
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        openMenuItemActionPerformed(evt);
-                    }
-                });
+            new java.awt.event.ActionListener() {
+                @Override
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    openMenuItemActionPerformed(evt);
+                }
+            });
         projectMenu.add(openMenuItem);
 
         saveMenuItem.setText(resourceMap.getString("saveMenuItem.text")); // NOI18N
@@ -935,7 +935,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                     if (name != null && !name.isEmpty() && !name.trim().isEmpty()) {
                         project.setName(name);
                         Desktop.this.getFrame().setTitle(project.getName()
-                                + "\t\tlogged: " + project.getCurrentUser().toString());
+                            + "\t\tlogged: " + project.getCurrentUser().toString());
                     }
                 }
             }
@@ -1038,7 +1038,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         addRequirementMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                requirementViewer.openEnterRequirementDialog();
+                requirementConfigurator.openEnterRequirementDialog();
             }
         });
         requirementMenu.add(addRequirementMenuItem);
@@ -1070,12 +1070,12 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                         }
                         cats.remove(Category.SYSTEM);
                         Category cat = (Category) JOptionPane.showInputDialog(getFrame(),
-                                "The requirements within " + file.getName()
-                                + " belong to which category?",
-                                "Input", JOptionPane.QUESTION_MESSAGE, null, cats.toArray(), null);
+                            "The requirements within " + file.getName()
+                            + " belong to which category?",
+                            "Input", JOptionPane.QUESTION_MESSAGE, null, cats.toArray(), null);
                         if (cat != null) {
                             project.importReqs(cat, reqs);
-                            requirementViewer.refresh();
+                            requirementConfigurator.refresh();
                         }
                     }
                 } catch (MismatchException | IOException exc) {
@@ -1177,7 +1177,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                     Project project = projectController.getProject();
                     project.getRequirementModel().renumberRequirements();
                     projectNavigator.refresh();
-                    requirementViewer.refresh();
+                    requirementConfigurator.refresh();
                 }
             }
         });
@@ -1229,24 +1229,24 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         miScan.setEnabled(false);
         miScan.setName("miScan"); // NOI18N
         miScan.setEnabled(
-                true);
+            true);
         miScan.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (projectController.getProject() == null) {
-                            return;
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (projectController.getProject() == null) {
+                        return;
 
-                        }
-
-                        ObjectModel om = projectController.getProject().getObjectModel();
-                        List<Message> messages = om.scanModel();
-                        typeConfigurator.setReliable(messages);
-                        typeConfigurator.refresh();
-                        refreshTrees();
-                        showErrorsAndMessages(messages, "Scan yielded no errors or warnings up to now.");
                     }
-                });
+
+                    ObjectModel om = projectController.getProject().getObjectModel();
+                    List<Message> messages = om.scanModel();
+                    typeConfigurator.setReliable(messages);
+                    typeConfigurator.refresh();
+                    refreshTrees();
+                    showErrorsAndMessages(messages, "Scan yielded no errors or warnings up to now.");
+                }
+            });
         objectMenu.add(miScan);
 
         miScanOverlap = new javax.swing.JMenuItem();
@@ -1254,24 +1254,24 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         miScanOverlap.setEnabled(false);
         miScanOverlap.setName("miScanOverlap"); // NOI18N
         miScanOverlap.setEnabled(
-                true);
+            true);
         miScanOverlap.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (projectController.getProject() == null) {
-                            return;
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (projectController.getProject() == null) {
+                        return;
 
-                        }
-
-                        ObjectModel om = projectController.getProject().getObjectModel();
-                        List<Message> messages = om.scanOverlap();
-                        typeConfigurator.setReliable(messages);
-                        typeConfigurator.refresh();
-                        refreshTrees();
-                        showErrorsAndMessages(messages, "Scan yielded no overlap.");
                     }
-                });
+
+                    ObjectModel om = projectController.getProject().getObjectModel();
+                    List<Message> messages = om.scanOverlap();
+                    typeConfigurator.setReliable(messages);
+                    typeConfigurator.refresh();
+                    refreshTrees();
+                    showErrorsAndMessages(messages, "Scan yielded no overlap.");
+                }
+            });
         objectMenu.add(miScanOverlap);
 
         miBehavior.setText(resourceMap.getString("miBehavior.text")); // NOI18N
@@ -1403,60 +1403,60 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         helpMenu.setName("helpMenu"); // NOI18N
 
         aboutMenuItem.setText(
-                "About"); // NOI18N
+            "About"); // NOI18N
         aboutMenuItem.addActionListener(
-                new java.awt.event.ActionListener() {
-                    @Override
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        aboutMenuItemActionPerformed(evt);
-                    }
-                });
+            new java.awt.event.ActionListener() {
+                @Override
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    aboutMenuItemActionPerformed(evt);
+                }
+            });
         helpMenu.add(aboutMenuItem);
 
         menuBar.add(helpMenu);
 
         statusPanel.setName(
-                "statusPanel"); // NOI18N
+            "statusPanel"); // NOI18N
 
         statusPanelSeparator.setName(
-                "statusPanelSeparator"); // NOI18N
+            "statusPanelSeparator"); // NOI18N
 
         statusMessageLabel.setName(
-                "statusMessageLabel"); // NOI18N
+            "statusMessageLabel"); // NOI18N
 
         statusAnimationLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 
         statusAnimationLabel.setName(
-                "statusAnimationLabel"); // NOI18N
+            "statusAnimationLabel"); // NOI18N
 
         progressBar.setName(
-                "progressBar"); // NOI18N
+            "progressBar"); // NOI18N
 
         org.jdesktop.layout.GroupLayout statusPanelLayout = new org.jdesktop.layout.GroupLayout(statusPanel);
 
         statusPanel.setLayout(statusPanelLayout);
 
         statusPanelLayout.setHorizontalGroup(
-                statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(statusPanelSeparator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 596, Short.MAX_VALUE)
-                .add(statusPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(statusMessageLabel)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 400, Short.MAX_VALUE)
-                        .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(statusAnimationLabel)
-                        .addContainerGap()));
+            statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(statusPanelSeparator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 596, Short.MAX_VALUE)
+            .add(statusPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(statusMessageLabel)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 400, Short.MAX_VALUE)
+                .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(statusAnimationLabel)
+                .addContainerGap()));
         statusPanelLayout.setVerticalGroup(
-                statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(statusPanelLayout.createSequentialGroup()
-                        .add(statusPanelSeparator, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                .add(statusMessageLabel)
-                                .add(statusAnimationLabel)
-                                .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .add(3, 3, 3)));
+            statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(statusPanelLayout.createSequentialGroup()
+                .add(statusPanelSeparator, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(statusMessageLabel)
+                    .add(statusAnimationLabel)
+                    .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(3, 3, 3)));
 
         setComponent(mainPanel);
 
@@ -1466,13 +1466,13 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     }// </editor-fold>//GEN-END:initComponents
 
     public void breakdownSelected() {
-        ArrayList<FactRequirement> factReqs = requirementViewer.getBreakdownReadyFactRequirements();
+        ArrayList<FactRequirement> factReqs = requirementConfigurator.getBreakdownReadyFactRequirements();
         if (factReqs.size() > 0) {
 //            dockingRoot.close(requirementsBreakdownPanel);
 //            requirementsBreakdownPanel = new RequirementsBreakdownPanel(projectController, factReqs);
 //            dockingRoot.createTab(requirementViewer, requirementsBreakdownPanel, 1, true);
             dockingRoot.close(factBreakdown);
-            dockingRoot.createTab(requirementViewer, factBreakdown, 1, true);
+            dockingRoot.createTab(requirementConfigurator, factBreakdown, 1, true);
             init = true;
             initFactBreakdown(factReqs.get(0));
         } else {
@@ -1535,6 +1535,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             LoginDialog loginDialog = new LoginDialog(getFrame(), true, projectController);
             loginDialog.setVisible(true);
             projectController.getProject().setCurrentUserAndInform();
+
             refresh();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(getFrame(), ex.getMessage());
@@ -1732,8 +1733,8 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
      */
     private void miAbstractObjectTypeActionPerformed(java.awt.event.ActionEvent evt) {
         AbstractObjectTypeDialog dialog
-                = new AbstractObjectTypeDialog(this.getFrame(), true,
-                        projectController.getProject().getObjectModel());
+            = new AbstractObjectTypeDialog(this.getFrame(), true,
+                projectController.getProject().getObjectModel());
         dialog.setVisible(true);
 
         refreshTrees();
@@ -1805,7 +1806,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         List<Message> messages = om.generateClasses(false, result == 0);
         typeConfigurator.setReliable(messages);
         typeConfigurator.refresh();
-        requirementViewer.refresh();
+        requirementConfigurator.refresh();
         // refreshTrees();
         showErrorsAndMessages(messages, "The behavior was generated succesfully.");
     }//GEN-LAST:event_miBehaviorActionPerformed
@@ -1822,7 +1823,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         List<Message> messages = om.generateClasses(true, result == 0);
         typeConfigurator.setReliable(messages);
         typeConfigurator.refresh();
-        requirementViewer.refresh();
+        requirementConfigurator.refresh();
         //   refreshTrees();
         showErrorsAndMessages(messages, "The behavior was generated succesfully.");
     }//GEN-LAST:event_miBehaviorWithRegistriesActionPerformed
@@ -1842,7 +1843,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         om.removeBehavior();
         typeConfigurator.setReliable(false);
         typeConfigurator.refresh();
-        requirementViewer.refresh();
+        requirementConfigurator.refresh();
         refreshTrees();
     }//GEN-LAST:event_miRemoveBehaviorActionPerformed
 
@@ -1975,7 +1976,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 
         typeConfigurator.setObjectModel(projectController.getProject().getObjectModel());
         typeConfigurator.refresh();
-        requirementViewer.refresh();
+        requirementConfigurator.setProjectController(projectController);
         initListenersAndMenu();
     }
 
@@ -1990,7 +1991,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 
     private void initTitleAndMenus(ProjectRole currentUser) {
         String project = projectController.getProject().getName() + " ("
-                + projectController.getProject().getFile().getName() + ")";
+            + projectController.getProject().getFile().getName() + ")";
 
         if (currentUser == null) {
             this.getFrame().setTitle(project + "\t\tlogged: ?");

@@ -21,11 +21,11 @@ public class FilterTableModel extends AbstractTableModel {
     private final String tableName;
     private List<RequirementFilter> filters;
     private Boolean[] selected;
-    private final RequirementConfigurator requirementViewer;
+    private final RequirementConfigurator requirementConfigurator;
     private int selectedItems;
 
     public FilterTableModel(RequirementConfigurator requirementViewer, String tableName, List<RequirementFilter> filters) {
-        this.requirementViewer = requirementViewer;
+        this.requirementConfigurator = requirementViewer;
         this.tableName = tableName;
         this.filters = filters;
         initSelected(filters.size());
@@ -87,7 +87,7 @@ public class FilterTableModel extends AbstractTableModel {
             }
             selected[row] = selection;
             fireTableCellUpdated(row, column);
-            requirementViewer.selectFilteredRequirements();
+            requirementConfigurator.refresh();
         }
     }
 

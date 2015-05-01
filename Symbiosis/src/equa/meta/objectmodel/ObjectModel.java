@@ -681,7 +681,7 @@ public class ObjectModel extends Model implements
                         error = true;
                     }
                     if (facttype.hasOptionalImmutableRoles()) {
-                        messages.add(new Message("warning: " + facttype.getName() + " possesses an optional role which"
+                        messages.add(new Message("warning: " + facttype.getName() + " possesses an optional role whose"
                             + " value cannot be changed later on", false));
                     }
 
@@ -702,7 +702,7 @@ public class ObjectModel extends Model implements
                     if (facttype.hasNonNavigableRoleWithSingleUnqueness()) {
                         messages.add(new Message("warning: facttype " + facttype.getName()
                             + " contains non navigable role with single uniqueness; this "
-                            + "uniqueness will not be incorporated within the source code.", false));
+                            + "uniqueness will not be incorporated in the source code.", false));
 
                     }
 
