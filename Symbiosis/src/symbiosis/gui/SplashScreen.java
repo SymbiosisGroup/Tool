@@ -123,14 +123,17 @@ public class SplashScreen extends Application {
         openProjecButton.setOnAction((ActionEvent event) -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Symbiosis Projects", "*.sym"));
             fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
             File openFile = fileChooser.showOpenDialog(primaryStage);
-            try {
-                Project.getProject(openFile);
-            } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
+            if (openFile != null) {
+                try {
+                    Project.getProject(openFile);
+                    closeScreen(primaryStage);
+                } catch (IOException | ClassNotFoundException ex) {
+                    Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-            closeScreen(primaryStage);
         });
         controlBox.getChildren().add(openProjecButton);
         //QuitButton
