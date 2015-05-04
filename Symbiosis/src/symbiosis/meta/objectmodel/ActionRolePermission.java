@@ -1,0 +1,39 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package symbiosis.meta.objectmodel;
+
+import symbiosis.meta.ChangeNotAllowedException;
+import symbiosis.meta.requirements.ActionRequirement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ * @author frankpeeters
+ */
+public abstract class ActionRolePermission extends ActionPermission implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    private final ObjectRole role;
+    private final List<ActionPrecondition> preconditions;
+
+    public ActionRolePermission(ObjectRole role, ActionRequirement source) {
+        super(role, source);
+        preconditions = new ArrayList<>();
+        this.role = role;
+    }
+
+    public ObjectRole getRole() {
+        return role;
+    }
+
+    @Override
+    public FactType getFactType() {
+        return role.getParent();
+    }
+
+}

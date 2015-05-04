@@ -1,16 +1,28 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2015 Jeroen Berkvens
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package symbiosis.gui;
 
+import java.io.File;
+import java.io.IOException;
+import symbiosis.gui.wizards.NewProject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,15 +37,19 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import symbiosis.project.Project;
 
 /**
  *
- * @author jeroen
+ * @author Jeroen Berkvens
+ * @company EQUA
+ * @project Symbiosis
  */
-public class FlashScreen extends Application {
+public class SplashScreen extends Application {
 
     private boolean closing = false;
 
@@ -61,13 +77,13 @@ public class FlashScreen extends Application {
         Label versionLabel = new Label("Version:");
         versionLabel.setFont(Font.font("System Regular", FontWeight.BOLD, 13));
         textTable.add(versionLabel, 0, 0);
-        Label versionNrLabel = new Label(FlashScreen.class.getPackage().getImplementationVersion());
+        Label versionNrLabel = new Label(SplashScreen.class.getPackage().getImplementationVersion());
         textTable.add(versionNrLabel, 1, 0);
         //Vendor
         Label vendorLabel = new Label("Vendor:");
         vendorLabel.setFont(Font.font("System Regular", FontWeight.BOLD, 13));
         textTable.add(vendorLabel, 0, 1);
-        Label vendorNameLabel = new Label(FlashScreen.class.getPackage().getImplementationVendor());
+        Label vendorNameLabel = new Label(SplashScreen.class.getPackage().getImplementationVendor());
         textTable.add(vendorNameLabel, 1, 1);
         //Homepage
         Label homepageLabel = new Label("Homepage:");
@@ -77,39 +93,51 @@ public class FlashScreen extends Application {
         textTable.add(homepageURLLabel, 1, 2);
         textBox.getChildren().add(textTable);
         imageTextSplit.getChildren().add(textBox);
-
         //Root Setup
         StackPane root = new StackPane();
         root.getChildren().add(imageTextSplit);
         //Control
         VBox controlBox = new VBox();
+        controlBox.setAlignment(Pos.BOTTOM_RIGHT);
+        controlBox.setSpacing(10);
         //NewProjectButton
         Button newProjecButton = new Button("New Project");
-        newProjecButton.setDefaultButton(true);
+        newProjecButton.setPrefWidth(380);
         newProjecButton.setOnMouseClicked((MouseEvent event) -> {
             //New Project
-            Survey survey = new Survey();
+            NewProject newProjectWizard = new NewProject();
             try {
                 Stage stage = new Stage();
                 stage.initModality(Modality.WINDOW_MODAL);
                 stage.initOwner(primaryStage.getOwner().getScene().getWindow());
-                survey.start(stage);
+                newProjectWizard.start(stage);
             } catch (Exception ex) {
-                Logger.getLogger(FlashScreen.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
             }
             closeScreen(primaryStage);
         });
         controlBox.getChildren().add(newProjecButton);
         //OpenProjectButton
         Button openProjecButton = new Button("Open Project");
+        openProjecButton.setPrefWidth(380);
         openProjecButton.setOnAction((ActionEvent event) -> {
-            //Open Project
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open");
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+            File openFile = fileChooser.showOpenDialog(primaryStage);
+            try {
+                Project.getProject(openFile);
+            } catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
             closeScreen(primaryStage);
         });
         controlBox.getChildren().add(openProjecButton);
         //QuitButton
         Button quitButton = new Button("Quit Symbiosis");
+        quitButton.setPrefWidth(380);
         quitButton.setOnAction((ActionEvent event) -> {
+            System.exit(0);
         });
         controlBox.getChildren().add(quitButton);
 
@@ -122,7 +150,7 @@ public class FlashScreen extends Application {
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest((WindowEvent event) -> {
             if (!closing) {
-                event.consume();
+                System.exit(0);
             }
         });
         primaryStage.show();

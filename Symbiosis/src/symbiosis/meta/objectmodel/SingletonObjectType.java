@@ -1,0 +1,108 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package symbiosis.meta.objectmodel;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
+
+import symbiosis.code.Field;
+import symbiosis.meta.DuplicateException;
+import symbiosis.meta.MismatchException;
+import symbiosis.meta.classrelations.Relation;
+import symbiosis.meta.requirements.FactRequirement;
+import symbiosis.meta.requirements.Requirement;
+import symbiosis.meta.traceability.Source;
+import symbiosis.util.Naming;
+
+/**
+ *
+ * @author FrankP
+ */
+@Entity
+public class SingletonObjectType extends ObjectType {
+
+    private static final long serialVersionUID = 1L;
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private Singleton singleton;
+
+
+    /**
+     * creation of a singleton objecttype which refers to parent and contains
+     * one object with the name objectname, based on source
+     *
+     * @param parent
+     * @param objectname is not empty
+     * @param source
+     */
+    public SingletonObjectType(FactType parent, String objectname,
+            Source source) {
+        super(parent, objectname);
+        singleton = new Singleton(this, source);
+        getFactType().getPopulation().addSingleton(singleton);
+    }
+
+    /**
+     *
+     * @return the singleton object belonging to this objecttype
+     */
+    public Singleton getSingleton() {
+        return singleton;
+    }
+
+    @Override
+    public Value parse(String expression, String separator, Requirement source) throws MismatchException {
+        if (expression.trim().equalsIgnoreCase(getOTE().makeExpression(singleton))) {
+            return singleton;
+        } else {
+            throw new MismatchException(getOTE(), "[" + expression + "] differs from [" + singleton.toString() + "]");
+        }
+    }
+
+    @Override
+    public String makeExpression(Value value) {
+        return getOTE().makeExpression(singleton);
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
+
+    @Override
+    boolean isDirectAccessible() {
+        return true;
+    }
+
+    @Override
+    void generateMethods() {
+        try {
+            List<Relation> relations = codeClass.getRelations();
+            generateSingletonField();
+
+            generateMethods(relations);
+            generateToStringMethod();
+            if (!isLight()) {
+                generatePropertiesMethod();
+            }
+        } catch (DuplicateException ex) {
+            Logger.getLogger(SingletonObjectType.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private void generateSingletonField() {
+        final boolean AUTO_INCR = true;
+        Field f = new Field(this, Naming.singletonName(getName()),!AUTO_INCR);
+        f.setClassField(true);
+        codeClass.addField(f);
+    }
+
+}
