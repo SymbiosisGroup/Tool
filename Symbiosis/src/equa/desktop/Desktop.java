@@ -1473,7 +1473,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 //            dockingRoot.createTab(requirementViewer, requirementsBreakdownPanel, 1, true);
             dockingRoot.close(factBreakdown);
             dockingRoot.createTab(requirementConfigurator, factBreakdown, 1, true);
-            init = true;
+          //  init = true;
             initFactBreakdown(factReqs.get(0));
         } else {
             JOptionPane.showMessageDialog(getFrame(), "No approved/non realized fact requirements found.");

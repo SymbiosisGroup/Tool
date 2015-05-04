@@ -137,6 +137,16 @@ public class Project implements Serializable, Publisher {
         initProject(name, nameCreator, roleCreator, isProjectMember);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Project) {
+            Project project = (Project) obj;
+            return project.file.equals(file);
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Unconstrained RETRIEVE operation.
      *

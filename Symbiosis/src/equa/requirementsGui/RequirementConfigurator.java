@@ -75,6 +75,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
     public static final int REVIEW_IMPACT = 3;
     public static final int OTHER_FILTER = 4;
     private ProjectController projectController;
+    private Project project;
     private ArrayList<Requirement> filteredRequirements;
     private final DockKey dockKey;
     private JTable[] filterTables;
@@ -100,22 +101,23 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
     }
 
     public final void setProjectController(ProjectController controller) {
-        projectController = controller;
-
-        if (controller.getProject() != null) {
+        if (projectController == null) {
+            projectController = controller;
+            project = projectController.getProject();
             projectController.addView(this);
-            Project p = projectController.getProject();
-            p.addListener(this, "currentUser");
             initView();
             initCategories();
-            
-            // tblRequirements.setAutoCreateRowSorter(true);    
+            deselectSYS();
+            refresh();
+        } else if (!controller.getProject().equals(project)) {
+            project = controller.getProject();
+            initCategories();
+            deselectSYS();
+            refresh();
         }
-        deselectSYS();
-        refresh();
+
     }
-    
-    
+
     @Override
     public void refresh() {
         selectFilteredRequirements();
@@ -153,7 +155,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
                 } else {
                     mntmActionRuleAssignment.setEnabled(false);
                     mntmEventRuleAssignment.setEnabled(false);
-                     mntmInitializeAssignment.setEnabled(false);
+                    mntmInitializeAssignment.setEnabled(false);
                 }
             } else {
                 mntmEditRequirement.setEnabled(false);
@@ -705,8 +707,6 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
             return filteredRequirements.get(rows[0]);
         }
     }
-
-    
 
     private void selectFilteredRequirements() {
         Project p = projectController.getProject();
