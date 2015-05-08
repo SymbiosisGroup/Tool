@@ -25,6 +25,7 @@ import symbiosis.util.NumberIssue;
 import fontys.observer.BasicPublisher;
 import fontys.observer.PropertyListener;
 import fontys.observer.Publisher;
+import symbiosis.gui.ScreenManager;
 
 /**
  *
@@ -128,13 +129,13 @@ public class RequirementModel extends Model implements Publisher, Serializable {
     public void remove(ModelElement member) {
         Requirement requirement = (Requirement) member;
         if (requirement instanceof FactRequirement) {
-            facts.remove((FactRequirement)requirement);
+            facts.remove((FactRequirement) requirement);
         } else if (requirement instanceof RuleRequirement) {
-            rules.remove((RuleRequirement)requirement);
+            rules.remove((RuleRequirement) requirement);
         } else if (requirement instanceof ActionRequirement) {
-            actions.remove((ActionRequirement)requirement);
+            actions.remove((ActionRequirement) requirement);
         } else if (requirement instanceof QualityAttribute) {
-            qualityAttributes.remove((QualityAttribute)requirement);
+            qualityAttributes.remove((QualityAttribute) requirement);
         } else {
             throw new RuntimeException("removing of unknown model element "
                     + "at the requirementsmodel");
@@ -143,8 +144,6 @@ public class RequirementModel extends Model implements Publisher, Serializable {
             bp.inform(this, "remReq", null, member);
         }
     }
-    
-
 
     /**
      * The requirement should be an instance of either FactRequirement,
@@ -356,7 +355,10 @@ public class RequirementModel extends Model implements Publisher, Serializable {
                 source, this);
         qa.setModel(this);
         qualityAttributes.add(qa);
-        bp.inform(this, "newReq", null, qa);
+        if (bp != null) {
+            bp.inform(this, "newReq", null, qa);
+        }
+        ScreenManager.getMainScreen().refresh(qa);
         return qa;
 
     }
@@ -384,7 +386,7 @@ public class RequirementModel extends Model implements Publisher, Serializable {
     public Iterator<RuleRequirement> rules() {
         return rules.iterator();
     }
-    
+
     public int countRules() {
         return rules.size();
     }
@@ -518,7 +520,7 @@ public class RequirementModel extends Model implements Publisher, Serializable {
             }
         }
         actions.removeAll(toRemove);
-        
+
         toRemove = new TreeSet<>();
         for (FactRequirement fact : facts) {
             if (fact.getCategory().equals(Category.SYSTEM)) {
@@ -526,7 +528,7 @@ public class RequirementModel extends Model implements Publisher, Serializable {
             }
         }
         facts.removeAll(toRemove);
-        
+
         toRemove = new TreeSet<>();
         for (RuleRequirement rule : rules) {
             if (rule.getCategory().equals(Category.SYSTEM)) {

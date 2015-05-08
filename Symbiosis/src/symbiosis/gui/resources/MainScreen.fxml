@@ -16,7 +16,7 @@
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Save">
+                  <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" text="Save">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
@@ -32,7 +32,7 @@
             <items>
                   <Menu mnemonicParsing="false" text="Requirements">
                      <items>
-                        <MenuItem fx:id="AddNewRequirementMenuItem" mnemonicParsing="false" text="Add New" />
+                        <MenuItem fx:id="addNewRequirementMenuItem" mnemonicParsing="false" text="Add New" />
                      </items>
                   </Menu>
               <MenuItem mnemonicParsing="false" text="Delete" />
@@ -57,7 +57,7 @@
                            <children>
                               <TableView fx:id="requitementsTable" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <columns>
-                                  <TableColumn fx:id="readyColumn" prefWidth="75.0" text="Ready">
+                                  <TableColumn fx:id="readyColumn" text="Ready">
                                        <contextMenu>
                                           <ContextMenu fx:id="readyColumnContextMenu">
                                             <items>
@@ -65,7 +65,7 @@
                                             </items>
                                           </ContextMenu>
                                        </contextMenu></TableColumn>
-                                  <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Name">
+                                  <TableColumn fx:id="nameColumn" text="Name">
                                        <contextMenu>
                                           <ContextMenu fx:id="nameColumnContextMenu">
                                             <items>
@@ -73,7 +73,7 @@
                                             </items>
                                           </ContextMenu>
                                        </contextMenu></TableColumn>
-                                    <TableColumn fx:id="typeColumn" prefWidth="75.0" text="Type">
+                                    <TableColumn fx:id="typeColumn" text="Type">
                                        <contextMenu>
                                           <ContextMenu fx:id="typeColumnContextMenu">
                                             <items>
@@ -82,7 +82,7 @@
                                           </ContextMenu>
                                        </contextMenu>
                                     </TableColumn>
-                                    <TableColumn fx:id="stateColumn" prefWidth="75.0" text="State">
+                                    <TableColumn fx:id="stateColumn" text="State">
                                        <contextMenu>
                                           <ContextMenu fx:id="stateColumnContextMenu">
                                             <items>
@@ -91,7 +91,7 @@
                                           </ContextMenu>
                                        </contextMenu>
                                     </TableColumn>
-                                    <TableColumn fx:id="reviewColumn" prefWidth="75.0" text="Review">
+                                    <TableColumn fx:id="reviewColumn" text="Review">
                                        <contextMenu>
                                           <ContextMenu fx:id="reviewColumnContextMenu">
                                             <items>

@@ -49,8 +49,11 @@ public abstract class Requirement extends Reviewable
     private UrgencyKind urgency;
     @Column(name = "moscow")
     private MoSCoW moscow;
+    @Column(name = "typy")
+    private final String typy;
 
-    public Requirement() {
+    public Requirement(String type) {
+        this.typy = type;
     }
 
     /**
@@ -64,7 +67,7 @@ public abstract class Requirement extends Reviewable
      * @param parent of requirement, which is the requirements model
      */
     Requirement(int nr, Category cat, String text,
-            ExternalInput source, RequirementModel parent) {
+            ExternalInput source, RequirementModel parent, String type) {
         super(parent, cat, source);
         if (text.isEmpty()) {
             throw new RuntimeException("text of a requirement can not be empty");
@@ -76,6 +79,7 @@ public abstract class Requirement extends Reviewable
         impact = Impact.NORMAL;
         urgency = UrgencyKind.UNDEFINED;
         moscow = MoSCoW.UNDEFINED;
+        this.typy = type;
     }
     
     
@@ -339,7 +343,9 @@ public abstract class Requirement extends Reviewable
     /**
      * @return the kind of this requirement.
      */
-    public abstract String getReqType();
+    public String getReqType() {
+        return typy;
+    }
 
     @Override
     public String toString() {

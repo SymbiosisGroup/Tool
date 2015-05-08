@@ -113,7 +113,7 @@ public class Project implements Serializable, Publisher {
      * DEFAULT CONSTRUCTOR; WARNING: creates a new instance of Project without
      * the definition of its name and {@link ProjectRole} creator.
      */
-    public Project() {
+    private Project() {
     }
 
     /**
@@ -126,7 +126,7 @@ public class Project implements Serializable, Publisher {
      * @param stakeholderRole is the role of the creator of this Project.
      * @param isProjectMember specifies if the creator is project-member.
      */
-    public Project(String name, String stakeholderName, String stakeholderRole) {
+    private Project(String name, String stakeholderName, String stakeholderRole) {
         if (name.isEmpty()) {
             throw new RuntimeException("project name may not be empty");
         }
@@ -134,6 +134,10 @@ public class Project implements Serializable, Publisher {
             throw new RuntimeException("name creator may not be empty");
         }
         initProject(name, stakeholderName, stakeholderRole);
+    }
+    
+    public static void setup(String name, String stakeholderName, String stakeholderRole) {
+        instance = new Project(name, stakeholderName, stakeholderRole);
     }
 
     /**
@@ -425,6 +429,15 @@ public class Project implements Serializable, Publisher {
         }
         return savedDateTime;
     }
+    
+    public synchronized boolean save() {
+        try {
+            return save(file);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Project.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
 
     /**
      * Constrained CREATE operation. Saves this Project into the
@@ -439,6 +452,7 @@ public class Project implements Serializable, Publisher {
         if (file == null) {
             throw new FileNotFoundException("file of project is unknown");
         } else {
+            this.file = file;
             Calendar savedAt_backUp = savedAt;
             try {
                 save(file, this);

@@ -16,10 +16,15 @@
  */
 package symbiosis.gui;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -31,6 +36,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
@@ -39,7 +45,9 @@ import javafx.util.Callback;
 import symbiosis.gui.dialogs.AddRequirementDialog;
 import symbiosis.gui.dialogs.FilterDialog;
 import symbiosis.gui.resources.ButtonsCell;
+import symbiosis.gui.resources.CheckBoxCell;
 import symbiosis.meta.requirements.ActionRequirement;
+import symbiosis.meta.requirements.QualityAttribute;
 import symbiosis.meta.requirements.Requirement;
 import symbiosis.meta.requirements.RequirementModel;
 import symbiosis.meta.traceability.Category;
@@ -61,7 +69,7 @@ public class MainScreen extends Application {
     @FXML
     private ContextMenu readyColumnContextMenu, nameColumnContextMenu, typeColumnContextMenu, stateColumnContextMenu, reviewColumnContextMenu, textColumnContextMenu;
     @FXML
-    private MenuItem AddNewRequirementMenuItem;
+    private MenuItem saveMenuItem, addNewRequirementMenuItem;
     @FXML
     private MenuItem filterReadyColumnMenuItem, filterNameColumnMenuItem, filterTypeColumnMenuItem, filterStateColumnMenuItem, filterReviewColumnMenuItem, filterTextColumnMenuItem;
 
@@ -86,38 +94,26 @@ public class MainScreen extends Application {
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(primaryStage.getScene().getWindow());
         flashScreen.start(stage);
-        testData();
         fillTable();
         setup();
         ScreenManager.setMainScreen(this);
     }
 
-    private void testData() {
-        RequirementModel requirementModel = new RequirementModel();
-        Category cat = new Category("te", "Tester", Project.getProject());
-        data.add(requirementModel.addActionRequirement(cat, "test", new ExternalInput("", cat.getOwner())));
-        data.add(requirementModel.addActionRequirement(cat, "X", new ExternalInput("", cat.getOwner())));
-        data.add(requirementModel.addActionRequirement(cat, "henk", new ExternalInput("", cat.getOwner())));
-        data.add(requirementModel.addActionRequirement(cat, "test", new ExternalInput("", cat.getOwner())));
-        data.add(requirementModel.addActionRequirement(cat, "henk", new ExternalInput("", cat.getOwner())));
-        data.add(requirementModel.addActionRequirement(cat, "Bla", new ExternalInput("", cat.getOwner())));
-//        data.add(requirementModel.addActionRequirement(new Category("te", "Tester", Project.getProject()), "Bla", null));
-//        data.add(requirementModel.addActionRequirement(new Category("te", "Tester", Project.getProject()), "X", null));
-//        data.add(requirementModel.addActionRequirement(new Category("te", "Tester", Project.getProject()), "Henk", null));
-        ActionRequirement addActionRequirement = requirementModel.addActionRequirement(cat, "test", new ExternalInput("", cat.getOwner()));
-        addActionRequirement.isRealized();
-    }
-
     private void fillTable() {
         requitementsTable.setItems(data);
-        readyColumn.setCellValueFactory(
-                new PropertyValueFactory<>("Realized")
-        );
+        readyColumn.setSortable(false);
+        readyColumn.setMinWidth(40);
+        readyColumn.setCellFactory(new Callback<TableColumn<Requirement, Object>, TableCell<Requirement, Object>>() {
+            @Override
+            public TableCell<Requirement, Object> call(TableColumn<Requirement, Object> param) {
+                return new CheckBoxCell(param);
+            }
+        });
         nameColumn.setCellValueFactory(
                 new PropertyValueFactory<>("Name")
         );
         typeColumn.setCellValueFactory(
-                new PropertyValueFactory<>("Type")
+                new PropertyValueFactory<>("ReqType")
         );
         stateColumn.setCellValueFactory(
                 new PropertyValueFactory<>("State")
@@ -127,26 +123,41 @@ public class MainScreen extends Application {
         );
         reviewColumn.setSortable(false);
         reviewColumn.setMinWidth(120);
-        reviewColumn.setCellFactory(new Callback<TableColumn<Object, String>, TableCell<Object, String>>() {
-                    @Override
-                    public TableCell<Object, String> call(TableColumn<Object, String> param) {
-                        return new ButtonsCell(param);
-                    }
-                });
+        reviewColumn.setCellFactory(new Callback<TableColumn<Requirement, Object>, TableCell<Requirement, Object>>() {
+            @Override
+            public TableCell<Requirement, Object> call(TableColumn<Requirement, Object> param) {
+                return new ButtonsCell(param);
+            }
+        });
 
         textColumn.setCellValueFactory(
                 new PropertyValueFactory<>("Text")
         );
+        setRightColumnWidth();
+    }
+
+    private void setRightColumnWidth() {
+        double tableWidth = requitementsTable.getWidth();
+        double readyWidth = readyColumn.getWidth();
+        double nameWidth = nameColumn.getWidth();
+        double typeWidth = typeColumn.getWidth();
+        double stateWidth = stateColumn.getWidth();
+        double reviewWidth = reviewColumn.getWidth();
+        //requitementsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        textColumn.setPrefWidth(tableWidth - readyWidth - nameWidth - typeWidth - stateWidth - reviewWidth - 50);
     }
 
     private void setup() {
         setupMenuListeners();
     }
-    
-    private void setupMenuListeners(){
+
+    private void setupMenuListeners() {
         //Main Menu
-        AddNewRequirementMenuItem.setOnAction((ActionEvent event) -> {
+        addNewRequirementMenuItem.setOnAction((ActionEvent event) -> {
             new AddRequirementDialog().start();
+        });
+        saveMenuItem.setOnAction((ActionEvent event) -> {
+            Project.getProject().save();
         });
         //Context Menu
         filterTextColumnMenuItem.setOnAction((ActionEvent event) -> {
@@ -164,7 +175,18 @@ public class MainScreen extends Application {
     }
 
     public void refresh() {
-        //TODO
+        data.clear();
+        Iterator<Requirement> requirements = Project.getProject().getRequirementModel().requirements();
+        while (requirements.hasNext()) {
+            Requirement nextRequirement = requirements.next();
+            data.add(nextRequirement);
+        }
+    }
+
+    public void refresh(Requirement requirement) {
+        if (!data.contains(requirement)) {
+            data.add(requirement);
+        }
     }
 
     /**

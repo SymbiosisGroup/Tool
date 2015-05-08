@@ -221,24 +221,20 @@ class NewProjectWizard extends Wizard {
 
     @Override
     public void finish() {
-        //TODO
         String projectName = WizardData.instance.projectName.get();
         String fileLocation = WizardData.instance.fileLocation.get();
         String stakeholderName = WizardData.instance.stakeholderName.get();
         String stakeholderRole = WizardData.instance.stakeholderRole.get();
         String projectMemberName = WizardData.instance.projectMemberName.get();
         String projectMemberRole = WizardData.instance.projectMemberRole.get();
-        System.out.println("Project Name:" + projectName);
-        System.out.println("File Location:" + fileLocation);
-        System.out.println("Stakeholder Name:" + stakeholderName);
-        System.out.println("Stakeholder Role:" + stakeholderRole);
-        System.out.println("Project Member Name:" + projectMemberName);
-        System.out.println("Project Member Role:" + projectMemberRole);
-        new Project(projectName, stakeholderName, stakeholderRole);
+        Project.setup(projectName, stakeholderName, stakeholderRole);
         try {
             Project.getProject().save(new File(fileLocation));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(NewProjectWizard.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (!projectMemberName.isEmpty()) {
+            Project.getProject().getParticipants().addProjectMember(projectMemberName, projectMemberRole);
         }
         owner.close();
     }
@@ -329,11 +325,13 @@ class SetupPage extends WizardPage {
             File startDirectory = new File(fileLocationTextField.getText());
             fileChooser.setInitialDirectory(startDirectory.getParentFile());
             File saveFile = fileChooser.showSaveDialog(((NewProjectWizard) super.getWizard()).owner);
-            path = saveFile.getParent() + "/";
-            if (saveFile.getName().endsWith(".sym")) {
-                fileLocationTextField.setText(path + saveFile.getName());
-            } else {
-                fileLocationTextField.setText(path + saveFile.getName() + ".sym");
+            if (saveFile != null) {
+                path = saveFile.getParent() + "/";
+                if (saveFile.getName().endsWith(".sym")) {
+                    fileLocationTextField.setText(path + saveFile.getName());
+                } else {
+                    fileLocationTextField.setText(path + saveFile.getName() + ".sym");
+                }
             }
         });
         return root;

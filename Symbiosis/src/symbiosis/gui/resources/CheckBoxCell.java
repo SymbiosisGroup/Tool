@@ -19,12 +19,12 @@ package symbiosis.gui.resources;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.layout.HBox;
 import symbiosis.meta.requirements.Requirement;
-import symbiosis.meta.traceability.ReviewState;
 
 /**
  *
@@ -32,27 +32,16 @@ import symbiosis.meta.traceability.ReviewState;
  * @company EQUA
  * @project Symbiosis
  */
-public class ButtonsCell extends TableCell<Requirement, Object> {
+public class CheckBoxCell extends TableCell<Requirement, Object> {
 
-    final Button approveButton = new Button("App");
-    final Button addButton = new Button("Add");
-    final Button removeButton = new Button("Rem");
-    final HBox hBox = new HBox();
+    final CheckBox ready = new CheckBox();
 
     private final TableColumn tableColumn;
 
-    public ButtonsCell(Object param) {
+    public CheckBoxCell(Object param) {
         tableColumn = (TableColumn) param;
-        approveButton.setMinWidth(50);
-        addButton.setMinWidth(50);
-        removeButton.setMinWidth(50);
-        hBox.setSpacing(10);
-        approveButton.setOnAction((ActionEvent t) -> {
-            approveButton.setText("APP");
-        });
-        removeButton.setOnAction((ActionEvent t) -> {
-            removeButton.setText("REM");
-        });
+        tableColumn.setSortable(false);
+        ready.setDisable(true);
     }
 
     @Override
@@ -61,15 +50,10 @@ public class ButtonsCell extends TableCell<Requirement, Object> {
         if (!empty) {
             final TableRow<Requirement> tableRow = getTableRow();
             final Requirement rowItem = tableRow == null ? null : tableRow.getItem();
-            ReviewState reviewState = rowItem == null ? null : rowItem.getReviewState();
-            if (reviewState != null) {
-                if (reviewState.toString().contains("APP") && !hBox.getChildren().contains(approveButton)) {
-                    hBox.getChildren().add(approveButton);
-                } else if (reviewState.toString().contains("ADD") && !hBox.getChildren().contains(addButton)) {
-                    hBox.getChildren().add(addButton);
-                }
+            if (rowItem != null) {
+                ready.setSelected(rowItem.isRealized());
             }
-            setGraphic(hBox);
+            setGraphic(ready);
         }
     }
 }

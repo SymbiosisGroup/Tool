@@ -27,9 +27,6 @@ public class RuleRequirement extends Requirement {
     @ManyToOne
     private RequirementModel model;
 
-    public RuleRequirement() {
-    }
-
     /**
      * Constructor.
      *
@@ -41,7 +38,7 @@ public class RuleRequirement extends Requirement {
      */
     RuleRequirement(int nr, Category cat, String text,
             ExternalInput source, RequirementModel parent) {
-        super(nr, cat, text, source, parent);
+        super(nr, cat, text, source, parent, "Rule");
     }
 
     /**

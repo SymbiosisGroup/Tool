@@ -21,9 +21,6 @@ public class QualityAttribute extends Requirement {
     @ManyToOne
     private RequirementModel model;
 
-    public QualityAttribute() {
-    }
-
     /**
      * Constructor.
      *
@@ -35,7 +32,7 @@ public class QualityAttribute extends Requirement {
      */
     QualityAttribute(int nr, Category cat, String text,
             ExternalInput source, RequirementModel parent) {
-        super(nr, cat, text, source, parent);
+        super(nr, cat, text, source, parent, "QA");
 
     }
 

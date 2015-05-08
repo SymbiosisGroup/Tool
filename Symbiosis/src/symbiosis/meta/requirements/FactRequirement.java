@@ -28,9 +28,6 @@ public class FactRequirement extends Requirement {
     @ManyToOne
     private RequirementModel model;
 
-    public FactRequirement() {
-    }
-
     /**
      * Constructor; it is entirelly based on the constructor of the Requirement
      * class.
@@ -43,7 +40,7 @@ public class FactRequirement extends Requirement {
      */
     FactRequirement(int nr, Category cat, String text,
         ExternalInput source, RequirementModel parent) {
-        super(nr, cat, text, source, parent);
+        super(nr, cat, text, source, parent, "Fact");
     }
 
     /**

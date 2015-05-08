@@ -133,6 +133,7 @@ public class SplashScreen extends Application {
                 } catch (IOException | ClassNotFoundException ex) {
                     Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                ScreenManager.getMainScreen().refresh();
             }
         });
         controlBox.getChildren().add(openProjecButton);

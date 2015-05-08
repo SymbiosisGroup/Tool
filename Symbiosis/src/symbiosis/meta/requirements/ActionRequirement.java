@@ -22,9 +22,6 @@ public class ActionRequirement extends Requirement {
     @ManyToOne
     private RequirementModel model;
 
-    public ActionRequirement() {
-    }
-
     /**
      * Constructor; entirely based on the constructor of the Requirement class.
      *
@@ -36,7 +33,7 @@ public class ActionRequirement extends Requirement {
      */
     ActionRequirement(int nr, Category cat, String text,
             ExternalInput source, RequirementModel parent) {
-        super(nr, cat, text, source, parent);
+        super(nr, cat, text, source, parent, "Action");
     }
 
     /**
@@ -98,14 +95,6 @@ public class ActionRequirement extends Requirement {
             getReviewState().change(source, getText());
             this.text = trimmedText;
         }
-    }
-
-    /**
-     * @return "Action" as kind of requirement, always.
-     */
-    @Override
-    public String getReqType() {
-        return "Action";
     }
 
     public RequirementModel getModel() {
