@@ -193,9 +193,6 @@ public class Project implements Serializable, Publisher {
         categories.add(new Category("DEF", "Default", this));
         categories.add(Category.SYSTEM);
         vocabulary = new Vocabulary(om);
-//        objectRoleDiagrams = new ArrayList<>();
-//        classDiagrams = new TreeSet<>();
-
         projectRoles = new ProjectRoles(this);
         createdBy = projectRoles.addStakeholder(nameCreator, roleCreator);
         setCurrentUserAndInform(createdBy);
@@ -211,8 +208,8 @@ public class Project implements Serializable, Publisher {
         Project project = (Project) in.readObject();
         in.close();
         project.publisher = new BasicPublisher(new String[]{"currentUser"});
-//        project.objectRoleDiagrams = new ArrayList<>();
         project.getObjectModel().addSystemMethods();
+        project.setCurrentUserAndInform(project.getCreatedBy());
         instance = project;
         return instance;
     }

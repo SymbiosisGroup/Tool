@@ -16,6 +16,8 @@
  */
 package symbiosis.gui.resources;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -23,8 +25,12 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.layout.HBox;
+import symbiosis.gui.ScreenManager;
+import symbiosis.meta.ChangeNotAllowedException;
 import symbiosis.meta.requirements.Requirement;
+import symbiosis.meta.traceability.ExternalInput;
 import symbiosis.meta.traceability.ReviewState;
+import symbiosis.project.Project;
 
 /**
  *
@@ -35,7 +41,7 @@ import symbiosis.meta.traceability.ReviewState;
 public class ButtonsCell extends TableCell<Requirement, Object> {
 
     final Button approveButton = new Button("App");
-    final Button addButton = new Button("Add");
+    final Button rejectButton = new Button("Rej");
     final Button removeButton = new Button("Rem");
     final HBox hBox = new HBox();
 
@@ -44,14 +50,30 @@ public class ButtonsCell extends TableCell<Requirement, Object> {
     public ButtonsCell(Object param) {
         tableColumn = (TableColumn) param;
         approveButton.setMinWidth(50);
-        addButton.setMinWidth(50);
+        rejectButton.setMinWidth(50);
         removeButton.setMinWidth(50);
         hBox.setSpacing(10);
         approveButton.setOnAction((ActionEvent t) -> {
-            approveButton.setText("APP");
+            final TableRow<Requirement> tableRow = getTableRow();
+            final Requirement rowItem = tableRow == null ? null : tableRow.getItem();
+            if (rowItem != null) {
+                rowItem.approve(new ExternalInput("Manually Approved", Project.getProject().getCurrentUser()));
+            }
+            ScreenManager.getMainScreen().refresh();
+        });
+        rejectButton.setOnAction((ActionEvent t) -> {
+            final TableRow<Requirement> tableRow = getTableRow();
+            final Requirement rowItem = tableRow == null ? null : tableRow.getItem();
+            if (rowItem != null) {
+                rowItem.reject(new ExternalInput("Manually Rejected", Project.getProject().getCurrentUser()));
+            }
         });
         removeButton.setOnAction((ActionEvent t) -> {
-            removeButton.setText("REM");
+            final TableRow<Requirement> tableRow = getTableRow();
+            final Requirement rowItem = tableRow == null ? null : tableRow.getItem();
+            if (rowItem != null) {
+                rowItem.remove();
+            }
         });
     }
 
@@ -63,10 +85,13 @@ public class ButtonsCell extends TableCell<Requirement, Object> {
             final Requirement rowItem = tableRow == null ? null : tableRow.getItem();
             ReviewState reviewState = rowItem == null ? null : rowItem.getReviewState();
             if (reviewState != null) {
-                if (reviewState.toString().contains("APP") && !hBox.getChildren().contains(approveButton)) {
+                if (reviewState == ReviewState.ADDED) {
+                    hBox.getChildren().clear();
                     hBox.getChildren().add(approveButton);
-                } else if (reviewState.toString().contains("ADD") && !hBox.getChildren().contains(addButton)) {
-                    hBox.getChildren().add(addButton);
+                    hBox.getChildren().add(rejectButton);
+                } else if (reviewState == ReviewState.APPROVED) {
+                    hBox.getChildren().clear();
+                    hBox.getChildren().add(removeButton);
                 }
             }
             setGraphic(hBox);

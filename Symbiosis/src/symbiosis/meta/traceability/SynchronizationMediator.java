@@ -83,7 +83,7 @@ public class SynchronizationMediator implements Serializable {
      * @return the highest impact of to-dos
      */
     public Impact getImpactOfToDos() {
-        Impact impact = Impact.ZERO;
+        Impact impact = Impact.NONE;
         for (ToDo toDo : toDos) {
             if (toDo.getImpact().getOrder() > impact.getOrder()) {
                 impact = toDo.getImpact();

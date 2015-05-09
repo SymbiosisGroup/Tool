@@ -7,13 +7,13 @@ import symbiosis.meta.requirements.RequirementFilter;
  *
  * @author FrankP
  */
-public enum Impact implements RequirementFilter {
+public enum Impact {
 
     UNDEFINED(-1),
     /**
      *
      */
-    ZERO(0),
+    NONE(0),
     /**
      *
      */
@@ -40,10 +40,10 @@ public enum Impact implements RequirementFilter {
     public int getOrder() {
         return order;
     }
-
+    
     @Override
-    public boolean acccepts(Requirement requirement) {
-        return requirement.getReviewState().getReviewImpact().equals(this);
+    public String toString(){
+        return this.name().substring(0,1) + this.name().substring(1).toLowerCase();
     }
 
 }

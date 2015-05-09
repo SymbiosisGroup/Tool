@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
+import symbiosis.gui.ScreenManager;
 import symbiosis.gui.SplashScreen;
 import symbiosis.project.Project;
 
@@ -208,12 +209,12 @@ abstract class WizardPage extends VBox {
  */
 class NewProjectWizard extends Wizard {
 
-    Stage owner;
+    Stage screen;
 
-    public NewProjectWizard(Stage owner) {
+    public NewProjectWizard(Stage screen) {
         super(new SetupPage(), new StakeholderPage(), new ProjectMemberPage());
-        this.owner = owner;
-        this.owner.setOnCloseRequest((WindowEvent event) -> {
+        this.screen = screen;
+        this.screen.setOnCloseRequest((WindowEvent event) -> {
             cancel();
             event.consume();
         });
@@ -236,23 +237,20 @@ class NewProjectWizard extends Wizard {
         if (!projectMemberName.isEmpty()) {
             Project.getProject().getParticipants().addProjectMember(projectMemberName, projectMemberRole);
         }
-        owner.close();
+        System.out.println("Project created");
+        ScreenManager.getMainScreen().refresh();
+        screen.close();
     }
 
     @Override
     public void cancel() {
         System.out.println("Cancelled");
-        SplashScreen flashScreen = new SplashScreen();
-        try {
-            Stage stage = new Stage();
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(owner.getOwner().getScene().getWindow());
-            flashScreen.start(stage);
-        } catch (Exception ex) {
-            Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
+        if (!screen.getOwner().getScene().getWindow().isShowing()) {
+            
         }
-        owner.close();
+        screen.close();
     }
+
 }
 
 /**
@@ -324,7 +322,7 @@ class SetupPage extends WizardPage {
             fileChooser.setTitle("Save");
             File startDirectory = new File(fileLocationTextField.getText());
             fileChooser.setInitialDirectory(startDirectory.getParentFile());
-            File saveFile = fileChooser.showSaveDialog(((NewProjectWizard) super.getWizard()).owner);
+            File saveFile = fileChooser.showSaveDialog(((NewProjectWizard) super.getWizard()).screen);
             if (saveFile != null) {
                 path = saveFile.getParent() + "/";
                 if (saveFile.getName().endsWith(".sym")) {

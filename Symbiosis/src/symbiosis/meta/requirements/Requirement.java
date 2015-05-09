@@ -8,16 +8,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 import symbiosis.meta.ChangeNotAllowedException;
-import symbiosis.meta.traceability.AddRejectedState;
-import symbiosis.meta.traceability.AddedState;
-import symbiosis.meta.traceability.ApprovedState;
 import symbiosis.meta.traceability.Category;
-import symbiosis.meta.traceability.ChangeRejectedState;
-import symbiosis.meta.traceability.ChangedState;
 import symbiosis.meta.traceability.ExternalInput;
 import symbiosis.meta.traceability.Impact;
-import symbiosis.meta.traceability.RemoveRejectedState;
-import symbiosis.meta.traceability.RemovedState;
 import symbiosis.meta.traceability.ReviewState;
 import symbiosis.meta.traceability.Reviewable;
 import symbiosis.project.Project;
@@ -46,11 +39,12 @@ public abstract class Requirement extends Reviewable
     @Column(name = "impact")
     private Impact impact;
     @Column(name = "urgency")
-    private UrgencyKind urgency;
+    private Urgency urgency;
     @Column(name = "moscow")
     private MoSCoW moscow;
     @Column(name = "typy")
     private final String typy;
+    private Impact reviewImpact;
 
     public Requirement(String type) {
         this.typy = type;
@@ -77,20 +71,9 @@ public abstract class Requirement extends Reviewable
         verifyMethod = VerifyMethod.UNDEFINED;
         this.nr = nr;
         impact = Impact.NORMAL;
-        urgency = UrgencyKind.UNDEFINED;
+        urgency = Urgency.UNDEFINED;
         moscow = MoSCoW.UNDEFINED;
         this.typy = type;
-    }
-    
-    
-
-    public String getJustification() {
-        return getReviewState().getExternalInput().getJustification();
-    }
-
-    public void setJustification(String justification) {
-        ExternalInput externalInput = getReviewState().getExternalInput();
-        externalInput.setJustification(justification);
     }
 
     /**
@@ -103,7 +86,7 @@ public abstract class Requirement extends Reviewable
     /**
      * @param urgency for this requirement.
      */
-    public void setUrgency(UrgencyKind urgency) {
+    public void setUrgency(Urgency urgency) {
         this.urgency = urgency;
     }
 
@@ -113,11 +96,11 @@ public abstract class Requirement extends Reviewable
     public Impact getImpact() {
         return impact;
     }
-
+    
     /**
      * @return the urgency of this requirement.
      */
-    public UrgencyKind getUrgency() {
+    public Urgency getUrgency() {
         return urgency;
     }
 
@@ -228,9 +211,9 @@ public abstract class Requirement extends Reviewable
     public boolean isApprovable(ProjectRole projectRole) {
         ReviewState rs = getReviewState();
         if (getCategory().isOwner(projectRole)
-                && (rs instanceof AddedState
-                || rs instanceof ChangedState
-                || rs instanceof RemovedState)) {
+                && (rs == ReviewState.ADDED
+                || rs == ReviewState.CHANGED
+                || rs == ReviewState.REMOVED)) {
             return true;
         } else {
             return false;
@@ -239,17 +222,17 @@ public abstract class Requirement extends Reviewable
 
     public boolean isChangeable(ProjectRole projectRole) {
         ReviewState rs = getReviewState();
-        ExternalInput ei = rs.getExternalInput();
+        ExternalInput ei = getExternalInput();
         if (ei.getFrom() == null) {
             return true;
         }
-        if (rs instanceof AddedState) {
+        if (rs == ReviewState.ADDED) {
             return true;
         }
-        if (rs instanceof ApprovedState) {
+        if (rs == ReviewState.APPROVED) {
             return true;
         }
-        if ((rs instanceof ChangedState)
+        if ((rs == ReviewState.CHANGED)
                 && ei.getFrom().getName().equalsIgnoreCase(projectRole.getName())) {
             return true;
         }
@@ -257,31 +240,21 @@ public abstract class Requirement extends Reviewable
     }
 
     public boolean isRemovable(ProjectRole projectRole) {
-        ReviewState rs = getReviewState();
-        if (rs instanceof ApprovedState) {
-            return true;
-        } else {
-            return false;
-        }
+        return getReviewState() == ReviewState.APPROVED;
     }
 
     public boolean isRejectable(ProjectRole projectRole) {
         if (projectRole instanceof StakeholderRole) {
             ReviewState rs = getReviewState();
-            if (rs instanceof AddedState) {
+            if (rs == ReviewState.ADDED) {
                 return true;
-            } else if (rs instanceof ChangedState) {
+            } else if (rs == ReviewState.CHANGED) {
                 return true;
-            } else if (rs instanceof RemovedState) {
+            } else if (rs == ReviewState.REMOVED) {
                 return true;
             }
         }
         return false;
-    }
-
-    public boolean isRollBackable(ProjectRole projectRole) {
-        ReviewState rs = getReviewState();
-        return rs.isRollBackable(projectRole);
     }
 
     /**
@@ -375,19 +348,19 @@ public abstract class Requirement extends Reviewable
     public boolean isTrue(String filter) {
         switch (filter) {
             case "Added":
-                return getReviewState() instanceof AddedState;
+                return getReviewState() == ReviewState.ADDED;
             case "AddRejected":
-                return getReviewState() instanceof AddRejectedState;
+                return getReviewState() == ReviewState.REJECTED;
             case "Approved":
-                return getReviewState() instanceof ApprovedState;
+                return getReviewState() == ReviewState.APPROVED;
             case "Changed":
-                return getReviewState() instanceof ChangedState;
+                return getReviewState() == ReviewState.CHANGED;
             case "ChangeRejected":
-                return getReviewState() instanceof ChangeRejectedState;
+                return getReviewState() == ReviewState.CHANGE_REJECTED;
             case "Removed":
-                return getReviewState() instanceof RemovedState;
+                return getReviewState() == ReviewState.REMOVED;
             case "RemoveRejected":
-                return getReviewState() instanceof RemoveRejectedState;
+                return getReviewState() == ReviewState.REMOVE_REJECTED;
             case "Action":
                 return this instanceof ActionRequirement;
             case "Fact":
@@ -397,15 +370,15 @@ public abstract class Requirement extends Reviewable
             case "QA":
                 return this instanceof QualityAttribute;
             case "UNDEFINED":
-                return this.getReviewState().getReviewImpact().equals(Impact.UNDEFINED);
-            case "ZERO":
-                return this.getReviewState().getReviewImpact().equals(Impact.ZERO);
+                return this.reviewImpact.equals(Impact.UNDEFINED);
+            case "NONE":
+                return this.reviewImpact.equals(Impact.NONE);
             case "LIGHT":
-                return this.getReviewState().getReviewImpact().equals(Impact.LIGHT);
+                return this.reviewImpact.equals(Impact.LIGHT);
             case "NORMAL":
-                return this.getReviewState().getReviewImpact().equals(Impact.NORMAL);
+                return this.reviewImpact.equals(Impact.NORMAL);
             case "SERIOUS":
-                return this.getReviewState().getReviewImpact().equals(Impact.SERIOUS);
+                return this.reviewImpact.equals(Impact.SERIOUS);
             case "Realized":
                 return isRealized();
             case "Owner":
@@ -418,5 +391,12 @@ public abstract class Requirement extends Reviewable
                 return getCategory().equals(project.getCategory(filter));
         }
     }
+    
+    public void approve(ExternalInput externalInput){
+        this.setReviewState(ReviewState.APPROVED);
+    }
 
+    public void reject(ExternalInput externalInput) {
+        this.setReviewState(ReviewState.REJECTED);
+    }
 }

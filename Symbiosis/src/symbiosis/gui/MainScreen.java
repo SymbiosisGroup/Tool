@@ -16,6 +16,7 @@
  */
 package symbiosis.gui;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,13 +40,16 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import symbiosis.gui.dialogs.AddRequirementDialog;
 import symbiosis.gui.dialogs.FilterDialog;
+import symbiosis.gui.dialogs.MessageDialog;
 import symbiosis.gui.resources.ButtonsCell;
 import symbiosis.gui.resources.CheckBoxCell;
+import symbiosis.gui.wizards.NewProject;
 import symbiosis.meta.requirements.ActionRequirement;
 import symbiosis.meta.requirements.QualityAttribute;
 import symbiosis.meta.requirements.Requirement;
@@ -69,11 +73,12 @@ public class MainScreen extends Application {
     @FXML
     private ContextMenu readyColumnContextMenu, nameColumnContextMenu, typeColumnContextMenu, stateColumnContextMenu, reviewColumnContextMenu, textColumnContextMenu;
     @FXML
-    private MenuItem saveMenuItem, addNewRequirementMenuItem;
+    private MenuItem newProjectMenuItem, saveProjectMenuItem, openProjectMenuItem, addNewRequirementMenuItem;
     @FXML
     private MenuItem filterReadyColumnMenuItem, filterNameColumnMenuItem, filterTypeColumnMenuItem, filterStateColumnMenuItem, filterReviewColumnMenuItem, filterTextColumnMenuItem;
 
     private ObservableList<Requirement> data = FXCollections.observableArrayList();
+    private Stage primaryStage;
 
     @Override
     public void start(Stage primaryStage) {
@@ -93,10 +98,16 @@ public class MainScreen extends Application {
         Stage stage = new Stage();
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(primaryStage.getScene().getWindow());
+        this.primaryStage = primaryStage;
         flashScreen.start(stage);
         fillTable();
         setup();
-        ScreenManager.setMainScreen(this);
+        try {
+            ScreenManager.setMainScreen(this);
+        } catch (Exception ex) {
+            Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+            MessageDialog.show("The Main Screen already exists this may have resulted in errors.");
+        }
     }
 
     private void fillTable() {
@@ -116,10 +127,10 @@ public class MainScreen extends Application {
                 new PropertyValueFactory<>("ReqType")
         );
         stateColumn.setCellValueFactory(
-                new PropertyValueFactory<>("State")
+                new PropertyValueFactory<>("ReviewState")
         );
         reviewColumn.setCellValueFactory(
-                new PropertyValueFactory<>("Text")
+                new PropertyValueFactory<>("ReviewState")
         );
         reviewColumn.setSortable(false);
         reviewColumn.setMinWidth(120);
@@ -152,13 +163,7 @@ public class MainScreen extends Application {
     }
 
     private void setupMenuListeners() {
-        //Main Menu
-        addNewRequirementMenuItem.setOnAction((ActionEvent event) -> {
-            new AddRequirementDialog().start();
-        });
-        saveMenuItem.setOnAction((ActionEvent event) -> {
-            Project.getProject().save();
-        });
+        setupMainMenuListeners();
         //Context Menu
         filterTextColumnMenuItem.setOnAction((ActionEvent event) -> {
             List<String> values = new ArrayList<>();
@@ -171,6 +176,44 @@ public class MainScreen extends Application {
             }
             System.out.println(values);
             new FilterDialog().start(values);
+        });
+    }
+
+    private void setupMainMenuListeners() {
+        //ProjectMenu
+        newProjectMenuItem.setOnAction((ActionEvent event) -> {
+            NewProject newProjectWizard = new NewProject();
+            try {
+                Stage stage = new Stage();
+                stage.initModality(Modality.WINDOW_MODAL);
+                stage.initOwner(primaryStage.getScene().getWindow());
+                newProjectWizard.start(stage);
+            } catch (Exception ex) {
+                Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        saveProjectMenuItem.setOnAction((ActionEvent event) -> {
+            Project.getProject().save();
+        });
+        openProjectMenuItem.setOnAction((ActionEvent event) -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Symbiosis Projects", "*.sym"));
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+            File openFile = fileChooser.showOpenDialog(primaryStage);
+            if (openFile != null) {
+                try {
+                    Project.getProject(openFile);
+                } catch (IOException | ClassNotFoundException ex) {
+                    Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                ScreenManager.getMainScreen().refresh();
+            }
+        });
+
+        //EditMenu
+        addNewRequirementMenuItem.setOnAction((ActionEvent event) -> {
+            new AddRequirementDialog().start();
         });
     }
 

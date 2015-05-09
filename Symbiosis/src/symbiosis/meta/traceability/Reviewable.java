@@ -35,6 +35,7 @@ public abstract class Reviewable extends ModelElement {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private Category cat;
     private boolean generated;
+    private ExternalInput source;
 
     public Reviewable() {
     }
@@ -43,6 +44,7 @@ public abstract class Reviewable extends ModelElement {
         super(parent, source);
         this.cat = cat;
         this.generated = true;
+        this.source = source;
         initReviewState(source);
     }
 
@@ -56,7 +58,7 @@ public abstract class Reviewable extends ModelElement {
     }
 
     public boolean isApproved() {
-        return reviewState instanceof ApprovedState;
+        return reviewState == ReviewState.APPROVED;
     }
 
     public Category getCategory() {
@@ -88,9 +90,9 @@ public abstract class Reviewable extends ModelElement {
 
     private void initReviewState(ExternalInput source) {
         if (cat.isOwner(source.getFrom()) || cat.equals(Category.SYSTEM)) {
-            reviewState = new ApprovedState(source, null, null, this);
+            reviewState = ReviewState.APPROVED;
         } else {
-            reviewState = new AddedState(source, this);
+            reviewState = ReviewState.ADDED;
         }
     }
 
@@ -101,7 +103,7 @@ public abstract class Reviewable extends ModelElement {
      */
     protected abstract void replaceBy(String content) throws ChangeNotAllowedException;
 
-    void setReviewState(ReviewState reviewState) {
+    protected void setReviewState(ReviewState reviewState) {
         this.reviewState = reviewState;
     }
 
@@ -111,14 +113,18 @@ public abstract class Reviewable extends ModelElement {
     }
 
     public abstract boolean isRealized();
-    
+
     @Override
-    protected void removeDependentMediator(SynchronizationMediator mediator){
+    protected void removeDependentMediator(SynchronizationMediator mediator) {
         super.removeDependentMediator(mediator);
-        if (isLonely()){
-            if (!isManuallyCreated()){
+        if (isLonely()) {
+            if (!isManuallyCreated()) {
                 getParent().remove(this);
             }
         }
+    }
+
+    protected ExternalInput getExternalInput() {
+        return source;
     }
 }

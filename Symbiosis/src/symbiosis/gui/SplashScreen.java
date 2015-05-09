@@ -52,9 +52,11 @@ import symbiosis.project.Project;
 public class SplashScreen extends Application {
 
     private boolean closing = false;
+    private Stage primaryStage;
 
     @Override
     public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         HBox imageTextSplit = new HBox();
         //Image (left)
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/symbiosis/gui/resources/logo.png")));
@@ -109,12 +111,13 @@ public class SplashScreen extends Application {
             try {
                 Stage stage = new Stage();
                 stage.initModality(Modality.WINDOW_MODAL);
-                stage.initOwner(primaryStage.getOwner().getScene().getWindow());
+                stage.initOwner(this.primaryStage.getScene().getWindow());
                 newProjectWizard.start(stage);
             } catch (Exception ex) {
                 Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
             }
-            closeScreen(primaryStage);
+            this.primaryStage.hide();
+//            closeScreen(this.primaryStage);
         });
         controlBox.getChildren().add(newProjecButton);
         //OpenProjectButton
@@ -125,11 +128,12 @@ public class SplashScreen extends Application {
             fileChooser.setTitle("Open");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Symbiosis Projects", "*.sym"));
             fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-            File openFile = fileChooser.showOpenDialog(primaryStage);
+            File openFile = fileChooser.showOpenDialog(this.primaryStage);
             if (openFile != null) {
                 try {
                     Project.getProject(openFile);
-                    closeScreen(primaryStage);
+                    closing = true;
+                    this.primaryStage.close();
                 } catch (IOException | ClassNotFoundException ex) {
                     Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -150,18 +154,17 @@ public class SplashScreen extends Application {
         StackPane.setAlignment(controlBox, Pos.BOTTOM_RIGHT);
         //Scene en Stage Setup
         Scene scene = new Scene(root, 800, 300);
-        primaryStage.setTitle("Symbiosis");
-        primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest((WindowEvent event) -> {
+        this.primaryStage.setTitle("Symbiosis");
+        this.primaryStage.setScene(scene);
+        this.primaryStage.setOnCloseRequest((WindowEvent event) -> {
             if (!closing) {
                 System.exit(0);
             }
         });
-        primaryStage.show();
+        this.primaryStage.show();
     }
 
-    private void closeScreen(Stage primaryStage) {
-        closing = true;
-        primaryStage.close();
+    public void show() {
+        this.primaryStage.show();
     }
 }

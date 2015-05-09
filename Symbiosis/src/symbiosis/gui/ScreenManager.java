@@ -25,12 +25,29 @@ package symbiosis.gui;
 public abstract class ScreenManager {
 
     private static MainScreen mainScreen;
+    private static SplashScreen splashScreen;
 
-    public static void setMainScreen(MainScreen mainScreen) {
-        ScreenManager.mainScreen = mainScreen;
+    public static void setMainScreen(MainScreen mainScreen) throws Exception {
+        if (ScreenManager.mainScreen == null) {
+            ScreenManager.mainScreen = mainScreen;
+        } else {
+            throw new Exception("Main Screen already defined.");
+        }
     }
 
     public static MainScreen getMainScreen() {
         return ScreenManager.mainScreen;
+    }
+
+    public static void setSplachScreen(SplashScreen splashScreen) throws Exception {
+        if (ScreenManager.splashScreen == null){
+        ScreenManager.splashScreen = splashScreen;
+        }else{
+            throw new Exception("Splach Screen already defined.");            
+        }
+    }
+
+    public static void showSplachScreen() {
+        splashScreen.show();
     }
 }

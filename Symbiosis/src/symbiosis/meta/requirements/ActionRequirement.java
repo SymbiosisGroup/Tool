@@ -92,7 +92,6 @@ public class ActionRequirement extends Requirement {
         }
 
         if (!trimmedText.equals(this.text)) {
-            getReviewState().change(source, getText());
             this.text = trimmedText;
         }
     }

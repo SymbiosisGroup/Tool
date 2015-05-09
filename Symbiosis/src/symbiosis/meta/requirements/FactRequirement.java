@@ -125,8 +125,6 @@ public class FactRequirement extends Requirement {
             Requirement req = rm.searchFor(trimmedText);
             if (req == null) {
                 if (!trimmedText.equalsIgnoreCase(text)) {
-                    getReviewState().change(source, getText());
-                    getReviewState().setReviewImpact(Impact.LIGHT);
                 }
                 this.text = trimmedText;
             }

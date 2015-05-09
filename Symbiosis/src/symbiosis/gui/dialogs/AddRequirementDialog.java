@@ -38,6 +38,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -53,8 +54,16 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import symbiosis.gui.ScreenManager;
 import symbiosis.gui.SplashScreen;
+import symbiosis.meta.ChangeNotAllowedException;
+import symbiosis.meta.requirements.ActionRequirement;
+import symbiosis.meta.requirements.ChanceOfFailure;
+import symbiosis.meta.requirements.MoSCoW;
+import symbiosis.meta.requirements.Requirement;
+import symbiosis.meta.requirements.Urgency;
+import symbiosis.meta.requirements.VerifyMethod;
 import symbiosis.meta.traceability.Category;
 import symbiosis.meta.traceability.ExternalInput;
+import symbiosis.meta.traceability.Impact;
 import symbiosis.project.Project;
 
 /**
@@ -73,7 +82,7 @@ public class AddRequirementDialog extends Application {
     private Button cancelButton, addRequirementButton;
 
     private Stage primaryStage;
-    
+
     public void start() {
         start(new Stage());
     }
@@ -105,40 +114,104 @@ public class AddRequirementDialog extends Application {
         typeOptions.add("Rule");
         typeOptions.add("QualityAttributes");
         typeComboBox.getItems().addAll(typeOptions);
+        typeComboBox.getSelectionModel().select(0);
         //CategoryOptions
         ObservableList<String> categoryOptions = FXCollections.observableArrayList();
         //categoryOptions.add(Category.SYSTEM.getName());
         Iterator<Category> categories = Project.getProject().getCategories();
         while (categories.hasNext()) {
-            categoryOptions.add(categories.next().getName());
+            Category cat = categories.next();
+            if (!cat.getCode().equalsIgnoreCase(Category.SYSTEM.getCode())) {
+                categoryComboBox.getItems().add(cat);
+            }
         }
+        categoryComboBox.getItems().add(Category.SYSTEM);
         categoryComboBox.getItems().addAll(categoryOptions);
+        categoryComboBox.getSelectionModel().select(0);
+        //ChanceOfFaulureOptions
+        ObservableList<ChanceOfFailure> chanceOfFailureOptions = FXCollections.observableArrayList();
+        chanceOfFailureOptions.add(ChanceOfFailure.UNDEFINED);
+        chanceOfFailureOptions.add(ChanceOfFailure.LOW);
+        chanceOfFailureOptions.add(ChanceOfFailure.MEDIUM);
+        chanceOfFailureOptions.add(ChanceOfFailure.HIGH);
+        chanceOfFailureComboBox.getItems().addAll(chanceOfFailureOptions);
+        chanceOfFailureComboBox.getSelectionModel().select(0);
+        //ImpactOptions
+        ObservableList<Impact> impactOptions = FXCollections.observableArrayList();
+        impactOptions.add(Impact.UNDEFINED);
+        impactOptions.add(Impact.NONE);
+        impactOptions.add(Impact.LIGHT);
+        impactOptions.add(Impact.NORMAL);
+        impactOptions.add(Impact.SERIOUS);
+        impactComboBox.getItems().addAll(impactOptions);
+        impactComboBox.getSelectionModel().select(0);
+        //UrgencyOptions
+        ObservableList<Urgency> urgencyOptions = FXCollections.observableArrayList();
+        urgencyOptions.add(Urgency.UNDEFINED);
+        urgencyOptions.add(Urgency.LOW);
+        urgencyOptions.add(Urgency.MEDIUM);
+        urgencyOptions.add(Urgency.HIGH);
+        urgencyComboBox.getItems().addAll(urgencyOptions);
+        urgencyComboBox.getSelectionModel().select(0);
+        //MoSCoWOptions
+        ObservableList<MoSCoW> moscowOptions = FXCollections.observableArrayList();
+        moscowOptions.add(MoSCoW.UNDEFINED);
+        moscowOptions.add(MoSCoW.MUST);
+        moscowOptions.add(MoSCoW.SHOULD);
+        moscowOptions.add(MoSCoW.COULD);
+        moscowOptions.add(MoSCoW.WONT);
+        moscowComboBox.getItems().addAll(moscowOptions);
+        moscowComboBox.getSelectionModel().select(0);
+        //VerifyMethodOptions
+        ObservableList<VerifyMethod> verifyMethodOptions = FXCollections.observableArrayList();
+        verifyMethodOptions.add(VerifyMethod.UNDEFINED);
+        verifyMethodOptions.add(VerifyMethod.NONE);
+        verifyMethodOptions.add(VerifyMethod.ANALYSIS);
+        verifyMethodOptions.add(VerifyMethod.DEMONSTRATION);
+        verifyMethodOptions.add(VerifyMethod.INSPECTION);
+        verifyMethodOptions.add(VerifyMethod.TEST);
+        verifyMethodComboBox.getItems().addAll(verifyMethodOptions);
+        verifyMethodComboBox.getSelectionModel().select(0);
     }
 
     private void addListeners() {
         addRequirementButton.setOnAction((ActionEvent event) -> {
-            Category category = Project.getProject().getCategory(categoryComboBox.getItems().get(categoryComboBox.getSelectionModel().getSelectedIndex()).toString());
-            ExternalInput externalInput = new ExternalInput("", Project.getProject().getCurrentUser());
-            switch (typeComboBox.getSelectionModel().getSelectedIndex()) {
-                case 0: {
-                    Project.getProject().getRequirementModel().addActionRequirement(category, requirementTextArea.getText(), externalInput);
-                    break;
-                }
-                case 1: {
-                    Project.getProject().getRequirementModel().addFactRequirement(category, requirementTextArea.getText(), externalInput);
-                    break;
-                }
-                case 2: {
-                    Project.getProject().getRequirementModel().addRuleRequirement(category, requirementTextArea.getText(), externalInput);
-                    break;
-                }
-                case 3: {
-                    Project.getProject().getRequirementModel().addQualityAttribute(category, requirementTextArea.getText(), externalInput);
-                    break;
-                }
-            }
-            this.primaryStage.close();
-            ScreenManager.getMainScreen().refresh();
+            addRequirement();
         });
+    }
+
+    private void addRequirement() {
+        Category category = (Category) categoryComboBox.getSelectionModel().getSelectedItem();
+        ExternalInput externalInput = new ExternalInput("", Project.getProject().getCurrentUser());
+        Requirement requirement = null;
+        switch (typeComboBox.getSelectionModel().getSelectedIndex()) {
+            case 0: {
+                requirement = Project.getProject().getRequirementModel().addActionRequirement(category, requirementTextArea.getText(), externalInput);
+                break;
+            }
+            case 1: {
+                requirement = Project.getProject().getRequirementModel().addFactRequirement(category, requirementTextArea.getText(), externalInput);
+                break;
+            }
+            case 2: {
+                requirement = Project.getProject().getRequirementModel().addRuleRequirement(category, requirementTextArea.getText(), externalInput);
+                break;
+            }
+            case 3: {
+                requirement = Project.getProject().getRequirementModel().addQualityAttribute(category, requirementTextArea.getText(), externalInput);
+                break;
+            }
+        }
+        requirement.setImpact((Impact) impactComboBox.getSelectionModel().getSelectedItem());
+        requirement.setChanceOfFailure((ChanceOfFailure) chanceOfFailureComboBox.getSelectionModel().getSelectedItem());
+        requirement.setMoSCoW((MoSCoW) moscowComboBox.getSelectionModel().getSelectedItem());
+        requirement.setUrgency((Urgency) urgencyComboBox.getSelectionModel().getSelectedItem());
+        requirement.setVerifyMethod((VerifyMethod) verifyMethodComboBox.getSelectionModel().getSelectedItem());
+        requirement.setManuallyCreated(true);
+        if (requirement.getCategory().isOwner(Project.getProject().getCurrentUser())) {
+            requirement.approve(new ExternalInput("added by owner of category", Project.getProject().getCurrentUser()));
+        }
+        this.primaryStage.close();
+        ScreenManager.getMainScreen().refresh();
     }
 }

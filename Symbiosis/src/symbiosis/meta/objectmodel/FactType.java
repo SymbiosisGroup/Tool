@@ -237,8 +237,6 @@ public class FactType extends ParentElement implements Type, ITerm,
                             uniqueString,
                             new SystemInput("redundancy or bad identification of facts is awkward"));
                     new UniquenessConstraint(roles.get(0), rule);
-                    rule.getReviewState().setReviewImpact(Impact.ZERO);
-
                 } catch (ChangeNotAllowedException ex) {
                     Logger.getLogger(FactType.class.getName()).log(Level.SEVERE, null, ex);
                 }

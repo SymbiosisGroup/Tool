@@ -27,4 +27,9 @@ public enum VerifyMethod {
      * this requirement needs an analysis by an expert
      */
     ANALYSIS;
+
+    @Override
+    public String toString() {
+        return this.name().substring(0, 1) + this.name().substring(1).toLowerCase();
+    }
 }

@@ -19,4 +19,9 @@ public enum ChanceOfFailure {
      * we expect a high risk in realisation of this requirement
      */
     HIGH;
+    
+    @Override
+    public String toString(){
+        return this.name().substring(0,1) + this.name().substring(1).toLowerCase();
+    }
 }

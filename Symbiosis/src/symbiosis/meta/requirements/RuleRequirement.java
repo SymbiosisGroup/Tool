@@ -103,7 +103,6 @@ public class RuleRequirement extends Requirement {
         }
 
         if (!trimmedText.equals(this.text)) {
-            getReviewState().change(source, getText());
             this.text = trimmedText;
         }
     }
@@ -125,16 +124,7 @@ public class RuleRequirement extends Requirement {
     }
 
     private boolean isSystemRule() {
-        return getReviewState().getExternalInput() instanceof SystemInput;
-    }
-
-    @Override
-    public void setJustification(String justification) {
-        if (isSystemRule()) {
-            return;
-        }
-        ExternalInput externalInput = getReviewState().getExternalInput();
-        externalInput.setJustification(justification);
+        return getCategory() == Category.SYSTEM;
     }
 
     @Override
@@ -146,7 +136,7 @@ public class RuleRequirement extends Requirement {
     }
 
     @Override
-    public void setUrgency(UrgencyKind urgency) {
+    public void setUrgency(Urgency urgency) {
         if (isSystemRule()) {
             return;
         }

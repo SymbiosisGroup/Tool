@@ -99,7 +99,7 @@ public abstract class ModelElement extends Source {
      */
     public boolean isReliable() {
         for (SynchronizationMediator mediator : sourceMediators) {
-            if (mediator.getImpactOfToDos() != Impact.ZERO) {
+            if (mediator.getImpactOfToDos() != Impact.NONE) {
                 return false;
             }
         }
