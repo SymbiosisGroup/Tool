@@ -67,6 +67,9 @@ import fontys.observer.PropertyListener;
 import fontys.observer.Publisher;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  *
@@ -108,6 +111,7 @@ public class ObjectModel extends Model implements
 
     public void addValueTypes(RequirementModel rm) {
         List<String> valuetypes = new ArrayList<>();
+
         valuetypes.add("Date");
         valuetypes.add("Time");
         valuetypes.add("DateTime");
@@ -116,6 +120,23 @@ public class ObjectModel extends Model implements
         valuetypes.add("Money");
         valuetypes.add("Name");
         valuetypes.add("Address");
+
+        ArrayList<JCheckBox> typesToChoose = new ArrayList();
+
+        for (String vt : valuetypes) {
+            JCheckBox box = new JCheckBox(vt);
+            typesToChoose.add(box);
+        }
+
+        Object[] containerObj = (Object[]) typesToChoose.toArray(new Object[typesToChoose.size()]);
+        JOptionPane.showConfirmDialog(null, containerObj, "Choose ValueTypes to add", JOptionPane.OK_CANCEL_OPTION);
+
+        for (JCheckBox cb : typesToChoose) {
+            if (!cb.isSelected()) {
+                valuetypes.remove(cb.getText());
+            }
+        }
+
         initValueTypes(valuetypes, rm);
     }
 
