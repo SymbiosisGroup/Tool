@@ -73,6 +73,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     private Frame parent;
     private DockKey key;
     private boolean reliableClasses;
+    private boolean doublejDoc = false;
     // private javax.swing.JCheckBoxMenuItem miAbsractOT;
 
     /**
@@ -1226,21 +1227,26 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 
     private void lsOperationsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lsOperationsValueChanged
 
-//        spSpecification.setVisible(false);
+        spSpecification.setVisible(false);
         Operation feature = (Operation) lsOperations.getSelectedValue();
         if (feature != null) {
             //taSpecification.setText(feature.getSpec());
             //((TitledBorder) spSpecification.getBorder()).setTitle("Specification of " + getSelectedFactType().getName() + " :: " + feature.callString());
-            JOptionPane jDoc = new JOptionPane(feature.getSpec());
-            JDialog dialog = jDoc.createDialog(parent, "Specification of " + getSelectedFactType().getName() + " :: " + feature.callString());
-            dialog.setModal(false);
-            dialog.setVisible(true);
-        } else {
-//            taSpecification.setText("");
-//            ((TitledBorder) spSpecification.getBorder()).setTitle("Specification of Selected Operation");
-        }
-//        spSpecification.setVisible(true);
+            if (!doublejDoc) {
+                JOptionPane jDoc = new JOptionPane(feature.getSpec());
+                JDialog dialog = jDoc.createDialog(parent, "Specification of " + getSelectedFactType().getName() + " :: " + feature.callString());
+                dialog.setModal(false);
+                dialog.setVisible(true);
+                doublejDoc = true;
+            } else {
+                doublejDoc = false;
+            }
+        }  /* else {
+         taSpecification.setText("");
+         ((TitledBorder) spSpecification.getBorder()).setTitle("Specification of Selected Operation");
+         }*/
 
+        spSpecification.setVisible(true);
     }//GEN-LAST:event_lsOperationsValueChanged
 
     private void miDefault_ValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miDefault_ValueActionPerformed
