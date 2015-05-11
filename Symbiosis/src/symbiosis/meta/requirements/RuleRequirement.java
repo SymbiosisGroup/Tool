@@ -74,8 +74,8 @@ public class RuleRequirement extends Requirement {
     public String getText() {
         for (ModelElement modelElement : dependents()) {
             if (modelElement instanceof ObjectModelRealization) {
-                if (modelElement instanceof DerivableConstraint ||
-                        modelElement instanceof RoleEvent){
+                if (modelElement instanceof DerivableConstraint
+                        || modelElement instanceof RoleEvent) {
                     return text;
                 }
                 return ((ObjectModelRealization) modelElement).getRequirementText();
@@ -174,20 +174,4 @@ public class RuleRequirement extends Requirement {
         }
         super.setCategory(cat);
     }
-
-    public static RequirementFilter getRequirementFilter() {
-        return new RequirementFilter() {
-
-            @Override
-            public boolean acccepts(Requirement requirement) {
-                return (requirement instanceof RuleRequirement);
-            }
-
-            @Override
-            public String toString() {
-                return "Rule";
-            }
-        };
-    }
-
 }

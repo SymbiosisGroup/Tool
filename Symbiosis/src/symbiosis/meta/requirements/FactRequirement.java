@@ -39,7 +39,7 @@ public class FactRequirement extends Requirement {
      * @param parent of requirement, which is the requirements model.
      */
     FactRequirement(int nr, Category cat, String text,
-        ExternalInput source, RequirementModel parent) {
+            ExternalInput source, RequirementModel parent) {
         super(nr, cat, text, source, parent, "Fact");
     }
 
@@ -145,21 +145,6 @@ public class FactRequirement extends Requirement {
 
     public void setModel(RequirementModel model) {
         this.model = model;
-    }
-
-    public static RequirementFilter getRequirementFilter() {
-        return new RequirementFilter() {
-
-            @Override
-            public boolean acccepts(Requirement requirement) {
-                return (requirement instanceof FactRequirement);
-            }
-
-            @Override
-            public String toString() {
-                return "Fact";
-            }
-        };
     }
 
     @Override

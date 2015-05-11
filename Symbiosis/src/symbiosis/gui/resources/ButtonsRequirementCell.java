@@ -38,7 +38,7 @@ import symbiosis.project.Project;
  * @company EQUA
  * @project Symbiosis
  */
-public class ButtonsCell extends TableCell<Requirement, Object> {
+public class ButtonsRequirementCell extends TableCell<Requirement, Object> {
 
     final Button approveButton = new Button("App");
     final Button rejectButton = new Button("Rej");
@@ -47,7 +47,7 @@ public class ButtonsCell extends TableCell<Requirement, Object> {
 
     private final TableColumn tableColumn;
 
-    public ButtonsCell(Object param) {
+    public ButtonsRequirementCell(Object param) {
         tableColumn = (TableColumn) param;
         approveButton.setMinWidth(50);
         rejectButton.setMinWidth(50);
@@ -95,6 +95,8 @@ public class ButtonsCell extends TableCell<Requirement, Object> {
                 }
             }
             setGraphic(hBox);
+        } else {
+            setGraphic(null);
         }
     }
 }

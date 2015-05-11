@@ -32,13 +32,13 @@ import symbiosis.meta.requirements.Requirement;
  * @company EQUA
  * @project Symbiosis
  */
-public class CheckBoxCell extends TableCell<Requirement, Object> {
+public class CheckBoxRequirementCell extends TableCell<Requirement, Object> {
 
     final CheckBox ready = new CheckBox();
 
     private final TableColumn tableColumn;
 
-    public CheckBoxCell(Object param) {
+    public CheckBoxRequirementCell(Object param) {
         tableColumn = (TableColumn) param;
         tableColumn.setSortable(false);
         ready.setDisable(true);
@@ -54,6 +54,8 @@ public class CheckBoxCell extends TableCell<Requirement, Object> {
                 ready.setSelected(rowItem.isRealized());
             }
             setGraphic(ready);
+        } else {
+            setGraphic(null);
         }
     }
 }

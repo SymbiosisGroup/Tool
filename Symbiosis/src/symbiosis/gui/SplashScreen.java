@@ -107,17 +107,19 @@ public class SplashScreen extends Application {
         newProjecButton.setPrefWidth(380);
         newProjecButton.setOnMouseClicked((MouseEvent event) -> {
             //New Project
-            NewProject newProjectWizard = new NewProject();
+            NewProject newProjectWizard = new NewProject(true);
             try {
                 Stage stage = new Stage();
                 stage.initModality(Modality.WINDOW_MODAL);
-                stage.initOwner(this.primaryStage.getScene().getWindow());
+                stage.initOwner(this.primaryStage.getOwner().getScene().getWindow());
                 newProjectWizard.start(stage);
             } catch (Exception ex) {
                 Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
             }
-            this.primaryStage.hide();
-//            closeScreen(this.primaryStage);
+            //This can not be done currently because JAVA will crash!
+//            primaryStage.hide();
+            closing = true;
+            this.primaryStage.close();
         });
         controlBox.getChildren().add(newProjecButton);
         //OpenProjectButton

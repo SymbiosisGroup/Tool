@@ -91,21 +91,6 @@ public class QualityAttribute extends Requirement {
         this.model = model;
     }
 
-    public static RequirementFilter getRequirementFilter() {
-        return new RequirementFilter() {
-
-            @Override
-            public boolean acccepts(Requirement requirement) {
-                return (requirement instanceof QualityAttribute);
-            }
-
-            @Override
-            public String toString() {
-                return "QA";
-            }
-        };
-    }
-
     @Override
     public boolean isManuallyCreated() {
         return true;

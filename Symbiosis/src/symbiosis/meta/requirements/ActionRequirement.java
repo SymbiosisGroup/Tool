@@ -103,22 +103,4 @@ public class ActionRequirement extends Requirement {
     public void setModel(RequirementModel model) {
         this.model = model;
     }
-
-    public static RequirementFilter getRequirementFilter() {
-        return new RequirementFilter() {
-
-            @Override
-            public boolean acccepts(Requirement requirement) {
-                return (requirement instanceof ActionRequirement);
-            }
-
-            @Override
-            public String toString() {
-                return "Action";
-            }
-        };
-    }
-
-    
-    
 }

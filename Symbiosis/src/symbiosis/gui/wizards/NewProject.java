@@ -27,13 +27,19 @@ import symbiosis.project.Project;
  */
 public class NewProject extends Application {
 
+    private final boolean fromSplashScreen;
+
+    public NewProject(boolean fromSplashScreen) {
+        this.fromSplashScreen = fromSplashScreen;
+    }
+
     public static void main(String[] args) throws Exception {
         launch(args);
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        stage.setScene(new Scene(new NewProjectWizard(stage), 400, 250));
+        stage.setScene(new Scene(new NewProjectWizard(stage, fromSplashScreen), 400, 250));
         stage.show();
     }
 }
@@ -210,10 +216,12 @@ abstract class WizardPage extends VBox {
 class NewProjectWizard extends Wizard {
 
     Stage screen;
+    private final boolean fromSplashScreen;
 
-    public NewProjectWizard(Stage screen) {
+    public NewProjectWizard(Stage screen, boolean fromSplashScreen) {
         super(new SetupPage(), new StakeholderPage(), new ProjectMemberPage());
         this.screen = screen;
+        this.fromSplashScreen = fromSplashScreen;
         this.screen.setOnCloseRequest((WindowEvent event) -> {
             cancel();
             event.consume();
@@ -245,8 +253,12 @@ class NewProjectWizard extends Wizard {
     @Override
     public void cancel() {
         System.out.println("Cancelled");
-        if (!screen.getOwner().getScene().getWindow().isShowing()) {
-            
+        if (fromSplashScreen) {
+            SplashScreen flashScreen = new SplashScreen();
+            Stage stage = new Stage();
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(screen.getOwner().getScene().getWindow());
+            flashScreen.start(stage);
         }
         screen.close();
     }

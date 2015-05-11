@@ -17,7 +17,6 @@
 package symbiosis.gui;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -37,7 +35,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
@@ -47,15 +44,12 @@ import javafx.util.Callback;
 import symbiosis.gui.dialogs.AddRequirementDialog;
 import symbiosis.gui.dialogs.FilterDialog;
 import symbiosis.gui.dialogs.MessageDialog;
-import symbiosis.gui.resources.ButtonsCell;
-import symbiosis.gui.resources.CheckBoxCell;
+import symbiosis.gui.resources.ButtonsRequirementCell;
+import symbiosis.gui.resources.CheckBoxRequirementCell;
 import symbiosis.gui.wizards.NewProject;
-import symbiosis.meta.requirements.ActionRequirement;
-import symbiosis.meta.requirements.QualityAttribute;
 import symbiosis.meta.requirements.Requirement;
-import symbiosis.meta.requirements.RequirementModel;
-import symbiosis.meta.traceability.Category;
-import symbiosis.meta.traceability.ExternalInput;
+import symbiosis.meta.requirements.RequirementFilter;
+import symbiosis.meta.requirements.RequirementFilter.FilterProperty;
 import symbiosis.project.Project;
 
 /**
@@ -77,7 +71,9 @@ public class MainScreen extends Application {
     @FXML
     private MenuItem filterReadyColumnMenuItem, filterNameColumnMenuItem, filterTypeColumnMenuItem, filterStateColumnMenuItem, filterReviewColumnMenuItem, filterTextColumnMenuItem;
 
-    private ObservableList<Requirement> data = FXCollections.observableArrayList();
+    private List<Requirement> data = new ArrayList();
+    private ObservableList<Requirement> displaying = FXCollections.observableArrayList();
+
     private Stage primaryStage;
 
     @Override
@@ -111,13 +107,13 @@ public class MainScreen extends Application {
     }
 
     private void fillTable() {
-        requitementsTable.setItems(data);
+        requitementsTable.setItems(displaying);
         readyColumn.setSortable(false);
         readyColumn.setMinWidth(40);
         readyColumn.setCellFactory(new Callback<TableColumn<Requirement, Object>, TableCell<Requirement, Object>>() {
             @Override
             public TableCell<Requirement, Object> call(TableColumn<Requirement, Object> param) {
-                return new CheckBoxCell(param);
+                return new CheckBoxRequirementCell(param);
             }
         });
         nameColumn.setCellValueFactory(
@@ -137,7 +133,7 @@ public class MainScreen extends Application {
         reviewColumn.setCellFactory(new Callback<TableColumn<Requirement, Object>, TableCell<Requirement, Object>>() {
             @Override
             public TableCell<Requirement, Object> call(TableColumn<Requirement, Object> param) {
-                return new ButtonsCell(param);
+                return new ButtonsRequirementCell(param);
             }
         });
 
@@ -165,24 +161,13 @@ public class MainScreen extends Application {
     private void setupMenuListeners() {
         setupMainMenuListeners();
         //Context Menu
-        filterTextColumnMenuItem.setOnAction((ActionEvent event) -> {
-            List<String> values = new ArrayList<>();
-            for (Object object : requitementsTable.getItems()) {
-                TableCell tableCell = (TableCell) object;
-                //TODO Something is broken here.
-                if (tableCell.getTableColumn().equals(textColumn) && !values.contains(tableCell.toString())) {
-                    values.add(tableCell.toString());
-                }
-            }
-            System.out.println(values);
-            new FilterDialog().start(values);
-        });
+        setupFilters();
     }
 
     private void setupMainMenuListeners() {
         //ProjectMenu
         newProjectMenuItem.setOnAction((ActionEvent event) -> {
-            NewProject newProjectWizard = new NewProject();
+            NewProject newProjectWizard = new NewProject(false);
             try {
                 Stage stage = new Stage();
                 stage.initModality(Modality.WINDOW_MODAL);
@@ -217,19 +202,76 @@ public class MainScreen extends Application {
         });
     }
 
+    private void setupFilters() {
+        //Text Filter
+        filterTextColumnMenuItem.setOnAction((ActionEvent event) -> {
+            List<RequirementFilter> values = new ArrayList<>();
+            data.stream().forEach((requirement) -> {
+                RequirementFilter requirementFilter = new RequirementFilter(requirement, FilterProperty.TEXT);
+                if (!values.contains(requirementFilter)) {
+                    values.add(requirementFilter);
+                }
+            });
+            new FilterDialog().start(values);
+        });
+        //Name Filter
+        filterNameColumnMenuItem.setOnAction((ActionEvent event) -> {
+            List<RequirementFilter> values = new ArrayList<>();
+            data.stream().forEach((requirement) -> {
+                RequirementFilter requirementFilter = new RequirementFilter(requirement, FilterProperty.NAME);
+                if (!values.contains(requirementFilter)) {
+                    values.add(requirementFilter);
+                }
+            });
+            new FilterDialog().start(values);
+        });
+        //State Filter
+        filterStateColumnMenuItem.setOnAction((ActionEvent event) -> {
+            List<RequirementFilter> values = new ArrayList<>();
+            data.stream().forEach((requirement) -> {
+                RequirementFilter requirementFilter = new RequirementFilter(requirement, FilterProperty.STATE);
+                if (!values.contains(requirementFilter)) {
+                    values.add(requirementFilter);
+                }
+            });
+            new FilterDialog().start(values);
+        });
+        //Type Filter
+        filterTypeColumnMenuItem.setOnAction((ActionEvent event) -> {
+            List<RequirementFilter> values = new ArrayList<>();
+            data.stream().forEach((requirement) -> {
+                RequirementFilter requirementFilter = new RequirementFilter(requirement, FilterProperty.TYPE);
+                if (!values.contains(requirementFilter)) {
+                    values.add(requirementFilter);
+                }
+            });
+            new FilterDialog().start(values);
+        });
+    }
+
     public void refresh() {
         data.clear();
+        displaying.clear();
         Iterator<Requirement> requirements = Project.getProject().getRequirementModel().requirements();
         while (requirements.hasNext()) {
             Requirement nextRequirement = requirements.next();
             data.add(nextRequirement);
         }
+        displaying.addAll(data);
     }
 
     public void refresh(Requirement requirement) {
         if (!data.contains(requirement)) {
             data.add(requirement);
+            displaying.add(requirement);
         }
+    }
+
+    public void setFilter(List<RequirementFilter> selectedFilters) {
+        displaying.clear();
+        selectedFilters.stream().forEach((filter) -> {
+            displaying.add(filter.getRequirement());
+        });
     }
 
     /**

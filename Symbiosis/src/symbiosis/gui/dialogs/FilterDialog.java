@@ -16,7 +16,9 @@
  */
 package symbiosis.gui.dialogs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import symbiosis.gui.wizards.NewProject;
 import java.util.logging.Level;
@@ -27,8 +29,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -41,6 +48,11 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
+import symbiosis.gui.ScreenManager;
+import symbiosis.gui.resources.CheckBoxRequirementFilterCell;
+import symbiosis.meta.requirements.Requirement;
+import symbiosis.meta.requirements.RequirementFilter;
 
 /**
  *
@@ -50,9 +62,9 @@ import javafx.stage.WindowEvent;
  */
 public class FilterDialog extends Application {
 
-    List<String> values;
+    List<RequirementFilter> values = new LinkedList<>();
 
-    public void start(List<String> values) {
+    public void start(List<RequirementFilter> values) {
         this.values.addAll(values);
         start(new Stage());
     }
@@ -60,11 +72,54 @@ public class FilterDialog extends Application {
     @Override
     public void start(Stage primaryStage) {
         StackPane root = new StackPane();
-        ListView filterListView = new ListView();
-        filterListView.getItems().addAll(values);
-        root.getChildren().add(filterListView);
+        VBox vBox = new VBox();
+        vBox.setPadding(new Insets(10));
+        vBox.setSpacing(10);
+        TableView<RequirementFilter> filterTableView = new TableView();
+        filterTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        //SelectedFilterColumn
+        TableColumn selectedFilterColumn = new TableColumn();
+        selectedFilterColumn.setCellFactory(new Callback<TableColumn<RequirementFilter, Object>, TableCell<RequirementFilter, Object>>() {
+            @Override
+            public TableCell<RequirementFilter, Object> call(TableColumn<RequirementFilter, Object> param) {
+                return new CheckBoxRequirementFilterCell(param);
+            }
+        });
+        filterTableView.getColumns().add(selectedFilterColumn);
+        //FilterNameColumn
+        TableColumn filterNameColumn = new TableColumn();
+        filterNameColumn.setCellValueFactory(
+                new PropertyValueFactory<>("Filter")
+        );
+        filterTableView.getColumns().add(filterNameColumn);
+        filterTableView.getItems().addAll(values);
+        vBox.getChildren().add(filterTableView);
+        HBox hBox = new HBox();
+        hBox.setSpacing(10);
+        //SelectAll CheckBox
+        CheckBox selectAllCheckBox = new CheckBox("SelectAll");
+        selectAllCheckBox.setOnAction((ActionEvent event) -> {
+            values.stream().forEach((filter) -> {
+                filter.setSelected(selectAllCheckBox.isSelected());
+            });
+        });
+        hBox.getChildren().add(selectAllCheckBox);
+        //Apply Button
+        Button applyFilterButton = new Button("Apply");
+        applyFilterButton.setDefaultButton(true);
+        applyFilterButton.setOnAction((ActionEvent event) -> {
+            List<RequirementFilter> selectedFilters = new ArrayList<>();
+            values.stream().filter((filter) -> (filter.isSelected())).forEach((filter) -> {
+                selectedFilters.add(filter);
+            });
+            ScreenManager.getMainScreen().setFilter(selectedFilters);
+            primaryStage.close();
+        });
+        hBox.getChildren().add(applyFilterButton);
+        vBox.getChildren().add(hBox);
+        root.getChildren().add(vBox);
         //Scene en Stage Setup
-        Scene scene = new Scene(root, 400, 200);
+        Scene scene = new Scene(root, 500, 200);
         primaryStage.setTitle("Symbiosis");
         primaryStage.setScene(scene);
         primaryStage.show();

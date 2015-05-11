@@ -31,7 +31,7 @@ import symbiosis.project.StakeholderRole;
  * @author FrankP
  */
 @Entity
-public class Category implements Comparable<Category>, Serializable, RequirementFilter {
+public class Category implements Comparable<Category>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -339,10 +339,5 @@ public class Category implements Comparable<Category>, Serializable, Requirement
      */
     public void setId(long id) {
         this.id = id;
-    }
-
-    @Override
-    public boolean acccepts(Requirement requirement) {
-        return requirement.getCategory().equals(this);
     }
 }
