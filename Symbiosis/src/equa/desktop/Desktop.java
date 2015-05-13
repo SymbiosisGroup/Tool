@@ -1473,7 +1473,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 //            dockingRoot.createTab(requirementViewer, requirementsBreakdownPanel, 1, true);
             dockingRoot.close(factBreakdown);
             dockingRoot.createTab(requirementConfigurator, factBreakdown, 1, true);
-          //  init = true;
+            //  init = true;
             initFactBreakdown(factReqs.get(0));
         } else {
             JOptionPane.showMessageDialog(getFrame(), "No approved/non realized fact requirements found.");
@@ -1802,7 +1802,9 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         objects[0] = "Light";
         objects[1] = "Verbose";
         int result = JOptionPane.showOptionDialog(getFrame(), "Kind of Behavior", "Light version of behavior ?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, objects, objects[0]);
-
+        if (result == -1) {
+            return;
+        }
         List<Message> messages = om.generateClasses(false, result == 0);
         typeConfigurator.setReliable(messages);
         typeConfigurator.refresh();
@@ -1820,6 +1822,9 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         objects[0] = "Light";
         objects[1] = "Verbose";
         int result = JOptionPane.showOptionDialog(getFrame(), "Kind of Behavior", "Light version of behavior ?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, objects, objects[0]);
+        if (result == -1) {
+            return;
+        }
         List<Message> messages = om.generateClasses(true, result == 0);
         typeConfigurator.setReliable(messages);
         typeConfigurator.refresh();
