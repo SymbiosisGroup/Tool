@@ -866,7 +866,7 @@ public class ObjectRole extends Role {
 
     @Override
     public boolean isResponsible() {
-        if (!getParent().isValueType() && (isAddable() || isRemovable() || isSettable() || isInsertable() || isAdjustable() || isComposition()
+        if (/*!getParent().isValueType() &&*/ (isAddable() || isRemovable() || isSettable() || isInsertable() || isAdjustable() || isComposition()
             || isBoolean())) {
             return true;
         }
@@ -984,6 +984,11 @@ public class ObjectRole extends Role {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean isCandidateDefaultValue() {
+       return false;
     }
 
 }

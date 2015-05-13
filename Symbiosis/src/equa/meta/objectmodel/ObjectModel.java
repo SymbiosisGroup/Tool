@@ -660,17 +660,16 @@ public class ObjectModel extends Model implements
                             + "consider to deobjectify " + ot.getName(), false));
                     }
 
-                } else {
-//                    if (facttype.isMissingResponsibleRole()) {
-//                        messages.add(new Message("error: " + facttype.getName()
-//                            + " misses perhaps a responsible role which offers the opportunity to add, insert or remove a fact.\n"
-//                            + "\tor perhaps you have to change one of the roles into a composition role\n"
-//                            + "\tor perhaps one of the roles doesn't need to be navigable", true));
-//                        error = true;
-//                    }
+                } else {if (facttype.isMissingResponsibleRole()) {
+                        messages.add(new Message("error: " + facttype.getName()
+                            + " misses perhaps a responsible role which offers the opportunity to add, insert or remove a fact.\n"
+                            + "\tor perhaps you have to change one of the roles into a composition role\n"
+                            + "\tor perhaps one of the roles is influenced by system event", true));
+                        error = true;
+                   }
                     if (!facttype.hasNavigableRoles() && facttype.size() > 0) {
                         messages.add(new Message("error: " + facttype.getName()
-                            + " does not have exactly one navigable role.", true));
+                            + " does not have any navigable role.", true));
                         error = true;
                     }
                     if (facttype.isSuspiciousCandidateClass()) {

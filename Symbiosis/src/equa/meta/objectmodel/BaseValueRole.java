@@ -112,7 +112,10 @@ public class BaseValueRole extends Role {
             return;
         }
         Role cp = getParent().counterpart(this);
-        if (cp != null && !cp.isMandatory()) {
+        if (cp==null){
+            throw new ChangeNotAllowedException("Default value makes only sense with respect to binary fact types.");
+        }
+        if (!cp.isMandatory()) {
             throw new ChangeNotAllowedException("Default value makes no sense if counterpart role is not mandatory.");
         }
         if (isAutoIncr()) {
@@ -292,7 +295,7 @@ public class BaseValueRole extends Role {
 
     @Override
     public boolean isCandidateAutoIncr() {
-        return bt.equals(BaseType.NATURAL);
+        return bt.equals(BaseType.NATURAL) && getDefaultValue()!=null;
     }
 
     @Override
@@ -323,6 +326,12 @@ public class BaseValueRole extends Role {
     @Override
     public boolean isCandidateComposition() {
         return false;
+    }
+    
+    @Override
+    public boolean isCandidateDefaultValue() {
+        if (isAutoIncr()) return false;
+        return getParent().counterpart(this)!=null;
     }
 
     @Override

@@ -1447,7 +1447,6 @@ public class Java implements Language {
             endOfLine = text.substring(start).indexOf(System.getProperty("line.separator"));
         }
 
-
         return text.substring(start).replace("@Override", "");
     }
 
@@ -1627,7 +1626,11 @@ public class Java implements Language {
     @Override
     public String propertyName(String name, STorCT returnType) {
         if (returnType.equals(BaseType.BOOLEAN)) {
-            return "is" + Naming.withCapital(name);
+            if (name.toLowerCase().startsWith("is")) {
+                return Naming.withoutCapital(name);
+            } else {
+                return "is" + Naming.withCapital(name);
+            }
         } else {
             return "get" + Naming.withCapital(name);
         }
@@ -1759,7 +1762,7 @@ public class Java implements Language {
         boolean endOfFieldsSection = fieldIndex == -1 || remainingText.substring(0, fieldIndex).contains("(");
         while (!endOfFieldsSection) {
             if (isField(remainingText.substring(0, fieldIndex), false)) {
-                fields.add(remainingText.substring(0, fieldIndex+1).trim());
+                fields.add(remainingText.substring(0, fieldIndex + 1).trim());
             }
             remainingText = skipComment(remainingText.substring(fieldIndex + 1));
             fieldIndex = remainingText.indexOf(";");

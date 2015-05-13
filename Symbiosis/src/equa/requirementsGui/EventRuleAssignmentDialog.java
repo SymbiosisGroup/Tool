@@ -214,7 +214,7 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
         btRemove = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(500, 350));
+        setPreferredSize(new java.awt.Dimension(500, 370));
 
         pnEventHandler.setName("pnEventHandler"); // NOI18N
         pnEventHandler.setPreferredSize(new java.awt.Dimension(220, 50));

@@ -2092,15 +2092,17 @@ public class FactType extends ParentElement implements Type, ITerm,
 //            }
 //        }
         for (Role role : roles) {
+            // qualifier implies responsible qualified role
             if (role.isResponsible() || role.isQualifier()) {
                 return false;
             }
-            if (role.isNavigable() && role.isMandatory()) {
-                Role cp = counterpart(role);
-                if (cp == null || !cp.isNavigable() || !cp.isMandatory()) {
-                    return false;
-                }
-            }
+            // binary fact type with one mandatory navigable role is a considered responsible 
+//            if (role.isNavigable() && role.isMandatory()) {
+//                Role cp = counterpart(role);
+//                if (cp == null || !cp.isNavigable() || !cp.isMandatory()) {
+//                    return false;
+//                }
+//            }
         }
         return true;
     }

@@ -126,5 +126,10 @@ public class CBTRole extends ObjectRole {
     public boolean isSeqNr() {
         return false; //isQualifier() && (((ConstrainedBaseType) getSubstitutionType()).isSuitableAsIndex());
     }
+    
+     @Override
+    public boolean isCandidateDefaultValue() {
+       return !isAutoIncr() && getParent().counterpart(this)!=null;
+    }
 
 }

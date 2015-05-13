@@ -1905,10 +1905,9 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                 miHidden.setEnabled(!ft.isConstrainedBaseType());
                 miAuto_Incr.setEnabled(firstSelectedRole.isCandidateAutoIncr());
                 if (firstSelectedRole instanceof BaseValueRole) {
-                    miDefault_Value.setEnabled(true);
+                    miDefault_Value.setEnabled(firstSelectedRole.isCandidateDefaultValue());
                     miConstrainedBaseType.setEnabled(!ft.isConstrainedBaseType());
-                    miReplaceBTPlus.setEnabled(true);
-                    
+                    miReplaceBTPlus.setEnabled(true);    
                 } else { // ObjectRole
                     ObjectRole objectRole = (ObjectRole) firstSelectedRole;
                     if (firstSelectedRole.getSubstitutionType().isValueType()) {

@@ -708,9 +708,9 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
         list.addLineAtCurrentIndentation(l.docLine("of included operations or add/remove (non final) operations of the"));
         list.addLineAtCurrentIndentation(l.docLine(getParent().getName() + "-class."));
 
-        list.addLineAtCurrentIndentation(l.docLine("Please do not add constructors or non-anonymous classes."));
-        list.addLineAtCurrentIndentation(l.docLine("Use the indenting and new line rules for your language."));
-        list.addLineAtCurrentIndentation(l.docLine("Do not put line breaks where the line is not finished."));
+        list.addLineAtCurrentIndentation(l.docLine("Please do not add constructors or non-anonymous classes,"));
+        list.addLineAtCurrentIndentation(l.docLine("and do not refer explicitly to this temporary " + getParent().getName() + "-class."));
+      //  list.addLineAtCurrentIndentation(l.docLine("Do not put line breaks where the line is not finished."));
         list.addLineAtCurrentIndentation(l.docEnd());
 
         list.addLinesAtCurrentIndentation(l.nameSpaceStart(nameSpace));

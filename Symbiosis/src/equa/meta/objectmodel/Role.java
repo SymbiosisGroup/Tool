@@ -514,6 +514,7 @@ public abstract class Role extends ParentElement implements Serializable, Publis
 
             mc.remove();
             mc = null;
+            
             publisher.inform(this, "mandatory", null, false);
 
         }
@@ -922,7 +923,9 @@ public abstract class Role extends ParentElement implements Serializable, Publis
     public abstract boolean isCandidateRemovable();
 
     public abstract boolean isCandidateComposition();
-
+    
+    public abstract boolean isCandidateDefaultValue();
+    
     @Override
     public void remove() {
         qualified = null;
