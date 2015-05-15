@@ -69,9 +69,9 @@ public class ObjectTypeRelation extends Relation {
             return false;
         }
         if (isMandatory()) {
-            return true;
+            return !targetType().isRemovable();
         }
-        return !targetType().isRemovable();
+        return false;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class ObjectTypeRelation extends Relation {
     }
 
     @Override
-    public String getDefaultValue() {
+    public String getDefaultValueString() {
         return null;
     }
 

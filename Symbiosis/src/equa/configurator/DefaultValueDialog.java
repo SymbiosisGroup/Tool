@@ -134,12 +134,12 @@ public class DefaultValueDialog extends javax.swing.JDialog {
     private void btOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btOKActionPerformed
 
         defined = true;
-        for (int i=0;i<vt.getFactType().getSize();i++){
-                if((((JTextField)panelTE.getComponent(2*i+1)).getText()).trim().isEmpty()){
-                    JOptionPane.showMessageDialog(this, "empty substitution is not allowed");
-                    defined=false;
-                }
+        for (int i = 0; i < vt.getFactType().getSize(); i++) {
+            if ((((JTextField) panelTE.getComponent(2 * i + 1)).getText()).trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "empty substitution is not allowed");
+                defined = false;
             }
+        }
         setVisible(false);// TODO add your handling code here:
     }//GEN-LAST:event_btOKActionPerformed
 
@@ -151,9 +151,13 @@ public class DefaultValueDialog extends javax.swing.JDialog {
     List<String> getValues() {
         if (defined) {
             List<String> values = new ArrayList<String>();
-            for (int i=0;i<vt.getFactType().getSize();i++){
-                values.add(((JTextField)panelTE.getComponent(2*i+1)).getText());
-               
+            for (int i = 0; i < panelTE.getComponents().length; i++) {
+                JComponent comp = (JComponent) panelTE.getComponent(i);
+                if (comp instanceof JLabel) {
+                    values.add(((JLabel) comp).getText());
+                } else if (comp instanceof JTextField) {
+                    values.add(((JTextField) comp).getText());
+                }
             }
             return values;
         } else {

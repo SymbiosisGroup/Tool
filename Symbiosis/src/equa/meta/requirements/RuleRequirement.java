@@ -75,15 +75,15 @@ public class RuleRequirement extends Requirement {
 
     @Override
     public String getText() {
-        for (ModelElement modelElement : dependents()) {
-            if (modelElement instanceof ObjectModelRealization) {
-                if (modelElement instanceof DerivableConstraint ||
-                        modelElement instanceof RoleEvent){
-                    return text;
-                }
-                return ((ObjectModelRealization) modelElement).getRequirementText();
-            }
-        }
+//        for (ModelElement modelElement : dependents()) {
+//            if (modelElement instanceof ObjectModelRealization) {
+//                if (modelElement instanceof DerivableConstraint ||
+//                        modelElement instanceof RoleEvent){
+//                    return text;
+//                }
+//                return ((ObjectModelRealization) modelElement).getRequirementText();
+//            }
+//        }
         return text;
     }
 
@@ -106,7 +106,7 @@ public class RuleRequirement extends Requirement {
         }
 
         if (!trimmedText.equals(this.text)) {
-            getReviewState().change(source, getText());
+            getReviewState().change(source, this.text);
             this.text = trimmedText;
         }
     }

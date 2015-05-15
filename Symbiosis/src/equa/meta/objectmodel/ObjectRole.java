@@ -113,8 +113,16 @@ public class ObjectRole extends Role {
     }
 
     @Override
-    public String getDefaultValue() {
+    public String getDefaultValueString() {
         if (defaultValue == null || !ot.isValueType()) {
+            return null;
+        } else {
+            return defaultValue.getValueString();
+        }
+    }
+    
+    public Value getDefaultValue() {
+         if (defaultValue == null || !ot.isValueType()) {
             return null;
         } else {
             return defaultValue.getValue();
@@ -122,7 +130,7 @@ public class ObjectRole extends Role {
     }
 
     public void setDefaultValue(Value value) throws MismatchException, ChangeNotAllowedException {
-        if (this.defaultValue != null && this.defaultValue.getValue().equalsIgnoreCase(value.toString())) {
+        if (this.defaultValue != null && this.defaultValue.getValueString().equalsIgnoreCase(value.toString())) {
             return;
         }
 
@@ -750,7 +758,7 @@ public class ObjectRole extends Role {
         if (!isNavigable()) {
             sb.append("!nav ");
             if (hasDefaultValue()) {
-                sb.append(" " + defaultValue.getValue());
+                sb.append(" " + defaultValue.getValueString());
 
             }
         } else {
@@ -988,7 +996,7 @@ public class ObjectRole extends Role {
 
     @Override
     public boolean isCandidateDefaultValue() {
-       return false;
+       return ot.isValueType();
     }
 
 }

@@ -485,6 +485,7 @@ public class ObjectModel extends Model implements
      * @return a list with all errors and warnings
      */
     public List<Message> generateClasses(boolean withRegistries, boolean light) {
+        removeArtificialFactTypes();
         addSystemMethods();
 
         for (FactType ft : typeRepository.getFactTypeCollection()) {
@@ -639,7 +640,7 @@ public class ObjectModel extends Model implements
 
     public ArrayList<Message> scanModel() {
         ArrayList<Message> messages = new ArrayList<>();
-        removeArtificialFactTypes();
+
         boolean error = false;
 
         for (FactType facttype : typeRepository.getFactTypeCollection()) {
@@ -653,6 +654,10 @@ public class ObjectModel extends Model implements
                     messages.add(new Message("error: " + facttype.getName()
                         + " has more than one responsible role.", true));
                     error = true;
+                }
+                if (facttype.hasOptionalImmutableRoles()) {
+                    messages.add(new Message("warning: " + facttype.getName() + " possesses an optional role whose"
+                        + " value cannot be changed later on", false));
                 }
 
                 if (facttype.isObjectType()) {
@@ -680,13 +685,15 @@ public class ObjectModel extends Model implements
                             + "consider to deobjectify " + ot.getName(), false));
                     }
 
-                } else {if (facttype.isMissingResponsibleRole()) {
+                } else {
+                    if (facttype.isMissingResponsibleRole()) {
                         messages.add(new Message("error: " + facttype.getName()
                             + " misses perhaps a responsible role which offers the opportunity to add, insert or remove a fact.\n"
                             + "\tor perhaps you have to change one of the roles into a composition role\n"
                             + "\tor perhaps one of the roles is influenced by system event", true));
                         error = true;
-                   }
+                    }
+
                     if (!facttype.hasNavigableRoles() && facttype.size() > 0) {
                         messages.add(new Message("error: " + facttype.getName()
                             + " does not have any navigable role.", true));
@@ -698,10 +705,6 @@ public class ObjectModel extends Model implements
                             + "\tconsider to objectify the roles with a common uniqueness.\n"
                             + "\tor perhaps one of the roles should be a qualifier role", true));
                         error = true;
-                    }
-                    if (facttype.hasOptionalImmutableRoles()) {
-                        messages.add(new Message("warning: " + facttype.getName() + " possesses an optional role whose"
-                            + " value cannot be changed later on", false));
                     }
 
                     Role navigableRole = facttype.getNavigableRole();

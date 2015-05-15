@@ -91,7 +91,7 @@ public class BooleanRelation extends Relation {
     }
 
     @Override
-    public String getDefaultValue() {
+    public String getDefaultValueString() {
         return role.getParent().getDefaultValue().toString();
     }
 

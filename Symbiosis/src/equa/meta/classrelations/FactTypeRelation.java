@@ -14,6 +14,7 @@ import equa.meta.objectmodel.ObjectRole;
 import equa.meta.objectmodel.ObjectType;
 import equa.meta.objectmodel.Role;
 import equa.meta.objectmodel.SubstitutionType;
+import equa.meta.objectmodel.Value;
 import equa.util.Naming;
 import java.util.Iterator;
 import java.util.List;
@@ -142,17 +143,26 @@ public class FactTypeRelation extends Relation {
         return (role.getParent() instanceof ElementsFactType)
             && (role.getSubstitutionType() instanceof CollectionType);
     }
-    
-    public boolean isEventSource(){
+
+    public boolean isEventSource() {
         return role.isEventSource();
     }
 
     @Override
-    public String getDefaultValue() {
+    public String getDefaultValueString() {
         if (hasNoDefaultValue()) {
             return null;
         } else {
-            return relatedRole.getDefaultValue();
+            return relatedRole.getDefaultValueString();
+        }
+    }
+
+    @Override
+    public Value getDefaultValue() {
+        if (relatedRole instanceof ObjectRole) {
+            return ((ObjectRole) relatedRole).getDefaultValue();
+        } else {
+            return null;
         }
     }
 

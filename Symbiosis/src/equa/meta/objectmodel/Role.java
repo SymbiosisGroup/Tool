@@ -962,7 +962,7 @@ public abstract class Role extends ParentElement implements Serializable, Publis
 
     public abstract boolean hasDefaultValue();
 
-    public abstract String getDefaultValue();
+    public abstract String getDefaultValueString();
 
     public MandatoryConstraint getMandatoryConstraint() {
         return this.mc;

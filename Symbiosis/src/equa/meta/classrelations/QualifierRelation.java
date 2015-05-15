@@ -76,11 +76,11 @@ public class QualifierRelation extends Relation {
     }
 
     @Override
-    public String getDefaultValue() {
+    public String getDefaultValueString() {
         if (hasNoDefaultValue()) {
             return null;
         } else {
-            return role.getDefaultValue();
+            return role.getDefaultValueString();
         }
     }
 

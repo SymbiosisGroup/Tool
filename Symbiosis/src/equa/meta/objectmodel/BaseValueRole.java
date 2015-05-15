@@ -65,7 +65,7 @@ public class BaseValueRole extends Role {
                 throw new ChangeNotAllowedException(
                     "auto increment only allowed in case of natural number role");
             }
-            if (getDefaultValue() != null) {
+            if (getDefaultValueString() != null) {
                 defaultValue.remove();
             }
 
@@ -91,11 +91,11 @@ public class BaseValueRole extends Role {
     }
 
     @Override
-    public String getDefaultValue() {
+    public String getDefaultValueString() {
         if (defaultValue == null) {
             return null;
         } else {
-            return defaultValue.getValue();
+            return defaultValue.getValueString();
         }
     }
 
@@ -108,7 +108,7 @@ public class BaseValueRole extends Role {
     }
 
     public void setDefaultValue(String value) throws MismatchException, ChangeNotAllowedException {
-        if (defaultValue != null && defaultValue.getValue().equalsIgnoreCase(value)) {
+        if (defaultValue != null && defaultValue.getValueString().equalsIgnoreCase(value)) {
             return;
         }
         Role cp = getParent().counterpart(this);
@@ -211,7 +211,7 @@ public class BaseValueRole extends Role {
             sb.append("hid ");
         }
         if (hasDefaultValue()) {
-            sb.append(defaultValue.getValue());
+            sb.append(defaultValue.getValueString());
         }
         if (isAutoIncr()) {
             sb.append("incr");
@@ -295,7 +295,7 @@ public class BaseValueRole extends Role {
 
     @Override
     public boolean isCandidateAutoIncr() {
-        return bt.equals(BaseType.NATURAL) && getDefaultValue()!=null;
+        return bt.equals(BaseType.NATURAL) && getDefaultValueString()!=null;
     }
 
     @Override

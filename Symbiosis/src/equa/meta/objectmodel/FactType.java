@@ -387,7 +387,7 @@ public class FactType extends ParentElement implements Type, ITerm,
         if (defaultBooleanValue == null) {
             return null;
         } else {
-            return defaultBooleanValue.getValue();
+            return defaultBooleanValue.getValueString();
         }
     }
 
@@ -540,9 +540,9 @@ public class FactType extends ParentElement implements Type, ITerm,
                 }
                 or.qualified = bvr.qualified;
                 roles.set(i, or);
-                if (bvr.getDefaultValue() != null) {
+                if (bvr.getDefaultValueString() != null) {
                     try {
-                        or.setDefaultValue(bvr.getDefaultValue());
+                        or.setDefaultValue(bvr.getDefaultValueString());
                         bvr.removeDefaultValue();
                     } catch (MismatchException ex) {
                         Logger.getLogger(FactType.class.getName()).log(Level.SEVERE, null, ex);
@@ -623,12 +623,12 @@ public class FactType extends ParentElement implements Type, ITerm,
         return name;
     }
 
-    public void addDerivableConstraint(RuleRequirement rule, String text) {
+    public void addDerivableConstraint(RuleRequirement rule, String text) throws ChangeNotAllowedException {
         if (derivableConstraint != null) {
             throw new RuntimeException("derivable constraint already exists");
         }
         if (!isElementary()) {
-            throw new RuntimeException("fact type isn't elementary");
+            throw new ChangeNotAllowedException("fact type isn't elementary");
         }
 
         derivableConstraint = new DerivableConstraint(this, rule, text);
@@ -1383,7 +1383,7 @@ public class FactType extends ParentElement implements Type, ITerm,
         }
 
         if (defaultBooleanValue != null) {
-            text.append(defaultBooleanValue.getValue());
+            text.append(defaultBooleanValue.getValueString());
         }
 
         if (ot != null) {
@@ -2557,7 +2557,7 @@ public class FactType extends ParentElement implements Type, ITerm,
     }
 
     boolean hasOptionalImmutableRoles() {
-        if (isDerivable() || isValueType() || getMutablePermission() != null) {
+        if (isDerivable() || isValueType() || roles.size() == 0 || getMutablePermission() != null) {
             return false;
         }
 
@@ -2574,6 +2574,8 @@ public class FactType extends ParentElement implements Type, ITerm,
                     if (responsibleRole.isSettable() || responsibleRole.isAddable()
                         || responsibleRole.isInsertable()) {
                         return false;
+                    } else {
+                        return true;
                     }
                 }
             }

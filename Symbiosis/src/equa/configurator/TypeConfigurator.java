@@ -920,45 +920,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         reliableClasses = false;
         refresh();
 
-//        if (ft.isDerivable()) {
-//            DerivableConstraint dc = ft.getDerivableConstraint();
-//            Requirement req = (Requirement) dc.creationSource();
-//            String text = JOptionPane.showInputDialog(this,
-//                "edit the derivation rule", req.getText());
-//            if (text != null && text.isEmpty()) {
-//                JOptionPane.showMessageDialog(this, "description of "
-//                    + "derivation rule cannot be empty");
-//            } else {
-//                ProjectRole currentUser = om.getProject().getCurrentUser();
-//
-//                try {
-//                    req.setText(new ExternalInput("", currentUser), text);
-//                } catch (ChangeNotAllowedException ex) {
-//                    JOptionPane.showMessageDialog(parent, ex.getMessage());
-//                }
-//            }
-//
-//        } else {
-//            if (!ft.isElementary()) {
-//                JOptionPane.showMessageDialog(this, ft.getName() + " is not elementary");
-//                return;
-//            }
-//            if (ft.getNavigableRole() == null) {
-//                JOptionPane.showMessageDialog(this, ft.getName() + " doesn't possess a single navigable role");
-//                return;
-//            }
-//            String text = JOptionPane.showInputDialog(this,
-//                "please enter the derivation rule");
-//            if (text == null || text.isEmpty()) {
-//                JOptionPane.showMessageDialog(this, "description of "
-//                    + "derivation rule cannot be empty");
-//            } else {
-//                RuleRequirement rule = createRuleRequirement(text, ft.getCategory());
-//                ft.addDerivableConstraint(rule, text);
-//                reliableClasses = false;
-//                refresh();
-//            }
-//        }
     }//GEN-LAST:event_miDerivableActionPerformed
 
     private void miUniquenessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miUniquenessActionPerformed
@@ -1324,14 +1285,14 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                         ProjectRole projectRole = om.getProject().getCurrentUser();
                         Category cat = role.getParent().getCategory();
                         ExternalInput input = new ExternalInput("", projectRole);
-                        RuleRequirement rule = rm.addRuleRequirement(cat, "", input);
+                        RuleRequirement rule = rm.addRuleRequirement(cat, "dummy", input);
                         value = role.getSubstitutionType().parse(values, rule);
                         role.setDefaultValue(value);
                         rule.setText(input, value.toString() + " is the default value of <" + role.detectRoleName()
                             + "> in " + role.getParent().getFactTypeString());
                     } catch (MismatchException ex) {
                         JOptionPane.showMessageDialog(this, "default value "
-                            + value.toString() + " is not a correct "
+                            + " is not a correct "
                             + role.getSubstitutionType().getName() + " value("
                             + ex.getMessage() + ")");
                         return;

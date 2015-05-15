@@ -1238,7 +1238,6 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                         return;
 
                     }
-
                     ObjectModel om = projectController.getProject().getObjectModel();
                     List<Message> messages = om.scanModel();
                     typeConfigurator.setReliable(messages);

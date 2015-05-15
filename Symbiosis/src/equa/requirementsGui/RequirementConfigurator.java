@@ -236,8 +236,8 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         tcm.getColumn(1).setMinWidth(70); // name
         tcm.getColumn(2).setMinWidth(70); // kind
         tcm.getColumn(3).setMinWidth(50); // revstate
-        tcm.getColumn(4).setMinWidth(70); // review
-        tcm.getColumn(5).setMinWidth(600); // text
+//        tcm.getColumn(4).setMinWidth(70); // review
+        tcm.getColumn(4).setMinWidth(670); // text
         tblRequirements.setPreferredScrollableViewportSize(null);
         tblRequirements.setAutoResizeMode(AUTO_RESIZE_OFF);
         tblRequirements.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);

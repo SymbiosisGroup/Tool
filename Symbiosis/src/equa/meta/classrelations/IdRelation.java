@@ -135,7 +135,7 @@ public class IdRelation extends Relation {
     }
 
     @Override
-    public String getDefaultValue() {
+    public String getDefaultValueString() {
         return null;
     }
 

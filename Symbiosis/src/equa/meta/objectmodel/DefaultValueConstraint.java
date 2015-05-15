@@ -37,12 +37,17 @@ public class DefaultValueConstraint extends StaticConstraint implements Serializ
         return "def";
     }
 
-    public String getValue() {
-        if (stringvalue == null) {
-            return value.toString();
+    public String getValueString() {
+        if (value != null) {
+            ObjectRole role = (ObjectRole) getParent(); 
+            return role.getSubstitutionType().makeExpression(value);
         } else {
             return stringvalue;
         }
+    }
+    
+    public Value getValue(){
+        return value;
     }
 
     @Override
@@ -63,10 +68,10 @@ public class DefaultValueConstraint extends StaticConstraint implements Serializ
     public String getRequirementText() {
         if (getParent() instanceof Role) {
             return "The default value on <" + ((Role) getParent()).detectRoleName() + "> within " + getFactType().getFactTypeString()
-                + " is " + getValue() + ".";
+                + " is " + getValueString() + ".";
         } else {
             return "The default value on <" + getFactType().getName()
-                + "> is " + getValue() + ".";
+                + "> is " + getValueString() + ".";
         }
     }
 

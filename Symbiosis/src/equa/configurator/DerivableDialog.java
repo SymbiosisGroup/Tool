@@ -143,15 +143,21 @@ public class DerivableDialog extends javax.swing.JDialog {
                     ft.getDerivableConstraint().setText(new ExternalInput("", role), taText.getText());
                 } else {
                     RequirementModel rm = project.getRequirementModel();
+                    if (ft.isElementary()){
                     RuleRequirement rule = rm.addRuleRequirement(ft.getCategory(), taText.getText(),
                         new ExternalInput("", role));
-                    ft.addDerivableConstraint(rule, taText.getText());
+                    ft.addDerivableConstraint(rule, taText.getText());}
+                    else {
+                        JOptionPane.showMessageDialog(this,"fact type isn't elementary");
+                    }
                 }
-                setVisible(false);
+                
             } catch (ChangeNotAllowedException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage());
             }
+             setVisible(false);
         }
+       
     }//GEN-LAST:event_btOkActionPerformed
 
     private void btDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDeleteActionPerformed

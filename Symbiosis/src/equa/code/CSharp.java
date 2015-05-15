@@ -886,11 +886,11 @@ public class CSharp implements Language {
     @Override
     public String defaultValue(Relation r) {
         if (r.targetType().equals(BaseType.STRING)) {
-            return stringSymbol() + r.getDefaultValue() + stringSymbol();
+            return stringSymbol() + r.getDefaultValueString() + stringSymbol();
         } else if (r.targetType() instanceof ConstrainedBaseType) {
-            return newInstance(r.targetType(), r.getDefaultValue() + "");
+            return newInstance(r.targetType(), r.getDefaultValueString() + "");
         } else {
-            return r.getDefaultValue();
+            return r.getDefaultValueString();
         }
     }
 

@@ -92,7 +92,7 @@ public class CBTRole extends ObjectRole {
    
 
     public void setDefaultValue(String value) throws MismatchException, ChangeNotAllowedException {
-        if (this.defaultValue != null && this.defaultValue.getValue().equalsIgnoreCase(value)) {
+        if (this.defaultValue != null && this.defaultValue.getValueString().equalsIgnoreCase(value)) {
             return;
         }
 

@@ -133,15 +133,16 @@ public class Population extends ParentElement implements Serializable {
         Tuple tuple;
         int index = searchTuple(values, types);
         if (index == -1) {
-            FactType ft = (FactType) getParent();
-            if (ft.isObjectType()) {
-                source = null;
-            }
+//            FactType ft = (FactType) getParent();
+//            if (ft.isObjectType()) {
+//                source = null;
+//            }
             tuple = new Tuple(values, roles, this, source);
             tuples.add(tuple);
         } else {
             tuple = tuples.get(index);
-            if (tuple.getFactType().isPureFactType()) {
+//            if (tuple.getFactType().isPureFactType()) 
+            {
                 tuple.addSource(source);
             }
         }

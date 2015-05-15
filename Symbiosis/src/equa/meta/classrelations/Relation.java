@@ -21,6 +21,7 @@ import equa.meta.objectmodel.ObjectType;
 import equa.meta.objectmodel.Role;
 import equa.meta.objectmodel.SubstitutionType;
 import equa.meta.objectmodel.UniquenessConstraint;
+import equa.meta.objectmodel.Value;
 import java.io.Serializable;
 import java.util.List;
 
@@ -460,7 +461,11 @@ public abstract class Relation implements Comparable<Relation>, Serializable {
      */
     public abstract boolean hasNoDefaultValue();
 
-    public abstract String getDefaultValue();
+    public abstract String getDefaultValueString();
+    
+    public Value getDefaultValue(){
+        return null;
+    }
 
     public boolean isAutoIncr() {
         return role.isAutoIncr();

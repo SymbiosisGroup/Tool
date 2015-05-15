@@ -73,6 +73,9 @@ import equa.meta.objectmodel.RoleEvent;
 import equa.meta.objectmodel.FactType;
 import equa.meta.objectmodel.ObjectModel;
 import equa.meta.objectmodel.ObjectType;
+import equa.meta.objectmodel.Tuple;
+import equa.meta.objectmodel.TupleItem;
+import equa.meta.objectmodel.Value;
 import equa.util.Naming;
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -705,6 +708,23 @@ public class Java implements Language {
             if (i + 1 < params.length) {
                 sb.append(", ");
             }
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+
+    public String newInstance(STorCT type, Tuple value) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("new ");
+        sb.append(type(type));
+        sb.append("(");
+        String sep = "";
+        Iterator<TupleItem> it = value.items();
+        while (it.hasNext()) {
+            sb.append(sep);
+            // werkt niet goed als tuple item wederom andere tuples bevat
+            sb.append((it.next().getValue().toString()));
+            sep = ", ";
         }
         sb.append(")");
         return sb.toString();
@@ -1904,11 +1924,11 @@ public class Java implements Language {
     @Override
     public String defaultValue(Relation r) {
         if (r.targetType().equals(BaseType.STRING)) {
-            return stringSymbol() + r.getDefaultValue() + stringSymbol();
+            return stringSymbol() + r.getDefaultValueString() + stringSymbol();
         } else if (r.targetType() instanceof ConstrainedBaseType) {
-            return newInstance(r.targetType(), r.getDefaultValue() + "");
+            return newInstance(r.targetType(), r.getDefaultValueString() + "");
         } else {
-            return r.getDefaultValue();
+            return newInstance(r.targetType(), (Tuple)r.getDefaultValue());
         }
     }
 
