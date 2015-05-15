@@ -93,6 +93,13 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
     private JMenuItem mntmInitializeAssignment;
     private JScrollPane spRequirements;
 
+    private JPanel panelCategories;
+    private JPanel panelState;
+    private JPanel panelKind;
+    private JPanel panelImpact;
+    private JPanel panelOther;
+    private JPanel panelRequirements;
+
     public RequirementConfigurator(ProjectController controller) {
         dockKey = new DockKey("ReqModel Configurator");
         dockKey.setCloseEnabled(false);
@@ -178,94 +185,77 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         }
     }
 
-    private void initView() {
+    private void initFilters() {
         filterTables = new JTable[5];
 
-        setMinimumSize(new Dimension(737, 1500));
+        panelCategories = new JPanel();
+        //  panelCategories.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+        //      " ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        panelKind = new JPanel();
+        //   panelKind.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+        //       " ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        panelState = new JPanel();
+        //   panelState.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+        //       " ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        panelImpact = new JPanel();
+        //  panelImpact.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+        //       " ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        panelOther = new JPanel();
+        //   panelOther.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+        //       " ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
-        JPanel panelRequirements = new JPanel();
-        panelRequirements.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
-            "Requirements", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        JPanel panelCategories = new JPanel();
-        panelCategories.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
-            " ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        JPanel panelState = new JPanel();
-        panelState.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
-            " ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        JPanel panelKind = new JPanel();
-        panelKind.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
-            " ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        /**
+         * **** Categories
+         * ***************************************************************
+         */
+        JScrollPane spCat = new JScrollPane();
+        spCat.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        GroupLayout gl_panelCategories = new GroupLayout(panelCategories);
+        gl_panelCategories.setHorizontalGroup(
+            gl_panelCategories.createParallelGroup(Alignment.LEADING)
+            .addComponent(spCat, GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE));
+        gl_panelCategories.setVerticalGroup(
+            gl_panelCategories.createParallelGroup(Alignment.LEADING)
+            .addComponent(spCat, GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE));
+        panelCategories.setLayout(gl_panelCategories);
+        initCategories();
+        spCat.setViewportView(filterTables[CATEGORY]);
 
-        JScrollPane scrollPane_1 = new JScrollPane();
-        GroupLayout gl_panelState = new GroupLayout(panelState);
-        gl_panelState.setHorizontalGroup(
-            gl_panelState.createParallelGroup(Alignment.LEADING)
-            .addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE));
-        gl_panelState.setVerticalGroup(
-            gl_panelState.createParallelGroup(Alignment.LEADING)
-            .addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE));
-
-        JScrollPane scrollPane_2 = new JScrollPane();
+        /**
+         * **** Requirement Kind
+         * ***************************************************************
+         */
+        JScrollPane spKind = new JScrollPane();
         GroupLayout gl_panelKind = new GroupLayout(panelKind);
         gl_panelKind.setHorizontalGroup(
             gl_panelKind.createParallelGroup(Alignment.LEADING)
-            .addGroup(gl_panelKind.createSequentialGroup()
-                .addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(116, Short.MAX_VALUE)));
+            .addComponent(spKind, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE));
+        /*.addContainerGap(116, Short.MAX_VALUE))*/
         gl_panelKind.setVerticalGroup(
             gl_panelKind.createParallelGroup(Alignment.LEADING)
-            .addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE));
+            .addComponent(spKind, GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE));
+        List<RequirementFilter> reqFilters = new ArrayList<>();
+        reqFilters.add(ActionRequirement.getRequirementFilter());
+        reqFilters.add(FactRequirement.getRequirementFilter());
+        reqFilters.add(RuleRequirement.getRequirementFilter());
+        reqFilters.add(QualityAttribute.getRequirementFilter());
+        panelKind.setLayout(gl_panelKind);
+        filterTables[KIND] = new JTable(new FilterTableModel(this, "ReqKind", reqFilters));
+        spKind.setViewportView(filterTables[KIND]);
 
-        JPanel panelImpact = new JPanel();
-        panelImpact.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), " ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        panelImpact.setLayout(null);
-
-        // tblRequirements.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        tblRequirements = new RequirementsTable(new RequirementsTableModel(filteredRequirements));
-
-        panelRequirements.setLayout(new BoxLayout(panelRequirements, BoxLayout.X_AXIS));
-        spRequirements = new JScrollPane(tblRequirements, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        spRequirements.setMinimumSize(new Dimension(1000, 1500));
-        panelRequirements.add(spRequirements);
-
-        //tblRequirements.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        //tca = new TableColumnAdjuster(tblRequirements);
-        //tca.adjustColumns();
-        TableColumnModel tcm = tblRequirements.getColumnModel();
-        tcm.getColumn(0).setMinWidth(40); // realized
-        tcm.getColumn(1).setMinWidth(70); // name
-        tcm.getColumn(2).setMinWidth(70); // kind
-        tcm.getColumn(3).setMinWidth(50); // revstate
-//        tcm.getColumn(4).setMinWidth(70); // review
-        tcm.getColumn(4).setMinWidth(670); // text
-        tblRequirements.setPreferredScrollableViewportSize(null);
-        tblRequirements.setAutoResizeMode(AUTO_RESIZE_OFF);
-        tblRequirements.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-//SViewportView(tblRequirements);
-        SpringLayout springLayout = new SpringLayout();
-        springLayout.putConstraint(SpringLayout.NORTH, panelImpact, 0, SpringLayout.NORTH, this);
-        springLayout.putConstraint(SpringLayout.WEST, panelImpact, 441, SpringLayout.WEST, this);
-        springLayout.putConstraint(SpringLayout.SOUTH, panelImpact, 120, SpringLayout.NORTH, this);
-        springLayout.putConstraint(SpringLayout.EAST, panelImpact, 584, SpringLayout.WEST, this);
-        springLayout.putConstraint(SpringLayout.NORTH, panelRequirements, 121, SpringLayout.NORTH, this);
-        springLayout.putConstraint(SpringLayout.WEST, panelRequirements, 4, SpringLayout.WEST, this);
-        springLayout.putConstraint(SpringLayout.SOUTH, panelRequirements, 0, SpringLayout.SOUTH, this);
-        springLayout.putConstraint(SpringLayout.EAST, panelRequirements, 0, SpringLayout.EAST, this);
-        springLayout.putConstraint(SpringLayout.NORTH, panelKind, 0, SpringLayout.NORTH, this);
-        springLayout.putConstraint(SpringLayout.WEST, panelKind, 294, SpringLayout.WEST, this);
-        springLayout.putConstraint(SpringLayout.SOUTH, panelKind, 120, SpringLayout.NORTH, this);
-        springLayout.putConstraint(SpringLayout.EAST, panelKind, 437, SpringLayout.WEST, this);
-        springLayout.putConstraint(SpringLayout.NORTH, panelState, 0, SpringLayout.NORTH, this);
-        springLayout.putConstraint(SpringLayout.WEST, panelState, 149, SpringLayout.WEST, this);
-        springLayout.putConstraint(SpringLayout.NORTH, panelCategories, 0, SpringLayout.NORTH, this);
-        springLayout.putConstraint(SpringLayout.WEST, panelCategories, 4, SpringLayout.WEST, this);
-        setLayout(springLayout);
-        this.add(panelCategories);
-        this.add(panelState);
-        this.add(panelKind);
-        this.add(panelRequirements);
-        this.add(panelImpact);
-
+        /**
+         * **** Review State
+         * *****************************************************************
+         */
+        JScrollPane spState = new JScrollPane();
+        GroupLayout gl_panelState = new GroupLayout(panelState);
+        gl_panelState.setHorizontalGroup(
+            gl_panelState.createParallelGroup(Alignment.LEADING)
+            .addComponent(spState, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE));
+        gl_panelState.setVerticalGroup(
+            gl_panelState.createParallelGroup(Alignment.LEADING)
+            .addComponent(spState, GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE));
+        panelState.setLayout(gl_panelState);
         List<RequirementFilter> reviewFilters = new ArrayList<>();
         reviewFilters.add(AddedState.getRequirementFilter());
         reviewFilters.add(AddRejectedState.getRequirementFilter());
@@ -275,57 +265,43 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         reviewFilters.add(RemovedState.getRequirementFilter());
         reviewFilters.add(ChangedState.getRequirementFilter());
         filterTables[REVIEW_STATE] = new JTable(new FilterTableModel(this, "ReviewState", reviewFilters));
-        scrollPane_1.setViewportView(filterTables[REVIEW_STATE]);
-        panelState.setLayout(gl_panelState);
+        spState.setViewportView(filterTables[REVIEW_STATE]);
 
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        GroupLayout gl_panelCategories = new GroupLayout(panelCategories);
-        gl_panelCategories.setHorizontalGroup(
-            gl_panelCategories.createParallelGroup(Alignment.LEADING)
-            .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE));
-        gl_panelCategories.setVerticalGroup(
-            gl_panelCategories.createParallelGroup(Alignment.LEADING)
-            .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE));
-
-        initCategories();
-        scrollPane.setViewportView(filterTables[CATEGORY]);
-        panelCategories.setLayout(gl_panelCategories);
-
-        List<RequirementFilter> reqFilters = new ArrayList<>();
-        reqFilters.add(ActionRequirement.getRequirementFilter());
-        reqFilters.add(FactRequirement.getRequirementFilter());
-        reqFilters.add(RuleRequirement.getRequirementFilter());
-        reqFilters.add(QualityAttribute.getRequirementFilter());
-
-        filterTables[KIND] = new JTable(new FilterTableModel(this, "ReqKind", reqFilters));
-        scrollPane_2.setViewportView(filterTables[KIND]);
-        panelKind.setLayout(gl_panelKind);
-
-        JScrollPane scrollPane_4 = new JScrollPane();
-        scrollPane_4.setBounds(10, 15, 123, 94);
-        panelImpact.add(scrollPane_4);
+        /**
+         * **** Review Impact
+         * ******************************************************************
+         */
+        JScrollPane spImpact = new JScrollPane();
+        GroupLayout gl_panelImpact = new GroupLayout(panelImpact);
+        gl_panelImpact.setHorizontalGroup(
+            gl_panelImpact.createParallelGroup(Alignment.LEADING)
+            .addComponent(spImpact, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE));
+        gl_panelImpact.setVerticalGroup(
+            gl_panelImpact.createParallelGroup(Alignment.LEADING)
+            .addComponent(spImpact, GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE));
+        panelImpact.setLayout(gl_panelImpact);
         ArrayList<RequirementFilter> impacts = new ArrayList<>();
         impacts.add(Impact.UNDEFINED);
         impacts.add(Impact.ZERO);
         impacts.add(Impact.LIGHT);
         impacts.add(Impact.NORMAL);
         impacts.add(Impact.SERIOUS);
-
         filterTables[REVIEW_IMPACT] = new JTable(new FilterTableModel(this, "ReviewImpact", impacts));
-        scrollPane_4.setViewportView(filterTables[REVIEW_IMPACT]);
+        spImpact.setViewportView(filterTables[REVIEW_IMPACT]);
 
-        JPanel panelOther = new JPanel();
-        springLayout.putConstraint(SpringLayout.NORTH, panelOther, 0, SpringLayout.NORTH, this);
-        springLayout.putConstraint(SpringLayout.WEST, panelOther, 585, SpringLayout.WEST, this);
-        springLayout.putConstraint(SpringLayout.SOUTH, panelOther, 120, SpringLayout.NORTH, this);
-        springLayout.putConstraint(SpringLayout.EAST, panelOther, 728, SpringLayout.WEST, this);
-        panelOther.setLayout(null);
-        panelOther.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), " ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        this.add(panelOther);
-        JScrollPane scrollPane_5 = new JScrollPane();
-        scrollPane_5.setBounds(10, 15, 123, 94);
-        panelOther.add(scrollPane_5);
+        /**
+         * **** Other Filters
+         * ******************************************************************
+         */
+        JScrollPane spOther = new JScrollPane();
+        GroupLayout gl_panelOther = new GroupLayout(panelOther);
+        gl_panelOther.setHorizontalGroup(
+            gl_panelOther.createParallelGroup(Alignment.LEADING)
+            .addComponent(spOther, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE));
+        gl_panelOther.setVerticalGroup(
+            gl_panelOther.createParallelGroup(Alignment.LEADING)
+            .addComponent(spOther, GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE));
+        panelOther.setLayout(gl_panelOther);
 
         ArrayList<RequirementFilter> others = new ArrayList<>();
         others.add(new RequirementFilter() {
@@ -381,13 +357,85 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         });
 
         filterTables[OTHER_FILTER] = new JTable(new FilterTableModel(this, "OtherFilter", others));
-        scrollPane_5.setViewportView(filterTables[4]);
-        filterTables[OTHER_FILTER].setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        spOther.setViewportView(filterTables[OTHER_FILTER]);
 
         for (int i = 0; i < filterTables.length; i++) {
             filterTables[i].setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
             filterTables[i].getColumnModel().getColumn(0).setPreferredWidth(8);
         }
+
+        this.add(panelCategories);
+        this.add(panelState);
+        this.add(panelKind);
+        this.add(panelImpact);
+        this.add(panelOther);
+
+    }
+
+    private void initView() {
+        initFilters();
+
+        setMinimumSize(new Dimension(737, 1500));
+
+        panelRequirements = new JPanel();
+        panelRequirements.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+            "Requirements", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+
+        // tblRequirements.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        tblRequirements = new RequirementsTable(new RequirementsTableModel(filteredRequirements));
+
+        panelRequirements.setLayout(new BoxLayout(panelRequirements, BoxLayout.X_AXIS));
+        spRequirements = new JScrollPane(tblRequirements, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        spRequirements.setMinimumSize(new Dimension(1000, 1500));
+        panelRequirements.add(spRequirements);
+
+        tblRequirements.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        //tca = new TableColumnAdjuster(tblRequirements);
+        //tca.adjustColumns();
+        TableColumnModel tcm = tblRequirements.getColumnModel();
+        tcm.getColumn(0).setMinWidth(40); // realized
+        tcm.getColumn(1).setMinWidth(70); // name
+        tcm.getColumn(2).setMinWidth(70); // kind
+        tcm.getColumn(3).setMinWidth(50); // revstate
+//        tcm.getColumn(4).setMinWidth(70); // review
+        tcm.getColumn(4).setMinWidth(670); // text
+        tblRequirements.setPreferredScrollableViewportSize(null);
+        tblRequirements.setAutoResizeMode(AUTO_RESIZE_OFF);
+        tblRequirements.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        this.add(panelRequirements);
+
+        SpringLayout springLayout = new SpringLayout();
+        springLayout.putConstraint(SpringLayout.NORTH, panelRequirements, 125, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.WEST, panelRequirements, 0, SpringLayout.WEST, this);
+        springLayout.putConstraint(SpringLayout.SOUTH, panelRequirements, 0, SpringLayout.SOUTH, this);
+        springLayout.putConstraint(SpringLayout.EAST, panelRequirements, 0, SpringLayout.EAST, this);
+
+        springLayout.putConstraint(SpringLayout.NORTH, panelCategories, 0, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.WEST, panelCategories, 0, SpringLayout.WEST, this);
+        springLayout.putConstraint(SpringLayout.SOUTH, panelCategories, 120, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.EAST, panelCategories, 130, SpringLayout.WEST, this);
+
+        springLayout.putConstraint(SpringLayout.NORTH, panelState, 0, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.WEST, panelState, 135, SpringLayout.WEST, this);
+        springLayout.putConstraint(SpringLayout.SOUTH, panelState, 120, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.EAST, panelState, 265, SpringLayout.WEST, this);
+
+        springLayout.putConstraint(SpringLayout.NORTH, panelKind, 0, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.WEST, panelKind, 270, SpringLayout.WEST, this);
+        springLayout.putConstraint(SpringLayout.SOUTH, panelKind, 120, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.EAST, panelKind, 400, SpringLayout.WEST, this);
+
+        springLayout.putConstraint(SpringLayout.NORTH, panelImpact, 0, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.WEST, panelImpact, 405, SpringLayout.WEST, this);
+        springLayout.putConstraint(SpringLayout.SOUTH, panelImpact, 120, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.EAST, panelImpact, 535, SpringLayout.WEST, this);
+
+        springLayout.putConstraint(SpringLayout.NORTH, panelOther, 0, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.WEST, panelOther, 540, SpringLayout.WEST, this);
+        springLayout.putConstraint(SpringLayout.SOUTH, panelOther, 120, SpringLayout.NORTH, this);
+        springLayout.putConstraint(SpringLayout.EAST, panelOther, 670, SpringLayout.WEST, this);
+
+        setLayout(springLayout);
 
         requirementPopupMenu = new JPopupMenu();
         addPopup(tblRequirements, requirementPopupMenu);
@@ -550,11 +598,8 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         while (itCategories.hasNext()) {
             categories.add(itCategories.next());
         }
-        if (filterTables[CATEGORY] == null) {
-            filterTables[CATEGORY] = new JTable(new FilterTableModel(this, "Categories", categories));
-        } else {
-            filterTables[CATEGORY].setModel(new FilterTableModel(this, "Categories", categories));
-        }
+        
+        filterTables[CATEGORY] = new JTable(new FilterTableModel(this, "Categories", categories));
     }
 
     private boolean filtered(Requirement req) {

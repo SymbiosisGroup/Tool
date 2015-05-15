@@ -13,7 +13,7 @@ public class RequirementsTableModel extends AbstractTableModel {
 
     public static final int COLUMN_NUMBER = 0;
     public static final int COLUMN_NAME = 1;
-    private String[] columnNames = new String[]{"Ready", "Name", "Type", "RevSt",/* "Review",*/ "Text"};
+    private String[] columnNames = new String[]{"Rlzd", "Name", "Type", "RevSt",/* "Review",*/ "Text"};
     private ArrayList<Requirement> requirements;
 
     public RequirementsTableModel(ArrayList<Requirement> reqs) {

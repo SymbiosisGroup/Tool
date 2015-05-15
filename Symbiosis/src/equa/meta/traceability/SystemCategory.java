@@ -131,7 +131,7 @@ public class SystemCategory extends Category {
      */
     @Override
     public String toString() {
-        return "System [SYS]";
+        return "SYS, System";
     }
 
     /**

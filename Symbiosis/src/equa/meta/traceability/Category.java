@@ -213,11 +213,11 @@ public class Category implements Comparable<Category>, Serializable, Requirement
     @Override
     public String toString() {
         String s
-                = getName() + " [" + code;
+                = code;
         if (owner != null) {
-            s += ", " + owner.getName() + "]";
+            s += ", " + owner.getName();
         } else {
-            s += ", Owner undefined]";
+            s += ", Owner undefined";
         }
         return s;
     }
