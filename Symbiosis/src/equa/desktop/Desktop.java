@@ -179,6 +179,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     private JSeparator jSeparator6;
     private JMenuItem miValueTypes;
     private JMenuItem projectNameMenuItem;
+    private JMenuItem propertiesMenuItem;
 
     public Desktop(SingleFrameApplication app) {
         super(app);
@@ -789,7 +790,8 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         autosaveMenuItem = new javax.swing.JCheckBoxMenuItem("AutoSave");
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         projectRolesMenuItem = new javax.swing.JMenuItem();
-        JMenuItem projectNameMenuItem = new javax.swing.JMenuItem();
+        projectNameMenuItem = new javax.swing.JMenuItem();
+        propertiesMenuItem = new javax.swing.JMenuItem();
         //vocabularyMenuItem = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         //imageClassDiagramMenuItem = new javax.swing.JMenuItem();
@@ -898,16 +900,19 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         jSeparator1.setName("jSeparator1"); // NOI18N
         projectMenu.add(jSeparator1);
 
-        projectRolesMenuItem.setText(resourceMap.getString("projectRolesMenuItem.text")); // NOI18N
-        projectRolesMenuItem.setName("projectRolesMenuItem"); // NOI18N
-        projectRolesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        propertiesMenuItem = new JMenuItem("Project Properties");
+        propertiesMenuItem.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                participantsMenuItemActionPerformed(evt);
+            public void actionPerformed(ActionEvent e) {
+                Project project = projectController.getProject();
+                if (project != null) {
+                    JOptionPane.showMessageDialog(getFrame(), project.getProperties(), "Project Properties", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         });
+        projectMenu.add(propertiesMenuItem);
 
-        categoriesMenuItem = new JMenuItem("Categories");
+        categoriesMenuItem = new JMenuItem("Change Project Categories");
         categoriesMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -921,9 +926,18 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             }
         });
         projectMenu.add(categoriesMenuItem);
+
+        projectRolesMenuItem.setText(resourceMap.getString("projectRolesMenuItem.text")); // NOI18N
+        projectRolesMenuItem.setName("projectRolesMenuItem"); // NOI18N
+        projectRolesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                participantsMenuItemActionPerformed(evt);
+            }
+        });
         projectMenu.add(projectRolesMenuItem);
 
-        changeProjectRoleMenuItem = new JMenuItem("Change Project Role");
+        changeProjectRoleMenuItem = new JMenuItem("Change Current User");
         changeProjectRoleMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -940,7 +954,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             public void actionPerformed(ActionEvent e) {
                 Project project = projectController.getProject();
                 if (project != null) {
-                    String name = JOptionPane.showInputDialog("Change of project name", project.getName());
+                    String name = JOptionPane.showInputDialog("Change of Project Name", project.getName());
                     if (name != null && !name.isEmpty() && !name.trim().isEmpty()) {
                         project.setName(name);
                         Desktop.this.getFrame().setTitle(project.getName()
@@ -1653,8 +1667,10 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                         writeBehavior(ft, out);
                     }
                 }
+                showMessage("Behavior has been written to " + file.getPath(), "Behavior as Text");
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(getFrame(), ex.getMessage());
+                showMessage(ex.getMessage(), "Behavior as Text");
             }
         }
 
@@ -1723,8 +1739,10 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                     }
                 }
                 out.println();
+                showMessage("Requirements have been written to " + file.getPath(), "Requirements as Text");
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(getFrame(), ex.getMessage());
+                showMessage(ex.getMessage(), "Requirements as Text");
             }
         }
 
@@ -1820,7 +1838,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         typeConfigurator.refresh();
         requirementConfigurator.refresh();
         // refreshTrees();
-        showErrorsAndMessages(messages, "The behavior was generated succesfully.", "Scan; Generating Behaviour");
+        showErrorsAndMessages(messages, "The behavior was generated succesfully.", "Scan; Generating Behavior");
     }//GEN-LAST:event_miBehaviorActionPerformed
 
     private void miBehaviorWithRegistriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miBehaviorWithRegistriesActionPerformed
@@ -1840,7 +1858,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         typeConfigurator.refresh();
         requirementConfigurator.refresh();
         //   refreshTrees();
-        showErrorsAndMessages(messages, "The behavior was generated succesfully.", "Extended Scan; Generating Behaviour with Registries");
+        showErrorsAndMessages(messages, "The behavior was generated succesfully.", "Extended Scan; Generating Behavior with Registries");
     }//GEN-LAST:event_miBehaviorWithRegistriesActionPerformed
 
     public void initFactBreakdown(FactRequirement requirement) {

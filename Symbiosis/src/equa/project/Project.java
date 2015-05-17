@@ -110,6 +110,18 @@ public class Project implements Serializable, Publisher {
 
     private Language lastUsedLanguage = Language.JAVA;
 
+    public String getProperties() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("name:\t").append(name).append(java.lang.System.lineSeparator());
+        sb.append("created at:\t").append(createdAt.getTime().toString()).append(java.lang.System.lineSeparator());
+        sb.append("created by:\t").append(createdBy.getName()).append(java.lang.System.lineSeparator());
+        sb.append("current user:\t").append(currentUser.getName()).append(java.lang.System.lineSeparator());
+        sb.append("saved at:\t").append(savedAt.getTime().toString()).append(java.lang.System.lineSeparator());
+        sb.append("project file:\t").append(file.getPath()).append(java.lang.System.lineSeparator());
+
+        return sb.toString();
+    }
+
     /**
      * DEFAULT CONSTRUCTOR; WARNING: creates a new instance of Project without
      * the definition of its name and {@link ProjectRole} creator.
