@@ -75,6 +75,10 @@ public class ConstrainedBaseType extends ObjectType implements ListModel<Object>
 
         listenerList = new EventListenerList();
     }
+    
+     public String getExtendedKind() {
+         return "CBT";
+    }
 
     @Override
     public boolean isSuitableAsIndex() {

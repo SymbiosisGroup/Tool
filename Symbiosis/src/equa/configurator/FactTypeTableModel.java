@@ -15,7 +15,7 @@ import equa.meta.objectmodel.FactType;
 public class FactTypeTableModel extends AbstractTableAdapter<FactType> {
 
     private static final long serialVersionUID = 1L;
-    public static String[] COLUMN_NAMES = {"Kind", "Name", "Expression", "Constraints", "Inherits"};
+    public static String[] COLUMN_NAMES = {"Kind", "Name", "Expression", "Contract", "Inherits"};
 
     public FactTypeTableModel(ListModel<FactType> listModel) {
         super(listModel, COLUMN_NAMES);
@@ -36,10 +36,10 @@ public class FactTypeTableModel extends AbstractTableAdapter<FactType> {
                 return factType.getName();
             case 2:
                 return factType.getTypeExpression();
-            case 4:
-                return factType.inheritsString();
             case 3:
                 return factType.constraintString();
+            case 4:
+                return factType.inheritsString();
             default:
                 return null;
         }

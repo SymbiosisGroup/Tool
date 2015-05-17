@@ -150,6 +150,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     private Set<String> constantsAlgorithms;
     private Initializer initializer;
 
+
     public Initializer getInitializer() {
         return initializer;
     }
@@ -2434,6 +2435,9 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         }
     }
 
+     public String getExtendedKind() {
+        return getKind();
+    }
     boolean containsTuplesOfOtherSubtypes(ObjectType subtype) {
         if (subtypes.contains(subtype)) {
             for (ObjectType sub : subtypes) {

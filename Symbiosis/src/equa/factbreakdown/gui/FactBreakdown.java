@@ -33,7 +33,7 @@ public class FactBreakdown extends DockableTree implements TreeModelListener {
     private static int row_height;
 
     public FactBreakdown(ProjectController controller) {
-        super("Fact Beakdown");
+        super("Fact Breakdown");
 
         this.projectController = controller;
 

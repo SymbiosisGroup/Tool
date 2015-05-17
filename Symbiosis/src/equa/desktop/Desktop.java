@@ -3,7 +3,6 @@ package equa.desktop;
 import com.mxgraph.util.mxResources;
 import com.vlsolutions.swing.docking.Dockable;
 import com.vlsolutions.swing.docking.DockableState;
-import com.vlsolutions.swing.docking.DockingConstants;
 import com.vlsolutions.swing.docking.DockingDesktop;
 import com.vlsolutions.swing.docking.DockingSelectorDialog;
 import com.vlsolutions.swing.docking.RelativeDockablePosition;
@@ -23,8 +22,6 @@ import equa.diagram.cd.ClassDiagram;
 import equa.diagram.cd.ClassDiagramPanel;
 import equa.factbreakdown.gui.FactBreakdown;
 import equa.factbreakdown.gui.Node;
-import equa.factbreakdown.gui.RequirementsBreakdownPanel;
-import equa.gui.edit.NewProject;
 import equa.inspector.InspectorTreeNode;
 import equa.inspector.ProjectInspector;
 import equa.meta.DuplicateException;
@@ -54,7 +51,6 @@ import equa.requirementsGui.RequirementConfigurator;
 import fontys.observer.PropertyListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -87,13 +83,11 @@ import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.xml.parsers.ParserConfigurationException;
@@ -117,6 +111,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     private RequirementConfigurator requirementConfigurator;
     //private RequirementsBreakdownPanel requirementsBreakdownPanel;
     private TypeConfigurator typeConfigurator;
+    private MessageTab messages;
     private java.util.Timer autoSaveTimer;
     private final static long AUTO_SAVE_DELAY = 120000; //Delay between autosaves in miliseconds.
     private boolean autosave;
@@ -134,7 +129,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     private javax.swing.JMenuItem generateCDMenuItem;
     //SR
     private javax.swing.JMenuItem generateCodeMenuItem;
-    private javax.swing.JMenuItem editCodeMenuItem;
+    private javax.swing.JMenuItem generateSourceCodeMenuItem;
     private javax.swing.JMenuItem importCodeMenuItem;
     //private javax.swing.JMenuItem imageClassDiagramMenuItem;
     private javax.swing.JMenuItem mifontsizeFactBreakdown;
@@ -272,8 +267,14 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 
             dockingRoot.close(typeConfigurator);
         }
-        typeConfigurator = new TypeConfigurator(getFrame(), projectController.getProject().getObjectModel());
+        typeConfigurator = new TypeConfigurator(this, projectController.getProject().getObjectModel());
         dockingRoot.createTab(requirementConfigurator, typeConfigurator, 2, false);
+
+        if (messages != null) {
+            dockingRoot.close(messages);
+        }
+        messages = new MessageTab();
+        dockingRoot.createTab(requirementConfigurator, messages, 3, false);
 
         dockingRoot.addHiddenDockable(projectNavigator, RelativeDockablePosition.LEFT);
         dockingRoot.setDockableWidth(projectNavigator, 0.1);
@@ -295,6 +296,14 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             }
         };
         dockingRoot.addDockableSelectionListener(listener);
+    }
+
+    public void showMessage(String message, String trigger) {
+        messages.addMessage(message, trigger);
+    }
+
+    public void showMessages(List<Message> messages, String trigger) {
+        this.messages.addMessages(messages, trigger);
     }
 
     public Project getCurrentProject() {
@@ -806,7 +815,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         generateCDMenuItem = new javax.swing.JMenuItem();
         //SR
         generateCodeMenuItem = new javax.swing.JMenuItem();
-        editCodeMenuItem = new javax.swing.JMenuItem();
+        generateSourceCodeMenuItem = new javax.swing.JMenuItem();
         importCodeMenuItem = new javax.swing.JMenuItem();
         //windowMenu = new javax.swing.JMenu();
         //chooserMenuItem = new javax.swing.JMenuItem();
@@ -1243,7 +1252,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                     typeConfigurator.setReliable(messages);
                     typeConfigurator.refresh();
                     refreshTrees();
-                    showErrorsAndMessages(messages, "Scan yielded no errors or warnings up to now.");
+                    showErrorsAndMessages(messages, "Scan yielded no errors or warnings up to now.", "Scan");
                 }
             });
         objectMenu.add(miScan);
@@ -1268,7 +1277,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                     typeConfigurator.setReliable(messages);
                     typeConfigurator.refresh();
                     refreshTrees();
-                    showErrorsAndMessages(messages, "Scan yielded no overlap.");
+                    showErrorsAndMessages(messages, "Scan yielded no overlap.", "Scan on overlap");
                 }
             });
         objectMenu.add(miScanOverlap);
@@ -1346,19 +1355,9 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         generateMenu.setText(resourceMap.getString("diagramMenu.text")); // NOI18N
         generateMenu.setName("diagramMenu"); // NOI18N
 
-        generateCDMenuItem.setText(resourceMap.getString("generateCDMenuItem.text")); // NOI18N
-        generateCDMenuItem.setName("generateCDMenuItem"); // NOI18N
-        generateCDMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                generateCDMenuItemActionPerformed(evt);
-            }
-        });
-        generateMenu.add(generateCDMenuItem);
-
-        editCodeMenuItem.setText(resourceMap.getString("editCodeMenuItem.text")); // NOI18N
-        editCodeMenuItem.setName("editCodeMenuItem"); // NOI18N
-        editCodeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        generateSourceCodeMenuItem.setText(resourceMap.getString("editCodeMenuItem.text")); // NOI18N
+        generateSourceCodeMenuItem.setName("editCodeMenuItem"); // NOI18N
+        generateSourceCodeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 if (projectController.getProject() != null) {
@@ -1368,7 +1367,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 }
             }
         });
-        generateMenu.add(editCodeMenuItem);
+        generateMenu.add(generateSourceCodeMenuItem);
 
         generateCodeMenuItem.setText(resourceMap.getString("generateCodeMenuItem.text")); // NOI18N
         generateCodeMenuItem.setName("generateCodeMenuItem"); // NOI18N
@@ -1382,7 +1381,18 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 }
             }
         });
+        generateCodeMenuItem.setEnabled(false);
         generateMenu.add(generateCodeMenuItem);
+
+        generateCDMenuItem.setText(resourceMap.getString("generateCDMenuItem.text")); // NOI18N
+        generateCDMenuItem.setName("generateCDMenuItem"); // NOI18N
+        generateCDMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generateCDMenuItemActionPerformed(evt);
+            }
+        });
+        generateMenu.add(generateCDMenuItem);
 
         menuBar.add(generateMenu);
 
@@ -1534,6 +1544,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             LoginDialog loginDialog = new LoginDialog(getFrame(), true, projectController);
             loginDialog.setVisible(true);
             projectController.getProject().setCurrentUserAndInform();
+            projectController.getProject().setFile(file);
 
             refresh();
         } catch (IOException ex) {
@@ -1809,7 +1820,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         typeConfigurator.refresh();
         requirementConfigurator.refresh();
         // refreshTrees();
-        showErrorsAndMessages(messages, "The behavior was generated succesfully.");
+        showErrorsAndMessages(messages, "The behavior was generated succesfully.", "Scan; Generating Behaviour");
     }//GEN-LAST:event_miBehaviorActionPerformed
 
     private void miBehaviorWithRegistriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miBehaviorWithRegistriesActionPerformed
@@ -1829,7 +1840,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         typeConfigurator.refresh();
         requirementConfigurator.refresh();
         //   refreshTrees();
-        showErrorsAndMessages(messages, "The behavior was generated succesfully.");
+        showErrorsAndMessages(messages, "The behavior was generated succesfully.", "Extended Scan; Generating Behaviour with Registries");
     }//GEN-LAST:event_miBehaviorWithRegistriesActionPerformed
 
     public void initFactBreakdown(FactRequirement requirement) {
@@ -1860,7 +1871,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         refreshTrees();
     }//GEN-LAST:event_miInheritanceActionPerformed
 
-    private void showErrorsAndMessages(List<Message> messages, String header) {
+    private void showErrorsAndMessages(List<Message> messages, String header, String trigger) {
         if (messages.isEmpty()) {
             String title = "Information";
             int messageType = JOptionPane.INFORMATION_MESSAGE;
@@ -1902,8 +1913,8 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 JOptionPane.showMessageDialog(this.getFrame(), warnings.toString(), title, messageType);
             }
 
-            typeConfigurator.showMessages(errors.toString() + "\n" + warnings.toString());
         }
+        showMessages(messages, trigger);
     }
 
     void showDiagram(ClassDiagramPanel cdp) {

@@ -11,7 +11,7 @@ import equa.meta.objectmodel.Role;
 public class RoleTableModel extends AbstractTableAdapter<Role> {
 
     private static final long serialVersionUID = 1L;
-    public static String[] COLUMN_NAMES = {"RoleName", "RoleType", "Features of RoleType"};
+    public static String[] COLUMN_NAMES = {"RoleName", "RoleType", "Contract RoleType \u2192 FactType"};
 
     public RoleTableModel(ListModel<Role> listModel) {
         super(listModel, COLUMN_NAMES);

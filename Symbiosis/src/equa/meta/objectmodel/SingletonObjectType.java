@@ -33,7 +33,6 @@ public class SingletonObjectType extends ObjectType {
     @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Singleton singleton;
 
-
     /**
      * creation of a singleton objecttype which refers to parent and contains
      * one object with the name objectname, based on source
@@ -43,7 +42,7 @@ public class SingletonObjectType extends ObjectType {
      * @param source
      */
     public SingletonObjectType(FactType parent, String objectname,
-            Source source) {
+        Source source) {
         super(parent, objectname);
         singleton = new Singleton(this, source);
         getFactType().getPopulation().addSingleton(singleton);
@@ -81,6 +80,12 @@ public class SingletonObjectType extends ObjectType {
         return true;
     }
 
+    public String getExtendedKind() {
+
+        return "SINGLETON";
+
+    }
+
     @Override
     void generateMethods() {
         try {
@@ -100,7 +105,7 @@ public class SingletonObjectType extends ObjectType {
 
     private void generateSingletonField() {
         final boolean AUTO_INCR = true;
-        Field f = new Field(this, Naming.singletonName(getName()),!AUTO_INCR);
+        Field f = new Field(this, Naming.singletonName(getName()), !AUTO_INCR);
         f.setClassField(true);
         codeClass.addField(f);
     }

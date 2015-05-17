@@ -8,6 +8,7 @@ import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
 import static equa.code.ImportType.Collection;
 import equa.code.operations.Operation;
+import equa.desktop.Desktop;
 import equa.meta.ChangeNotAllowedException;
 import equa.meta.DuplicateException;
 import equa.meta.Message;
@@ -39,7 +40,7 @@ import equa.meta.traceability.ExternalInput;
 import equa.project.ProjectMemberRole;
 import equa.project.ProjectRole;
 import equa.util.Naming;
-import equa.util.SwingUtils;
+import equa.swing.gui.SwingUtils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
@@ -65,12 +66,13 @@ import javax.swing.table.TableColumnModel;
  * @author frankpeeters, RuudLenders
  */
 public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
-    
+
     private static final long serialVersionUID = 1L;
     public static final Color RELIABLE = new Color(0, 0, 102); // dark blue
     public static final Color UNRELIABLE = Color.gray;
     private ObjectModel om;
     private Frame parent;
+    private Desktop desktop;
     private DockKey key;
     private boolean reliableClasses;
     private boolean doublejDoc = false;
@@ -79,23 +81,14 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     /**
      * Creates new TypeConfigurator
      */
-    public TypeConfigurator(Frame parent, ObjectModel om) {
+    public TypeConfigurator(Desktop desktop, ObjectModel om) {
         this.om = om;
-        this.parent = parent;
+        this.desktop = desktop;
+        this.parent = desktop.getFrame();
         this.key = new DockKey("ObjectModel Configurator");
         this.key.setCloseEnabled(false);
         initComponents();
-        //      tbFactTypes.setAutoCreateRowSorter(true);
-//        miAbstractOT = new javax.swing.JCheckBoxMenuItem();
-//        miAbstractOT.setText("Add Abstract Object Type");
-//        miAbstractOT.setName("miAbstractOT");
-//        miAbstractOT.addActionListener(new java.awt.event.ActionListener() {
-//            @Override
-//            public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                miAbstractOTActionPerformed(evt);
-//            }
-//        });
-//        factTypePopup.add(miAbstractOT);
+
         pnClass.setSize(splitPane.getWidth() / 2, splitPane.getHeight());
         pnFactType.setSize(splitPane.getWidth() / 2, splitPane.getHeight());
         tfFactType.setLocation(0, 0);
@@ -105,14 +98,14 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         pnRoles.setSize(splitPane.getWidth() / 2, 109);
         setColumnsFactTypeTable();
         this.reliableClasses = true;
-        
+
         tbFactTypes.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 tbFactTypesMousePressed(evt);
             }
         });
-        
+
         tbRoles.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(java.awt.event.MouseEvent evt) {
@@ -120,7 +113,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             }
         });
     }
-    
+
     public void setObjectModel(ObjectModel om) {
         this.om = om;
         tbFactTypes.setModel(new FactTypeTableModel(om));
@@ -193,8 +186,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         tbRoles = new javax.swing.JTable();
         spFTs = new javax.swing.JScrollPane();
         tbFactTypes = new javax.swing.JTable();
-        spSpecification = new javax.swing.JScrollPane();
-        taSpecification = new javax.swing.JTextArea();
         pnClass = new javax.swing.JPanel();
         tfObjecttype = new javax.swing.JTextField();
         spOperations = new javax.swing.JScrollPane();
@@ -711,21 +702,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 
         pnFactType.add(spFTs, java.awt.BorderLayout.CENTER);
 
-        spSpecification.setBorder(javax.swing.BorderFactory.createTitledBorder("Specification of Selected Operation"));
-        spSpecification.setName("spSpecification"); // NOI18N
-        spSpecification.setPreferredSize(new java.awt.Dimension(430, 60));
-
-        taSpecification.setEditable(false);
-        taSpecification.setColumns(20);
-        taSpecification.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        taSpecification.setForeground(new java.awt.Color(0, 0, 102));
-        taSpecification.setRows(5);
-        taSpecification.setName("taSpecification"); // NOI18N
-        taSpecification.setPreferredSize(new java.awt.Dimension(600, 120));
-        spSpecification.setViewportView(taSpecification);
-
-        pnFactType.add(spSpecification, java.awt.BorderLayout.SOUTH);
-
         splitPane.setLeftComponent(pnFactType);
 
         pnClass.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -767,36 +743,35 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     }// </editor-fold>//GEN-END:initComponents
 
     public final void refresh() {
-        
+
         tbFactTypes.setVisible(false);
         if (om.getSize() > 0) {
             om.fireListChanged();
         }
-        
+
         tbFactTypes.setVisible(true);
-        
+
         SwingUtils.resize(tbFactTypes);
         spFTs.updateUI();
-        
+
         if (om.requiresLightBehavior()) {
             ((TitledBorder) spOperations.getBorder()).setTitle("Operations Class (light version)");
         } else {
             ((TitledBorder) spOperations.getBorder()).setTitle("Operations Class (verbose version)");
         }
-        
+
         if (reliableClasses) {
             tfObjecttype.setForeground(RELIABLE);
             lsOperations.setForeground(RELIABLE);
-            
+
         } else {
             tfObjecttype.setForeground(UNRELIABLE);
             lsOperations.setForeground(UNRELIABLE);
         }
-        
+
         FactType ft = getSelectedFactType();
         if (ft == null) {
             lsOperations.setModel(new DefaultListModel<Operation>());
-            taSpecification.setText("");
             tfObjecttype.setText("");
             tfFactType.setText("No FactType Selected");
             tbRoles.setVisible(false);
@@ -804,8 +779,14 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             setRoleTableModel(ft);
             SwingUtils.resize(tbRoles);
             tbRoles.setVisible(true);
-            tfFactType.setText(ft.getName());
-            
+            String roles;
+            if (ft.size() == 1) {
+                roles = "1 role";
+            } else {
+                roles = ft.size() + " roles";
+            }
+            tfFactType.setText(ft.getName() + " [" + ft.getExtendedKind() + "] with " + roles + ":");
+
             if (ft.isClass()) {
                 ObjectType ot = ft.getObjectType();
                 if (ot.getCodeClass() == null) {
@@ -821,10 +802,9 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                     classtext = "class ";
                 }
                 tfObjecttype.setText(classtext + ot.getName() + " " + inheritString(ot));
-                
+
             } else {
                 lsOperations.setModel(new DefaultListModel<Operation>());
-                taSpecification.setText("");
                 tfObjecttype.setText("");
             }
         }
@@ -860,7 +840,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             } catch (ChangeNotAllowedException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage());
             }
-            
+
         }
     }//GEN-LAST:event_miRemoveFTActionPerformed
 
@@ -870,7 +850,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             dialog = new EditTypeExpressionDialog(parent, getSelectedFactType(),
                 getSelectedFactType().getObjectType().getOTE(), "Edit Object Type Expression",
                 om.getProject().getCurrentUser());
-            
+
         } else {
             dialog = new EditTypeExpressionDialog(parent, getSelectedFactType(),
                 getSelectedFactType().getFTE(), "Edit Fact Type Expression",
@@ -905,7 +885,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             dialog.setVisible(true);
             reliableClasses = false;
             refresh();
-            
+
         }
     }//GEN-LAST:event_miObjectifyFTActionPerformed
 
@@ -914,7 +894,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (ft == null) {
             return;
         }
-        
+
         DerivableDialog dialog = new DerivableDialog(parent, ft);
         dialog.setVisible(true);
         reliableClasses = false;
@@ -940,9 +920,9 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 //                ucs.retainAll(ft.getRole(selectedValues[i]).ucs());
 //            }
             for (UniquenessConstraint uc : ucs) {
-                
+
                 uc.remove();
-                
+
             }
             reliableClasses = false;
             refresh();
@@ -956,9 +936,9 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                 String rule_text = "Two (or more) facts about " + roles.get(0).getParent().getFactTypeString()
                     + " with the same value on <"
                     + roleValues(roles) + "> are not allowed.";
-                
+
                 RuleRequirement rule = initRule(rule_text, ft.getCategory());
-                
+
                 new UniquenessConstraint(roles, rule);
                 reliableClasses = false;
                 refresh();
@@ -972,11 +952,11 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (roles.isEmpty()) {
             JOptionPane.showMessageDialog(this, "please select role");
         } else {
-            
+
             try {
                 Role role = roles.get(0);
                 if (roles.size() == 1) {
-                    
+
                     if (!role.isMandatory()) {
                         if (role.getSubstitutionType().isSingleton()
                             && !role.getParent().isDerivable()) {
@@ -984,13 +964,13 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                                 + "allowed in case of a role played by a singleton object type "
                                 + "(except when this fact type is derivable).");
                         } else {
-                            
+
                             RuleRequirement mandatoryRule
                                 = initRule("Every <" + Naming.withCapital(role.getSubstitutionType().getName())
                                     + "> cannot exist without a fact about " + role.getParent().getFactTypeString() + ", without any consideration.", role.getParent().getCategory());
                             new MandatoryConstraint(role, mandatoryRule);
                         }
-                        
+
                     } else {
                         role.deleteMandatoryConstraint();
                     }
@@ -999,9 +979,9 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                 } else {
                     JOptionPane.showMessageDialog(this, "please select exactly one role");
                 }
-                
+
             } catch (ChangeNotAllowedException ex) {
-                
+
                 JOptionPane.showMessageDialog(this, ex.getMessage());
             }
         }
@@ -1046,13 +1026,13 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             JOptionPane.showMessageDialog(this, "please select exactly one role");
         } else {
             if (miSettable.isSelected()) {
-                
+
                 role.addSettable("");
-                
+
             } else {
-                
+
                 role.getSettable().remove();
-                
+
             }
             reliableClasses = false;
             refresh();
@@ -1065,25 +1045,25 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             JOptionPane.showMessageDialog(this, "please select exactly one role");
         } else {
             if (miAddable.isSelected()) {
-                
+
                 role.addAddable("");
             } else {
-                
+
                 role.getAddable().remove();
-                
+
             }
             reliableClasses = false;
             refresh();
         }
     }//GEN-LAST:event_miAddableActionPerformed
-    
+
     private void miAbstractOTActionPerformed(java.awt.event.ActionEvent evt) {
-        
+
         AbstractObjectTypeDialog dialog = new AbstractObjectTypeDialog(parent, true, om);
         dialog.setVisible(true);
         reliableClasses = false;
         refresh();
-        
+
     }
 
     private void miQualifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miQualifierActionPerformed
@@ -1134,13 +1114,13 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (numbers.length == 1) {
             Role role = getSelectedRole();
             String name;
-            
+
             name = JOptionPane.showInputDialog(this, "please enter unique rolename", role.getRoleName());
-            
+
             if (name == null) {
                 return;
             }
-            
+
             if (!name.isEmpty() && !Naming.isIdentifier(name)) {
                 JOptionPane.showMessageDialog(this, "Rolename must fulfill the rules "
                     + "of an identifier: it must begin with a letter or an underscore (_) and"
@@ -1161,13 +1141,13 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 
         // JOptionPane.showMessageDialog(this, "unsupported operation; bug fixing of value constraints realization is needed");
         try {
-            
+
             int[] selectedValues = tbRoles.getSelectedRows();
             if (selectedValues.length != 1) {
                 return;
             }
             BaseValueRole br = (BaseValueRole) getSelectedFactType().getRole(selectedValues[0]);
-            
+
             FactType cbt = om.objectifyToConstrainedBaseType(br);
             ConstrainedBaseTypeDialog dialog
                 = new ConstrainedBaseTypeDialog(this.parent, true, (ConstrainedBaseType) cbt.getObjectType());
@@ -1178,17 +1158,16 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }//GEN-LAST:event_miConstrainedBaseTypeActionPerformed
-    
+
     public void showMessages(String messages) {
-        spSpecification.setVisible(false);
-        taSpecification.setText(messages);
-        ((TitledBorder) spSpecification.getBorder()).setTitle("Errors and warnings");
-        spSpecification.setVisible(true);
+//        spSpecification.setVisible(false);
+//        taSpecification.setText(messages);
+//        ((TitledBorder) spSpecification.getBorder()).setTitle("Errors and warnings");
+//        spSpecification.setVisible(true);
     }
 
     private void lsOperationsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lsOperationsValueChanged
 
-        spSpecification.setVisible(false);
         Operation feature = (Operation) lsOperations.getSelectedValue();
         if (feature != null) {
             //taSpecification.setText(feature.getSpec());
@@ -1207,7 +1186,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
          ((TitledBorder) spSpecification.getBorder()).setTitle("Specification of Selected Operation");
          }*/
 
-        spSpecification.setVisible(true);
     }//GEN-LAST:event_lsOperationsValueChanged
 
     private void miDefault_ValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miDefault_ValueActionPerformed
@@ -1216,15 +1194,15 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             if (getSelectedRole() instanceof BaseValueRole) {
                 BaseValueRole role = (BaseValueRole) getSelectedRole();
                 if (role.hasDefaultValue()) {
-                    
+
                     role.removeDefaultValue();
-                    
+
                 } else {
                     String value;
-                    
+
                     value = JOptionPane.showInputDialog(this, "please enter default "
                         + role.getSubstitutionType().getName() + " value");
-                    
+
                     if (value == null) {
                         return;
                     }
@@ -1250,7 +1228,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                     value = JOptionPane.showInputDialog(this, "please enter default "
                         + role.getSubstitutionType().getName() + " value out of "
                         + ((ConstrainedBaseType) role.getSubstitutionType()).valuesString());
-                    
+
                     if (value == null) {
                         return;
                     }
@@ -1280,7 +1258,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                     }
                     Value value = null;
                     try {
-                        
+
                         RequirementModel rm = om.getProject().getRequirementModel();
                         ProjectRole projectRole = om.getProject().getCurrentUser();
                         Category cat = role.getParent().getCategory();
@@ -1307,9 +1285,9 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     }//GEN-LAST:event_miDefault_ValueActionPerformed
 
     private void miObjectifyRolesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miObjectifyRolesActionPerformed
-        
+
         int[] selectedValues = tbRoles.getSelectedRows();
-        
+
         if (selectedValues.length == 0) {
             return;
         }
@@ -1326,7 +1304,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 //            JOptionPane.showMessageDialog(parent, "selected roles don't have a common uniqueness constraint");
 //        }
         reliableClasses = false;
-        
+
         setObjectModel(om);
     }//GEN-LAST:event_miObjectifyRolesActionPerformed
 
@@ -1336,13 +1314,13 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             JOptionPane.showMessageDialog(this, "please select exactly one role");
         } else {
             if (miRemovable.isSelected()) {
-                
+
                 role.addRemovable("");
-                
+
             } else {
-                
+
                 role.getRemovable().remove();
-                
+
             }
             reliableClasses = false;
             refresh();
@@ -1350,7 +1328,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     }//GEN-LAST:event_miRemovableActionPerformed
 
     private void miReplaceBTPlusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miReplaceBTPlusActionPerformed
-        
+
         int[] selectedValues = tbRoles.getSelectedRows();
         if (selectedValues.length != 1) {
             return;
@@ -1362,7 +1340,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         BaseValueRole role = (BaseValueRole) r;
         FactType ft = role.getParent();
         int roleNr = role.getNr();
-        
+
         List<String> cbts = detectCBTs(role.getSubstitutionType());
         String[] typeNames = new String[5 + cbts.size()];
         typeNames[0] = "String";
@@ -1375,7 +1353,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             typeNames[i] = cbt;
             i++;
         }
-        
+
         BaseTypePlusDialog dialog = new BaseTypePlusDialog(parent, true, typeNames, role.getSubstitutionType().getName());
         dialog.setVisible(true);
         if (dialog.getBaseTypePlus() != null) {
@@ -1412,17 +1390,17 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     }//GEN-LAST:event_miReplaceBTPlusActionPerformed
 
     private void miDeobjectifyRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miDeobjectifyRoleActionPerformed
-        
+
         int[] selectedValues = tbRoles.getSelectedRows();
         if (selectedValues.length != 1) {
             return;
         }
-        
+
         Role r = getSelectedRole();
         if (r instanceof BaseValueRole) {
             return;
         }
-        
+
         ObjectRole role = (ObjectRole) r;
         FactType ft = role.getParent();
         try {
@@ -1465,7 +1443,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (selectedValues.length != 1) {
             return;
         }
-        
+
         Role r = getSelectedRole();
         if (r instanceof BaseValueRole) {
             return;
@@ -1483,7 +1461,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (selected == null) {
             return;
         }
-        
+
         try {
             role.setSubstitutionType(selected);
             if (ot.getName().equalsIgnoreCase(role.getRoleName())) {
@@ -1544,7 +1522,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (evt.isPopupTrigger()) {
             int clickedIndex = tbFactTypes.rowAtPoint(evt.getPoint());
             tbFactTypes.setEditingRow(clickedIndex);
-            
+
             updateFactTypePopup();
             factTypePopup.show(tbFactTypes, evt.getX(), evt.getY());
         }
@@ -1561,7 +1539,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (evt.isPopupTrigger()) {
             int clickedIndex = tbRoles.rowAtPoint(evt.getPoint());
             tbRoles.setEditingRow(clickedIndex);
-            
+
             updateRolePopup();
             rolePopup.show(tbRoles, evt.getX(), evt.getY());
         }
@@ -1575,17 +1553,17 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         }
         FactType ft = getSelectedFactType();
         List<Role> roles = new ArrayList<>();
-        
+
         roles.add(ft.getRole(selectedValues[0]));
-        
+
         String rule_text = "Two (or more) facts about " + roles.get(0).getParent().getFactTypeString()
             + " with the same value on <"
             + roleValues(roles) + "> are not allowed.";
-        
+
         RuleRequirement rule = initRule(rule_text, ft.getCategory());
         try {
             new UniquenessConstraint(roles, rule);
-            
+
         } catch (ChangeNotAllowedException ex) {
             Logger.getLogger(TypeConfigurator.class
                 .getName()).log(Level.SEVERE, null, ex);
@@ -1600,13 +1578,13 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             JOptionPane.showMessageDialog(this, "please select exactly one role");
         } else {
             if (miAdjustable.isSelected()) {
-                
+
                 role.addAdjustable("");
-                
+
             } else {
-                
+
                 role.getAdjustable().remove();
-                
+
             }
             reliableClasses = false;
             refresh();
@@ -1619,12 +1597,12 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             JOptionPane.showMessageDialog(this, "please select exactly one role");
         } else {
             if (miInsertable.isSelected()) {
-                
+
                 role.addInsertable("");
             } else {
-                
+
                 role.getInsertable().remove();
-                
+
             }
             reliableClasses = false;
             refresh();
@@ -1660,15 +1638,15 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             JOptionPane.showMessageDialog(this, "please select exactly one role");
         }
         if (role.getFrequencyConstraint() != null) {
-            
+
             role.getFrequencyConstraint().remove();
-            
+
         } else {
-            
+
             FrequencyDialog dialog = new FrequencyDialog(parent, true);
             dialog.setVisible(true);
             if (dialog.getMin() != -1 && dialog.getMax() != -1) {
-                
+
                 String ruleText;
                 String roleName = role.detectRoleName();
                 ruleText = "The frequency of <" + roleName + "> within the actual facts of "
@@ -1685,7 +1663,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     }//GEN-LAST:event_miFrequencyActionPerformed
 
     private void miAuto_IncrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAuto_IncrActionPerformed
-        
+
         Role role = getSelectedRole();
         try {
             ((BaseValueRole) role).setAutoIncrement(!role.isAutoIncr());
@@ -1713,7 +1691,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (ft == null) {
             return;
         }
-        
+
         if (ft.isMutable()) {
             ft.deleteMutable();
         } else {
@@ -1760,7 +1738,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (role == null) {
             return;
         }
-        
+
         List<RoleEvent> events = role.getEvents();
         Object[] ev = events.toArray();
         RoleEvent selected;
@@ -1785,7 +1763,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (ft == null) {
             return;
         }
-        
+
         if (ft.isObjectType()) {
             ft.getObjectType().removeInitializer();
         }
@@ -1801,7 +1779,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             objectRole.setIsEventSource(!objectRole.isEventSource());
         }
     }//GEN-LAST:event_miChangeBySystemEventActionPerformed
-    
+
     private FactType getSelectedFactType() {
         int row = tbFactTypes.getEditingRow();
         if (row == -1 || row >= tbFactTypes.getModel().getRowCount()) {
@@ -1810,7 +1788,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             return om.getFactType((String) tbFactTypes.getModel().getValueAt(row, 1));
         }
     }
-    
+
     private Role getSelectedRole() {
         if (tbRoles.getSelectedRowCount() == 1) {
             return getSelectedFactType().getRole(tbRoles.getSelectedRow());
@@ -1818,7 +1796,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             return null;
         }
     }
-    
+
     private List<Role> getSelectedRoles() {
         List<Role> roles = new ArrayList<>();
         FactType ft = getSelectedFactType();
@@ -1829,7 +1807,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         }
         return roles;
     }
-    
+
     private String roleValues(List<Role> roles) {
         StringBuilder sb = new StringBuilder();
         sb.append(roles.get(0).getNamePlusType());
@@ -1838,9 +1816,9 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         }
         return sb.toString();
     }
-    
+
     private void updateRolePopup() {
-        
+
         int[] numbers;
         numbers = tbRoles.getSelectedRows();
         if (numbers.length == 0) {
@@ -1874,7 +1852,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                 if (firstSelectedRole instanceof BaseValueRole) {
                     miDefault_Value.setEnabled(firstSelectedRole.isCandidateDefaultValue());
                     miConstrainedBaseType.setEnabled(!ft.isConstrainedBaseType());
-                    miReplaceBTPlus.setEnabled(true);    
+                    miReplaceBTPlus.setEnabled(true);
                 } else { // ObjectRole
                     ObjectRole objectRole = (ObjectRole) firstSelectedRole;
                     if (firstSelectedRole.getSubstitutionType().isValueType()) {
@@ -1887,7 +1865,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                         miDeleteEventRule.setEnabled(!objectRole.getEvents().isEmpty());
                         //miDeleteEventRule.setSelected(!objectRole.getEvents().isEmpty());
                     }
-                    
+
                     miSettable.setEnabled(objectRole.isCandidateSettable());
                     miAdjustable.setEnabled(objectRole.isCandidateAdjustable());
                     miNavigable.setEnabled(true);
@@ -1895,7 +1873,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                     miInsertable.setEnabled(objectRole.isCandidateInsertable());
                     miRemovable.setEnabled(objectRole.isCandidateRemovable());
                     miComposition.setEnabled(objectRole.isCandidateComposition());
-                    
+
                     miReplaceWithSuperType.setEnabled(!ft.isGenerated());
                     miReplaceWithSubType.setEnabled(!ft.isGenerated());
                     miDeobjectifyRole.setEnabled(true);
@@ -1930,7 +1908,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                 miDefault_Value.setSelected(firstSelectedRole.hasDefaultValue());
             }
         }
-        
+
         showPopupText(miAddable);
         showPopupText(miRemovable);
         showPopupText(miUniqueness);
@@ -1951,7 +1929,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             switchOffRoleMenuItems();
         }
     }
-    
+
     private void showPopupText(JCheckBoxMenuItem checkbox) {
         // showing the right text
         String name = checkbox.getName().substring(2);
@@ -1961,9 +1939,9 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             checkbox.setText(name);
         }
     }
-    
+
     private void selectUniqueness(int[] numbers, FactType ft) {
-        
+
         HashSet<UniquenessConstraint> ucs = new HashSet<>();
         ucs.addAll(ft.getRole(numbers[0]).ucs());
         for (int i = 1; i < numbers.length; i++) {
@@ -1978,12 +1956,12 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         }
         miUniqueness.setSelected(unique);
     }
-    
+
     private void switchOffFactTypeMenuItems() {
         miRename.setEnabled(false);
         miTypeExpression.setEnabled(false);
         miDerivable.setEnabled(false);
-        
+
         miObjectifyFT.setEnabled(false);
         miDeobjectifyFT.setEnabled(false);
         miValueType.setEnabled(false);
@@ -1994,16 +1972,16 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         miAbstract.setEnabled(false);
         miSearch.setEnabled(false);
         miChangeId.setSelected(false);
-        
+
         miDerivable.setSelected(false);
-        
+
         miDeleteInitializer.setEnabled(false);
-        
+
         miValueType.setSelected(false);
         miComparable.setSelected(false);
-        
+
     }
-    
+
     private void switchOffRoleMenuItems() {
         miRenameRole.setEnabled(false);
         miUniqueness.setEnabled(false);
@@ -2029,7 +2007,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         miDeobjectifyRole.setEnabled(false);
         miAuto_Incr.setEnabled(false);
         miChangeBySystemEvent.setEnabled(false);
-        
+
         miUniqueness.setSelected(false);
         miMandatory.setSelected(false);
         miAddable.setSelected(false);
@@ -2046,7 +2024,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         miAuto_Incr.setSelected(false);
         miChangeBySystemEvent.setSelected(false);
     }
-    
+
     private RuleRequirement createRuleRequirement(String text, Category cat) {
         RequirementModel rm = om.getProject().getRequirementModel();
         ProjectRole currentUser = om.getProject().getCurrentUser();
@@ -2054,7 +2032,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             new ExternalInput("", currentUser));
         return rule;
     }
-    
+
     private ActionRequirement createActionRequirement(String text, Category cat) {
         RequirementModel rm = om.getProject().getRequirementModel();
         ProjectRole currentUser = om.getProject().getCurrentUser();
@@ -2062,7 +2040,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             new ExternalInput("", currentUser));
         return rule;
     }
-    
+
     private RuleRequirement initRule(String rule_text, Category cat) {
         // bad smell:
         ExternalInput input;
@@ -2077,7 +2055,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         // end of bad smell
         return rule;
     }
-    
+
     private static String inheritString(ObjectType ot) {
         String s = ot.getFactType().inheritsString();
         if (s.isEmpty()) {
@@ -2086,24 +2064,24 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             return "inherits " + s;
         }
     }
-    
+
     private void updateFactTypePopup() {
         FactType factType = getSelectedFactType();
         if (factType == null) {
             return;
         }
-        
+
         switchOffFactTypeMenuItems();
         miSearch.setEnabled(factType.isObjectType());
         miRename.setEnabled(true);
         if (factType.isGenerated()) {
             miRemoveFT.setEnabled(true);
-            
+
         } else {
-            
+
             miTypeExpression.setEnabled(factType.size() > 0
                 || (factType.isObjectType() && factType.getObjectType().isSingleton()));
-            
+
             miChangeId.setEnabled(factType.isCandidateMutable());
             miChangeId.setSelected(factType.getMutablePermission() != null);
             if (factType.isObjectType()) {
@@ -2112,12 +2090,12 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                 //miComparable.setEnabled(true);
                 //miComparable.setSelected(ot.isComparable());
                 miAbstract.setEnabled(true);
-                
+
                 if (factType.isCollectionType()) {
                     miTypeExpression.setEnabled(false);
                     miDeobjectifyFT.setEnabled(false);
                 }
-                
+
                 if (factType.getObjectType().getInitializer() != null) {
                     miDeleteInitializer.setEnabled(true);
                 }
@@ -2132,11 +2110,11 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                 miDefault_Boolean.setEnabled(factType.nonQualifierSize() == 1);
                 miDefault_Boolean.setSelected(factType.getDefaultValue() != null);
             }
-            
+
             miRemoveFT.setEnabled(true);
-            
+
         }
-        
+
         showPopupText(miValueType);
         // showPopupText(miComparable);
         if (factType.isObjectType()) {
@@ -2149,17 +2127,17 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             showPopupText(miChangeId);
         }
         showPopupText(miDefault_Boolean);
-        
+
         if (factType instanceof ElementsFactType) {
             switchOffFactTypeMenuItems();
         }
     }
-    
+
     @Override
     public DockKey getDockKey() {
         return key;
     }
-    
+
     @Override
     public Component getComponent() {
         return this;
@@ -2221,9 +2199,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     private javax.swing.JScrollPane spFTs;
     private javax.swing.JScrollPane spOperations;
     private javax.swing.JScrollPane spRoles;
-    private javax.swing.JScrollPane spSpecification;
     private javax.swing.JSplitPane splitPane;
-    private javax.swing.JTextArea taSpecification;
     private javax.swing.JTable tbFactTypes;
     private javax.swing.JTable tbRoles;
     private javax.swing.JTextField tfFactType;
@@ -2237,18 +2213,18 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         for (String name : FactTypeTableModel.COLUMN_NAMES) {
             tbFactTypes.getColumn(name).setMinWidth(24);
         }
-        
+
         tbFactTypes.getColumn(FactTypeTableModel.COLUMN_NAMES[0]).setMinWidth(30);
         tbFactTypes.getColumn(FactTypeTableModel.COLUMN_NAMES[1]).setMinWidth(150);
         tbFactTypes.getColumn(FactTypeTableModel.COLUMN_NAMES[2]).setMinWidth(360);
         tbFactTypes.getColumn(FactTypeTableModel.COLUMN_NAMES[3]).setMinWidth(50);
         tbFactTypes.getColumn(FactTypeTableModel.COLUMN_NAMES[4]).setMinWidth(50);
     }
-    
+
     public void setReliable(boolean reliable) {
         reliableClasses = reliable;
     }
-    
+
     public void setReliable(List<Message> messages) {
         for (Message message : messages) {
             if (message.isError()) {
@@ -2258,7 +2234,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         }
         setReliable(true);
     }
-    
+
     private void setRoleTableModel(FactType ft) {
         if (tbRoles.getModel() != null) {
             tbRoles.setModel(new RoleTableModel(ft));
@@ -2267,25 +2243,25 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             for (String name : RoleTableModel.COLUMN_NAMES) {
                 tbRoles.getColumn(name).setMinWidth(24);
             }
-            
+
             tbRoles.getColumn(RoleTableModel.COLUMN_NAMES[0]).setPreferredWidth(60);
             tbRoles.getColumn(RoleTableModel.COLUMN_NAMES[1]).setPreferredWidth(60);
             tbRoles.revalidate();
         }
     }
-    
+
     public void clear() {
         tbFactTypes.setModel(new DefaultTableModel());
         tbRoles.setModel(new DefaultTableModel());
         lsOperations.setModel(new DefaultListModel());
     }
-    
+
     private List<String> detectCBTs(BaseType substitutionType) {
         List<String> cbts = new ArrayList<>();
         if (om == null) {
             return cbts;
         }
-        
+
         Collection<FactType> fts = om.getFactTypes();
         for (FactType ft : fts) {
             if (ft.isConstrainedBaseType()) {

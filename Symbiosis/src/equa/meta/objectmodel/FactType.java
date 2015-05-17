@@ -230,7 +230,7 @@ public class FactType extends ParentElement implements Type, ITerm,
 
             if (roles.size() == 1) {
                 try {
-                    String uniqueString = "Two (or more) facts about " + getFactTypeString() + " with the same value on "
+                    String uniqueString = "Two facts about " + getFactTypeString() + " with the same value on "
                         + idString() + " are not allowed.";
                     RuleRequirement rule = rm.
                         addRuleRequirement(getCategory(),
@@ -329,7 +329,7 @@ public class FactType extends ParentElement implements Type, ITerm,
         role.setRoleName(Naming.withoutCapital("value"));
         roles.add(role);
 
-        String uniqueString = "Two or more values of " + getFactTypeString() + " are not allowed.";
+        String uniqueString = "Two facts about " + getFactTypeString() + " are not allowed.";
         RuleRequirement defaultrule = om.getProject().getRequirementModel().
             addRuleRequirement(Category.SYSTEM, uniqueString,
                 new SystemInput("redundancy or bad identification of objects is awkward"));
@@ -371,7 +371,7 @@ public class FactType extends ParentElement implements Type, ITerm,
         factTypeClass = null;
 
         try {
-            String uniqueString = "Two (or more) facts about " + getFactTypeString() + " with the same collection values are not allowed.";
+            String uniqueString = "Two facts about " + getFactTypeString() + " with the same collection values are not allowed.";
             RuleRequirement rule = om.getProject().getRequirementModel().
                 addRuleRequirement(source.getCategory(),
                     uniqueString,
@@ -572,7 +572,7 @@ public class FactType extends ParentElement implements Type, ITerm,
                     return;
                 }
             }
-            String uniqueString = "Two (or more) facts about " + getFactTypeString() + " with "
+            String uniqueString = "Two facts about " + getFactTypeString() + " with "
                 + uniqueString() + " are not allowed.";
 
             ObjectModel om = (ObjectModel) getParent();
@@ -1332,6 +1332,14 @@ public class FactType extends ParentElement implements Type, ITerm,
             return "FT";
         } else {
             return ot.getKind();
+        }
+    }
+
+    public String getExtendedKind() {
+        if (ot == null) {
+            return "FT";
+        } else {
+            return ot.getExtendedKind();
         }
     }
 

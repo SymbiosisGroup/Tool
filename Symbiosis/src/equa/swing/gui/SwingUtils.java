@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package equa.util;
+package equa.swing.gui;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -31,6 +31,9 @@ public class SwingUtils {
 
         for (int column = 0; column < table.getColumnCount(); column++) {
             int desiredWidth = MINWIDTH;
+            String columnHeader = table.getColumnName(column);
+            int headerSize = columnHeader.length()*7;
+            if (headerSize > desiredWidth) desiredWidth = headerSize;
             for (int row = 0; row < table.getRowCount(); row++) {
                 TableCellRenderer renderer = table.getCellRenderer(row, column);
                 Component comp = table.prepareRenderer(renderer, row, column);

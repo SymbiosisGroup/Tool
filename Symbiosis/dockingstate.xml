@@ -7,10 +7,13 @@
 <Key dockName="ReqModel Configurator"/>
 </Dockable>
 <Dockable>
-<Key dockName="Fact Beakdown"/>
+<Key dockName="Fact Breakdown"/>
 </Dockable>
 <Dockable>
 <Key dockName="ObjectModel Configurator"/>
+</Dockable>
+<Dockable>
+<Key dockName="Messages"/>
 </Dockable>
 </TabbedDockable>
 </DockingPanel>
@@ -26,10 +29,13 @@
 <Key dockName="ReqModel Configurator"/>
 </Dockable>
 <Dockable>
-<Key dockName="Fact Beakdown"/>
+<Key dockName="Fact Breakdown"/>
 </Dockable>
 <Dockable>
 <Key dockName="ObjectModel Configurator"/>
+</Dockable>
+<Dockable>
+<Key dockName="Messages"/>
 </Dockable>
 </TabGroup>
 </TabGroups>
