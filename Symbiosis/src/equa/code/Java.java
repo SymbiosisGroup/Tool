@@ -1928,6 +1928,10 @@ public class Java implements Language {
         } else if (r.targetType() instanceof ConstrainedBaseType) {
             return newInstance(r.targetType(), r.getDefaultValueString() + "");
         } else {
+            // compatibility problem
+            if (r.getDefaultValue()==null){
+                return r.getDefaultValueString();
+            } 
             return newInstance(r.targetType(), (Tuple)r.getDefaultValue());
         }
     }

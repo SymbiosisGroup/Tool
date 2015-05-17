@@ -1361,7 +1361,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 if (projectController.getProject() != null) {
-                    CodeGeneratorDialog codeGeneratorDialog = new CodeGeneratorDialog(Desktop.this.getFrame(), projectController, true);
+                    CodeGeneratorDialog codeGeneratorDialog = new CodeGeneratorDialog(Desktop.this.getFrame(), Desktop.this, projectController, true);
                     //codeGeneratorDialog.setLocationRelativeTo(null);
                     codeGeneratorDialog.setVisible(true);
                 }
@@ -1375,7 +1375,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 if (projectController.getProject() != null) {
-                    CodeGeneratorDialog codeGeneratorDialog = new CodeGeneratorDialog(Desktop.this.getFrame(), projectController, false);
+                    CodeGeneratorDialog codeGeneratorDialog = new CodeGeneratorDialog(Desktop.this.getFrame(), Desktop.this, projectController, false);
                     //codeGeneratorDialog.setLocationRelativeTo(null);
                     codeGeneratorDialog.setVisible(true);
                 }
@@ -1983,6 +1983,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         if (init) {
             clearAndCloseTabs();
             refreshTrees();
+            messages.clear();
         } else {
             initDockingRoot();
             initStatusBar();

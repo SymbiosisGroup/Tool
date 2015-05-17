@@ -25,28 +25,28 @@ import javax.swing.JTextArea;
  * @author frankpeeters
  */
 public class MessageTab extends javax.swing.JPanel implements Dockable {
-
+    
     private static final long serialVersionUID = 1L;
     static final char ARROW = '\u2192';
     private DockKey key;
     private JTextArea taMessages;
-
+    
     public MessageTab() {
         key = new DockKey("Messages");
         this.key.setCloseEnabled(false);
         initComponents();
     }
-
+    
     @Override
     public DockKey getDockKey() {
         return key;
     }
-
+    
     @Override
     public Component getComponent() {
         return this;
     }
-
+    
     private void initComponents() {
         setLayout(new BorderLayout());
         JPanel pnNorth = new JPanel();
@@ -65,16 +65,16 @@ public class MessageTab extends javax.swing.JPanel implements Dockable {
         JScrollPane spMessages = new JScrollPane(taMessages);
         add(spMessages, BorderLayout.CENTER);
     }
-
+    
     public void addMessage(String message, String trigger) {
-
+        
         taMessages.append(System.lineSeparator());
         GregorianCalendar gc = new GregorianCalendar();
         taMessages.append("[" + trigger + "]");
         taMessages.append(" on " + gc.getTime().toString() + " :" + System.lineSeparator());
         taMessages.append(ARROW + " " + message + System.lineSeparator());
     }
-
+    
     public void addMessages(List<Message> messages, String trigger) {
         taMessages.append(System.lineSeparator());
         GregorianCalendar gc = new GregorianCalendar();
@@ -83,5 +83,9 @@ public class MessageTab extends javax.swing.JPanel implements Dockable {
         for (Message message : messages) {
             taMessages.append(ARROW + " " + message.getText() + System.lineSeparator());
         }
+    }
+    
+    void clear() {
+        taMessages.setText("");
     }
 }

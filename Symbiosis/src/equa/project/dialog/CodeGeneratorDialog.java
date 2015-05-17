@@ -22,26 +22,29 @@ import javax.swing.JTextField;
 
 import equa.code.Languages;
 import equa.controller.ProjectController;
+import equa.desktop.Desktop;
 
 @SuppressWarnings("serial")
 public class CodeGeneratorDialog extends JDialog {
-
+    
     private ProjectController projectController;
     private JCheckBox chkBoxLibrary, chkBoxORM, chkBoxMInh;
+    private Desktop desktop;
 
     /**
      * Create the dialog.
      */
-    public CodeGeneratorDialog(JFrame parent, ProjectController controller,
+    public CodeGeneratorDialog(JFrame parent, Desktop dt, ProjectController controller,
         boolean edit) {
         super(parent, true);
+        this.desktop = dt;
         if (edit) {
             setTitle("Generate Source Code to Edit");
         } else {
             setTitle("Generate Code");
         }
         projectController = controller;
-
+        
         String rootNS = controller.getProject().getName().toLowerCase();
         String currentLocation = controller.getProject().getFile().getParentFile().getPath() + File.separator + "src";//System.getProperty("user.dir");
 
@@ -85,14 +88,14 @@ public class CodeGeneratorDialog extends JDialog {
         c.gridx = 0;
         c.gridy = 3;
         JLabel lblLibrary = new JLabel("Generate as library:");
-
+        
         c.gridx = 1;
         chkBoxLibrary = new JCheckBox();
         if (false) {
             panel.add(lblLibrary, c);
             panel.add(chkBoxLibrary, c);
         }
-
+        
         c.gridx = 0;
         c.gridy = 4;
         JLabel lblORM = new JLabel("Generate ORM:");
@@ -108,25 +111,25 @@ public class CodeGeneratorDialog extends JDialog {
         chkBoxMInh = new JCheckBox();
         // panel.add(chkBoxMInh, c);
         setCheckBoxes((Languages) cmbBoxLanguages.getSelectedItem());
-
+        
         cmbBoxLanguages.addActionListener(new ActionListener() {
-
+            
             @Override
             public void actionPerformed(ActionEvent e) {
                 Languages l = (Languages) ((JComboBox<Languages>) e.getSource()).getSelectedItem();
                 setCheckBoxes(l);
             }
         });
-
+        
         btnBrowse.addActionListener(new ActionListener() {
-
+            
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fChoser = new JFileChooser();
                 fChoser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 if (fChoser.showOpenDialog(CodeGeneratorDialog.this) == JFileChooser.APPROVE_OPTION) {
-                    File f = fChoser.getSelectedFile();
-                    txtLocation.setText(f.getAbsolutePath());
+                    File file = fChoser.getSelectedFile();
+                    txtLocation.setText(file.getAbsolutePath());
                 }
             }
         });
@@ -143,19 +146,24 @@ public class CodeGeneratorDialog extends JDialog {
                     // projectController.getProject().getObjectModel().generateClasses(true, false);
                     if (!((Languages) cmbBoxLanguages.getSelectedItem()).language().
                         generate(projectController.getProject().getObjectModel(), edit, chkBoxORM.isSelected(), chkBoxMInh.isSelected(), txtLocation.getText())) {
-                        JOptionPane.showMessageDialog(CodeGeneratorDialog.this, "The OM contains an error; Please generate behaviour with registries", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(CodeGeneratorDialog.this, "The OM contains an error; Please generate behaviour with registries",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                        desktop.showMessage("The OM contains an error; Please generate behaviour with registries", "Generating Source Code");
+                    } else {
+                        desktop.showMessage("The source code has been generated to destination " + txtLocation.getText(), "Generating Source Code");
                     }
                     CodeGeneratorDialog.this.dispose();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                     JOptionPane.showMessageDialog(CodeGeneratorDialog.this, "There was an IO error, is the location correct? Otherwise compilation failed.", "Error", JOptionPane.ERROR_MESSAGE);
-                } 
+                    desktop.showMessage("There was an IO error, is the location " + txtLocation.getText() + " correct? Otherwise compilation failed.", "Generating Source Code");
+                }                
             }
         }
         );
         bottomPanel.add(btnGenerate);
         JButton btnCancel = new JButton("Cancel");
-
+        
         btnCancel.addActionListener(
             new ActionListener() {
                 @Override
@@ -169,7 +177,7 @@ public class CodeGeneratorDialog extends JDialog {
         this.setLocationRelativeTo(parent);
         pack();
     }
-
+    
     private void setCheckBoxes(Languages l) {
         chkBoxLibrary.setEnabled(l.library());
         // chkBoxORM.setEnabled(l.orm());
