@@ -193,10 +193,8 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         panelState = new JPanel();
         panelImpact = new JPanel();
         panelOther = new JPanel();
-      
 
         //***** Categories ***************************************************************
-
         JScrollPane spCat = new JScrollPane();
         spCat.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         GroupLayout gl_panelCategories = new GroupLayout(panelCategories);
@@ -211,7 +209,6 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         spCat.setViewportView(filterTables[CATEGORY]);
 
         //***** Requirement Kind *********************************************************
-        
         JScrollPane spKind = new JScrollPane();
         GroupLayout gl_panelKind = new GroupLayout(panelKind);
         gl_panelKind.setHorizontalGroup(
@@ -231,7 +228,6 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         spKind.setViewportView(filterTables[KIND]);
 
         // ***** Review State ************************************************************
-         
         JScrollPane spState = new JScrollPane();
         GroupLayout gl_panelState = new GroupLayout(panelState);
         gl_panelState.setHorizontalGroup(
@@ -254,7 +250,6 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         spState.setViewportView(filterTables[REVIEW_STATE]);
 
         //***** Review Impact ************************************************************
-
         JScrollPane spImpact = new JScrollPane();
         GroupLayout gl_panelImpact = new GroupLayout(panelImpact);
         gl_panelImpact.setHorizontalGroup(
@@ -274,7 +269,6 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         spImpact.setViewportView(filterTables[REVIEW_IMPACT]);
 
         // ***** Other Filters **********************************************************
-
         JScrollPane spOther = new JScrollPane();
         GroupLayout gl_panelOther = new GroupLayout(panelOther);
         gl_panelOther.setHorizontalGroup(
@@ -342,6 +336,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         spOther.setViewportView(filterTables[OTHER_FILTER]);
 
         for (int i = 0; i < filterTables.length; i++) {
+                  filterTables[i].setFont(new java.awt.Font("Lucida Grande", 0, 12));
             filterTables[i].setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
             filterTables[i].getColumnModel().getColumn(0).setPreferredWidth(8);
         }
@@ -362,14 +357,15 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         panelRequirements = new JPanel();
         panelRequirements.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
             "Requirements", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        tblRequirements = new RequirementsTable(new RequirementsTableModel(filteredRequirements));
+        tblRequirements = new RequirementsTable(new RequirementsTableModel(filteredRequirements, project));
+        tblRequirements.setFont(new java.awt.Font("Lucida Grande", 0, 12));
         panelRequirements.setLayout(new BoxLayout(panelRequirements, BoxLayout.X_AXIS));
         spRequirements = new JScrollPane(tblRequirements, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         spRequirements.setMinimumSize(new Dimension(1500, 1500));
         panelRequirements.add(spRequirements);
 
         tblRequirements.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        
+
         TableColumnModel tcm = tblRequirements.getColumnModel();
         tcm.getColumn(0).setMinWidth(40); // realized
         tcm.getColumn(1).setMinWidth(70); // name
@@ -383,7 +379,6 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         this.add(panelRequirements);
 
         // ***** LAYOUT *****************************************************************
-
         SpringLayout springLayout = new SpringLayout();
 
         springLayout.putConstraint(SpringLayout.NORTH, panelCategories, 0, SpringLayout.NORTH, this);
@@ -417,9 +412,8 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         springLayout.putConstraint(SpringLayout.EAST, panelRequirements, 0, SpringLayout.EAST, this);
 
         setLayout(springLayout);
-        
-        // ***** POPUP MENU *************************************************************
 
+        // ***** POPUP MENU *************************************************************
         requirementPopupMenu = new JPopupMenu();
         addPopup(tblRequirements, requirementPopupMenu);
 
@@ -750,7 +744,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
                 filteredRequirements.add(req);
             }
         }
-        tblRequirements.setModel(new RequirementsTableModel(filteredRequirements));
+        tblRequirements.setModel(new RequirementsTableModel(filteredRequirements, project));
         //(new TableColumnAdjuster(tblRequirements)).adjustColumns();
     }
 

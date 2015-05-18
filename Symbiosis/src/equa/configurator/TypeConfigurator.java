@@ -57,6 +57,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
@@ -88,14 +89,18 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         this.key = new DockKey("ObjectModel Configurator");
         this.key.setCloseEnabled(false);
         initComponents();
+        
+//        JScrollPane scrollBar = new JScrollPane(panel,
+//            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+//            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         pnClass.setSize(splitPane.getWidth() / 2, splitPane.getHeight());
         pnFactType.setSize(splitPane.getWidth() / 2, splitPane.getHeight());
         tfFactType.setLocation(0, 0);
         tfFactType.setSize(splitPane.getWidth() / 2, 29);
         tbRoles.setLocation(0, tfFactType.getHeight());
-        tbRoles.setSize(splitPane.getWidth() / 2, 80);
-        pnRoles.setSize(splitPane.getWidth() / 2, 109);
+        tbRoles.setSize(splitPane.getWidth() / 2, 75);
+        pnRoles.setSize(splitPane.getWidth() / 2, 104);
         setColumnsFactTypeTable();
         this.reliableClasses = true;
 
@@ -182,7 +187,8 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         pnFactType = new javax.swing.JPanel();
         pnRoles = new javax.swing.JPanel();
         tfFactType = new javax.swing.JTextField();
-        spRoles = new javax.swing.JScrollPane();
+        spRoles = new javax.swing.JScrollPane(tbRoles,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         tbRoles = new javax.swing.JTable();
         spFTs = new javax.swing.JScrollPane();
         tbFactTypes = new javax.swing.JTable();
@@ -617,9 +623,11 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         pnRoles.setLayout(new java.awt.BorderLayout());
 
         tfFactType.setEditable(false);
-        tfFactType.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
-        tfFactType.setForeground(new java.awt.Color(0, 0, 102));
+        tfFactType.setBackground(new java.awt.Color(0, 0, 0));
+        tfFactType.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        tfFactType.setForeground(new java.awt.Color(255, 255, 255));
         tfFactType.setText("No FactType Selected");
+        tfFactType.setBorder(null);
         tfFactType.setName("tfFactType"); // NOI18N
         tfFactType.setPreferredSize(new java.awt.Dimension(1000, 30));
         tfFactType.addActionListener(new java.awt.event.ActionListener() {
@@ -629,13 +637,12 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         });
         pnRoles.add(tfFactType, java.awt.BorderLayout.NORTH);
 
-        spRoles.setBorder(null);
         spRoles.setMinimumSize(new java.awt.Dimension(0, 0));
         spRoles.setName("spRoles"); // NOI18N
         spRoles.setViewportView(tbRoles);
 
-        tbRoles.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        tbRoles.setForeground(new java.awt.Color(0, 0, 102));
+        tbRoles.setBackground(new java.awt.Color(204, 204, 204));
+        tbRoles.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         tbRoles.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -647,6 +654,9 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         tbRoles.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tbRoles.setName("tbRoles"); // NOI18N
         tbRoles.setPreferredSize(null);
+        tbRoles.setRowHeight(24);
+        tbRoles.setSelectionBackground(new java.awt.Color(0, 0, 153));
+        tbRoles.setShowGrid(true);
         tbRoles.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 tbRolesMousePressed(evt);
@@ -665,7 +675,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         spFTs.setViewportView(tbFactTypes);
 
         tbFactTypes.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        tbFactTypes.setForeground(new java.awt.Color(0, 0, 102));
         tbFactTypes.setModel(new equa.configurator.FactTypeTableModel(om));
         tbFactTypes.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tbFactTypes.setFillsViewportHeight(true);
@@ -673,6 +682,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         tbFactTypes.setMinimumSize(null);
         tbFactTypes.setName("tbFactTypes"); // NOI18N
         tbFactTypes.setPreferredSize(null);
+        tbFactTypes.setSelectionBackground(new java.awt.Color(0, 0, 153));
         tbFactTypes.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tbFactTypes.addContainerListener(new java.awt.event.ContainerAdapter() {
             public void componentAdded(java.awt.event.ContainerEvent evt) {
@@ -724,10 +734,10 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         spOperations.setPreferredSize(new java.awt.Dimension(600, 0));
 
         lsOperations.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-        lsOperations.setForeground(new java.awt.Color(0, 0, 102));
         lsOperations.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lsOperations.setName("lsOperations"); // NOI18N
         lsOperations.setPreferredSize(null);
+        lsOperations.setSelectionBackground(new java.awt.Color(0, 0, 153));
         lsOperations.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 lsOperationsValueChanged(evt);
@@ -773,19 +783,20 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (ft == null) {
             lsOperations.setModel(new DefaultListModel<Operation>());
             tfObjecttype.setText("");
-            tfFactType.setText("No FactType Selected");
+            tfFactType.setText(" No FactType Selected");
             tbRoles.setVisible(false);
         } else {
             setRoleTableModel(ft);
             SwingUtils.resize(tbRoles);
             tbRoles.setVisible(true);
-            String roles;
-            if (ft.size() == 1) {
-                roles = "1 role";
-            } else {
-                roles = ft.size() + " roles";
-            }
-            tfFactType.setText(ft.getName() + " [" + ft.getExtendedKind() + "] with " + roles + ":");
+//            String roles;
+//            if (ft.size() == 1) {
+//                roles = "1 role";
+//            } else {
+//                roles = ft.size() + " roles";
+//            }
+            tfFactType.setText(" " + ft.getName() + " [" + ft.getExtendedKind() + "]");
+               // + " with " + roles + ":"*/);
 
             if (ft.isClass()) {
                 ObjectType ot = ft.getObjectType();
@@ -2070,7 +2081,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (factType == null) {
             return;
         }
-
         switchOffFactTypeMenuItems();
         miSearch.setEnabled(factType.isObjectType());
         miRename.setEnabled(true);

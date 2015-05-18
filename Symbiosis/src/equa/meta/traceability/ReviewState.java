@@ -55,6 +55,10 @@ public abstract class ReviewState implements Serializable {
         reviewable.addSource(externalInput);
         this.reviewImpact = Impact.NORMAL;
     }
+    
+    public boolean needsApproval() {
+        return false;
+    }
 
     public abstract boolean isRollBackable(ProjectRole projectRole);
 

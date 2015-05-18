@@ -33,6 +33,10 @@ public class ChangedState extends ReviewState {
         setReviewImpact(Impact.NORMAL);
     }
 
+    public boolean needsApproval() {
+        return true;
+    }
+
     public ApprovedState getPreviousApprovedState() {
         return previous;
     }
@@ -43,7 +47,7 @@ public class ChangedState extends ReviewState {
 
     @Override
     public void change(ExternalInput source, String previousContent)
-            throws ChangeNotAllowedException {
+        throws ChangeNotAllowedException {
         if (reviewable.isOwner(source.getFrom())) {
             reviewable.setReviewState(new ApprovedState(source, previous, previousContent, reviewable));
         } else if (source.getFrom().equals(this.externalInput.getFrom())) {

@@ -24,14 +24,18 @@ public class AddedState extends ReviewState {
         super(source, reviewable);
     }
 
+    public boolean needsApproval() {
+        return true;
+    }
+
     @Override
     public void change(ExternalInput source, String previousContent)
-            throws ChangeNotAllowedException {
+        throws ChangeNotAllowedException {
         if (source.getFrom().equals(this.externalInput.getFrom())) {
             reviewable.addSource(source);
         } else {
             throw new ChangeNotAllowedException("change only allowed by owner or "
-                    + " author");
+                + " author");
         }
     }
 
@@ -41,14 +45,14 @@ public class AddedState extends ReviewState {
             reviewable.setReviewState(new ApprovedState(source, null, null, reviewable));
         } else {
             throw new ChangeNotAllowedException(source.getFrom().getName() + " isn't "
-                    + "owner of " + reviewable.getName());
+                + "owner of " + reviewable.getName());
         }
     }
 
     @Override
     public void remove(ExternalInput source) throws ChangeNotAllowedException {
         throw new ChangeNotAllowedException("removing of a added modelelement"
-                + " isn't allowed; please use a roll back");
+            + " isn't allowed; please use a roll back");
     }
 
     @Override
@@ -57,7 +61,7 @@ public class AddedState extends ReviewState {
             reviewable.setReviewState(new AddRejectedState(externalInput, rejection, reviewable));
         } else {
             throw new ChangeNotAllowedException(rejection.getFrom().getName() + " isn't "
-                    + "owner of " + reviewable.getName());
+                + "owner of " + reviewable.getName());
         }
     }
 
@@ -67,7 +71,7 @@ public class AddedState extends ReviewState {
             reviewable.remove();
         } else {
             throw new ChangeNotAllowedException(participant.getName() + " isn't "
-                    + "author of " + reviewable.getName());
+                + "author of " + reviewable.getName());
         }
     }
 
@@ -78,7 +82,9 @@ public class AddedState extends ReviewState {
 
     @Override
     public boolean isRollBackable(ProjectRole projectRole) {
-        if (externalInput.getFrom()==null) return false;
+        if (externalInput.getFrom() == null) {
+            return false;
+        }
         return externalInput.getFrom().getName().equalsIgnoreCase(projectRole.getName());
     }
 

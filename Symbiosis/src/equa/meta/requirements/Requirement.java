@@ -102,6 +102,8 @@ public abstract class Requirement extends Reviewable
     public void setUrgency(UrgencyKind urgency) {
         this.urgency = urgency;
     }
+    
+    
 
     /**
      * @param impact for this requirement.

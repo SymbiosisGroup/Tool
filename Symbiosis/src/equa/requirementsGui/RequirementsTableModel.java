@@ -1,28 +1,69 @@
 package equa.requirementsGui;
 
+import equa.meta.ChangeNotAllowedException;
 import java.util.ArrayList;
-
-import javax.swing.table.AbstractTableModel;
 
 import equa.meta.requirements.Requirement;
 import equa.meta.traceability.*;
-import java.util.List;
+import equa.project.Project;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 
 @SuppressWarnings("serial")
-public class RequirementsTableModel extends AbstractTableModel {
+public class RequirementsTableModel extends DefaultTableModel {
 
     public static final int COLUMN_NUMBER = 0;
     public static final int COLUMN_NAME = 1;
-    private String[] columnNames = new String[]{"Rlzd", "Name", "Type", "RevSt",/* "Review",*/ "Text"};
-    private ArrayList<Requirement> requirements;
+    private final String[] columnNames = new String[]{"Rlzd", "Name", "Type", "RevSt", "Appr", "Text"};
+    private final ArrayList<Requirement> requirements;
+    private final Project project;
 
-    public RequirementsTableModel(ArrayList<Requirement> reqs) {
+    public RequirementsTableModel(ArrayList<Requirement> reqs, Project project) {
         requirements = reqs;
+        this.project = project;
+    }
 
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        Class clazz = String.class;
+        switch (columnIndex) {
+            case 0:
+                clazz = Boolean.class;
+                break;
+            case 1:
+                clazz = String.class;
+                break;
+            case 2:
+                clazz = String.class;
+                break;
+            case 3:
+                clazz = String.class;
+                break;
+            case 4:
+                clazz = Boolean.class;
+                break;
+            case 5:
+                clazz = String.class;
+                break;
+        }
+        return clazz;
+    }
+
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        if (column != 4) {
+            return false;
+        }
+        Requirement req = requirements.get(row);
+        return req.isApprovable(project.getCurrentUser()) && req.getReviewState().needsApproval();
     }
 
     @Override
     public int getRowCount() {
+        if (requirements == null) {
+            return 0;
+        }
         return requirements.size();
     }
 
@@ -34,11 +75,6 @@ public class RequirementsTableModel extends AbstractTableModel {
     @Override
     public String getColumnName(int col) {
         return columnNames[col];
-    }
-
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        return getValueAt(0, columnIndex).getClass();
     }
 
     @Override
@@ -54,31 +90,42 @@ public class RequirementsTableModel extends AbstractTableModel {
             case 3:
                 return req.getReviewState().toString();
             case 4:
- //               return options(req.getReviewState());
- //           case 5:
+                return !req.getReviewState().needsApproval();
+            case 5:
                 return req.getText();
             default:
                 return null;
         }
     }
 
-    List<String> options(ReviewState state) {
-        List<String> options = new ArrayList<>();
-        if (state instanceof AddedState) {
-            options.add("ok");
-            options.add("rj");
-        } else if (state instanceof ApprovedState) {
-            options.add("rb");
-        } else if (state instanceof ChangedState) {
-            options.add("ok");
-            options.add("rj");
-        } else if (state instanceof RemovedState) {
-            options.add("ok");
-            options.add("rj");
+    @Override
+    public void setValueAt(Object aValue, int row, int column) {
+        if (aValue instanceof Boolean && column == 4) {
+            Requirement req = requirements.get(row);
+            try {
+                req.getReviewState().approve(new ExternalInput("", project.getCurrentUser()));
+            } catch (ChangeNotAllowedException ex) {
+                Logger.getLogger(RequirementsTableModel.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        return options;
     }
 
+//    List<String> options(ReviewState state) {
+//        List<String> options = new ArrayList<>();
+//        if (state instanceof AddedState) {
+//            options.add("ok");
+//            options.add("rj");
+//        } else if (state instanceof ApprovedState) {
+//            options.add("rb");
+//        } else if (state instanceof ChangedState) {
+//            options.add("ok");
+//            options.add("rj");
+//        } else if (state instanceof RemovedState) {
+//            options.add("ok");
+//            options.add("rj");
+//        }
+//        return options;
+//    }
     public Requirement getRequirementAt(int rowIndex) {
         try {
             return requirements.get(rowIndex);

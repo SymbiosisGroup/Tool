@@ -33,6 +33,10 @@ public class RemovedState extends ReviewState {
         setReviewImpact(Impact.NORMAL);
     }
 
+    public boolean needsApproval() {
+        return true;
+    }
+
     public ApprovedState getPreviousApprovedState() {
         return previous;
     }
@@ -40,7 +44,7 @@ public class RemovedState extends ReviewState {
     @Override
     public void change(ExternalInput source, String previousContent) throws ChangeNotAllowedException {
         throw new ChangeNotAllowedException("change is not allowed in case of "
-                + "REMOVED state");
+            + "REMOVED state");
     }
 
     @Override
