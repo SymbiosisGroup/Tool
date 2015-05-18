@@ -51,10 +51,13 @@ import javafx.stage.WindowEvent;
 public class MessageDialog extends Application {
 
     private String message;
-    
-    private MessageDialog(){
-    }
 
+    /**
+     * This starts the MessageDialog.
+     *
+     * @param primaryStage is the Stage the MessageDialog is going to be
+     * displayed on.
+     */
     @Override
     public void start(Stage primaryStage) {
         StackPane root = new StackPane();
@@ -67,6 +70,11 @@ public class MessageDialog extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Creates and shows a new MessageDialog.
+     *
+     * @param message is the message being displayed in the dialog.
+     */
     public static void show(String message) {
         MessageDialog instance = new MessageDialog();
         instance.message = message;

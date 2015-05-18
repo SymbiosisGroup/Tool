@@ -54,6 +54,13 @@ public class SplashScreen extends Application {
     private boolean closing = false;
     private Stage primaryStage;
 
+    /**
+     * This is operation starts the SplashScreen and initializes all of its
+     * components.
+     *
+     * @param primaryStage is the Stage the SplashScreen is going to be
+     * displayed on.
+     */
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -105,42 +112,15 @@ public class SplashScreen extends Application {
         //NewProjectButton
         Button newProjecButton = new Button("New Project");
         newProjecButton.setPrefWidth(380);
-        newProjecButton.setOnMouseClicked((MouseEvent event) -> {
-            //New Project
-            NewProject newProjectWizard = new NewProject(true);
-            try {
-                Stage stage = new Stage();
-                stage.initModality(Modality.WINDOW_MODAL);
-                stage.initOwner(this.primaryStage.getOwner().getScene().getWindow());
-                newProjectWizard.start(stage);
-            } catch (Exception ex) {
-                Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            //This can not be done currently because JAVA will crash!
-//            primaryStage.hide();
-            closing = true;
-            this.primaryStage.close();
+        newProjecButton.setOnAction((ActionEvent event) -> {
+            newProject();
         });
         controlBox.getChildren().add(newProjecButton);
         //OpenProjectButton
         Button openProjecButton = new Button("Open Project");
         openProjecButton.setPrefWidth(380);
         openProjecButton.setOnAction((ActionEvent event) -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Symbiosis Projects", "*.sym"));
-            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-            File openFile = fileChooser.showOpenDialog(this.primaryStage);
-            if (openFile != null) {
-                try {
-                    Project.getProject(openFile);
-                    closing = true;
-                    this.primaryStage.close();
-                } catch (IOException | ClassNotFoundException ex) {
-                    Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                ScreenManager.getMainScreen().refresh();
-            }
+            openProject();
         });
         controlBox.getChildren().add(openProjecButton);
         //QuitButton
@@ -166,7 +146,50 @@ public class SplashScreen extends Application {
         this.primaryStage.show();
     }
 
-    public void show() {
-        this.primaryStage.show();
+    /**
+     * This opens the new project wizard and closes the SplashScreen.
+     */
+    private void newProject() {
+        //Create new Wizard
+        NewProject newProjectWizard = new NewProject(true);
+        try {
+            //Setup the Stage
+            Stage stage = new Stage();
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(this.primaryStage.getOwner().getScene().getWindow());
+            //Run the Wizard
+            newProjectWizard.start(stage);
+            //SplachScreen can close
+            closing = true;
+            this.primaryStage.close();
+        } catch (Exception ex) {
+            Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * This opens the FileChooser dialog to open a new project. If a porject is
+     * opened it closes the SplashScreen.
+     */
+    private void openProject() {
+        //Create the FileChooser
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Symbiosis Projects", "*.sym"));
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        //Open the dialog
+        File openFile = fileChooser.showOpenDialog(this.primaryStage);
+        if (openFile != null) {
+            try {
+                Project.getProject(openFile);
+                //SplachScreen can close
+                closing = true;
+                this.primaryStage.close();
+                //MainScreen can refresh the project.
+                ScreenManager.getMainScreen().refresh();
+            } catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }

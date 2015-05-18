@@ -17,6 +17,7 @@
 package symbiosis.gui;
 
 /**
+ * This contains all screens that can be managed by other screens.
  *
  * @author Jeroen Berkvens
  * @company EQUA
@@ -25,7 +26,6 @@ package symbiosis.gui;
 public abstract class ScreenManager {
 
     private static MainScreen mainScreen;
-    private static SplashScreen splashScreen;
 
     public static void setMainScreen(MainScreen mainScreen) throws Exception {
         if (ScreenManager.mainScreen == null) {
@@ -37,17 +37,5 @@ public abstract class ScreenManager {
 
     public static MainScreen getMainScreen() {
         return ScreenManager.mainScreen;
-    }
-
-    public static void setSplachScreen(SplashScreen splashScreen) throws Exception {
-        if (ScreenManager.splashScreen == null){
-        ScreenManager.splashScreen = splashScreen;
-        }else{
-            throw new Exception("Splach Screen already defined.");            
-        }
-    }
-
-    public static void showSplachScreen() {
-        splashScreen.show();
     }
 }

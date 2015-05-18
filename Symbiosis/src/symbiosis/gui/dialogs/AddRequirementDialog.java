@@ -83,12 +83,21 @@ public class AddRequirementDialog extends Application {
 
     private Stage primaryStage;
 
+    //Start with new Stage.
     public void start() {
         start(new Stage());
     }
 
+    /**
+     * This is operation starts the AddRequirementDialog and initializes all of
+     * its components.
+     *
+     * @param primaryStage is the Stage the AddRequirementDialog is going to be
+     * displayed on.
+     */
     @Override
     public void start(Stage primaryStage) {
+        //Load FXML
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("resources/AddRequirementDialog.fxml"));
         fxmlLoader.setController(this);
         try {
@@ -102,10 +111,14 @@ public class AddRequirementDialog extends Application {
             throw new RuntimeException(exception);
         }
         this.primaryStage = primaryStage;
+        //Setup
         fillComboBoxes();
         addListeners();
     }
 
+    /**
+     * This fills the ComboBoxes with the right values.
+     */
     private void fillComboBoxes() {
         //TypeOptions
         ObservableList<String> typeOptions = FXCollections.observableArrayList();
@@ -174,15 +187,23 @@ public class AddRequirementDialog extends Application {
         verifyMethodComboBox.getSelectionModel().select(0);
     }
 
+    /**
+     * This adds all the listeners.
+     */
     private void addListeners() {
         addRequirementButton.setOnAction((ActionEvent event) -> {
             addRequirement();
         });
     }
 
+    /**
+     * This creates and adds the requirement to the project
+     */
     private void addRequirement() {
+        //Get Data
         Category category = (Category) categoryComboBox.getSelectionModel().getSelectedItem();
         ExternalInput externalInput = new ExternalInput("", Project.getProject().getCurrentUser());
+        //Create Requirement
         Requirement requirement = null;
         switch (typeComboBox.getSelectionModel().getSelectedIndex()) {
             case 0: {
@@ -202,6 +223,7 @@ public class AddRequirementDialog extends Application {
                 break;
             }
         }
+        //Set Requirement Data
         requirement.setImpact((Impact) impactComboBox.getSelectionModel().getSelectedItem());
         requirement.setChanceOfFailure((ChanceOfFailure) chanceOfFailureComboBox.getSelectionModel().getSelectedItem());
         requirement.setMoSCoW((MoSCoW) moscowComboBox.getSelectionModel().getSelectedItem());
@@ -211,6 +233,7 @@ public class AddRequirementDialog extends Application {
         if (requirement.getCategory().isOwner(Project.getProject().getCurrentUser())) {
             requirement.approve(new ExternalInput("added by owner of category", Project.getProject().getCurrentUser()));
         }
+        //Close the dialog and refresh the MainScreen.
         this.primaryStage.close();
         ScreenManager.getMainScreen().refresh();
     }

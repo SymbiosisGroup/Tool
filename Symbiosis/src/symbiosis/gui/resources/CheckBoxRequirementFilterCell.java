@@ -28,6 +28,8 @@ import symbiosis.meta.requirements.Requirement;
 import symbiosis.meta.requirements.RequirementFilter;
 
 /**
+ * A CheckBoxRequirementFilterCell is a cell in a TableView that displays one of
+ * the action buttons for a RequirementFilter.
  *
  * @author Jeroen Berkvens
  * @company EQUA
@@ -39,18 +41,33 @@ public class CheckBoxRequirementFilterCell extends TableCell<RequirementFilter, 
 
     private final TableColumn tableColumn;
 
+    /**
+     * This is the default constructor for the CheckBoxRequirementFilterCell.
+     *
+     * @param param is the TableColumn where this cell is part of.
+     */
     public CheckBoxRequirementFilterCell(Object param) {
         tableColumn = (TableColumn) param;
         tableColumn.setSortable(false);
     }
 
+    /**
+     * The override of the GUI update function. In this function it returns the
+     * CheckBox.
+     *
+     * @param object is used by the super function.
+     * @param empty is true if the cell is empty.
+     */
     @Override
     protected void updateItem(Object object, boolean empty) {
+        //Super function
         super.updateItem(object, empty);
         if (!empty) {
+            //Get RequirementFilter
             final TableRow<RequirementFilter> tableRow = getTableRow();
             final RequirementFilter rowItem = tableRow == null ? null : tableRow.getItem();
             if (rowItem != null) {
+                //Bind CheckBoxSelectedProperty to RequirementFilterSelectedProperty
                 rowItem.bindSelectedProperty(selected.selectedProperty());
             }
             setGraphic(selected);

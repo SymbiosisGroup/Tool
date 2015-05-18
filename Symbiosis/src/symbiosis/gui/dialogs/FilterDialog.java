@@ -64,11 +64,22 @@ public class FilterDialog extends Application {
 
     List<RequirementFilter> values = new LinkedList<>();
 
+    /**
+     * Show a new FilterDialog.
+     *
+     * @param values is a list of RequirementFilters to be displayed.
+     */
     public void start(List<RequirementFilter> values) {
         this.values.addAll(values);
         start(new Stage());
     }
 
+    /**
+     * Start the new FilterDialog and initialize its components.
+     *
+     * @param primaryStage is the stage that the FilterDialog is going to be
+     * displayed on.
+     */
     @Override
     public void start(Stage primaryStage) {
         StackPane root = new StackPane();

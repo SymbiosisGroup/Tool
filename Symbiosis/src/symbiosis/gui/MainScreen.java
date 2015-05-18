@@ -71,13 +71,21 @@ public class MainScreen extends Application {
     @FXML
     private MenuItem filterReadyColumnMenuItem, filterNameColumnMenuItem, filterTypeColumnMenuItem, filterStateColumnMenuItem, filterReviewColumnMenuItem, filterTextColumnMenuItem;
 
-    private List<Requirement> data = new ArrayList();
-    private ObservableList<Requirement> displaying = FXCollections.observableArrayList();
+    private final List<Requirement> data = new ArrayList();
+    private final ObservableList<Requirement> displaying = FXCollections.observableArrayList();
 
     private Stage primaryStage;
 
+    /**
+     * This is operation starts the MainScreen and initializes all of its
+     * components.
+     *
+     * @param primaryStage is the Stage the SplashScreen is going to be
+     * displayed on.
+     */
     @Override
     public void start(Stage primaryStage) {
+        //Load the FXML File
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("resources/MainScreen.fxml"));
         fxmlLoader.setController(this);
         try {
@@ -90,23 +98,19 @@ public class MainScreen extends Application {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-        SplashScreen flashScreen = new SplashScreen();
+
+        //Open the SplashScreen
+        SplashScreen splashScreen = new SplashScreen();
         Stage stage = new Stage();
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(primaryStage.getScene().getWindow());
         this.primaryStage = primaryStage;
-        flashScreen.start(stage);
-        fillTable();
+        splashScreen.start(stage);
+        //Setup
         setup();
-        try {
-            ScreenManager.setMainScreen(this);
-        } catch (Exception ex) {
-            Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
-            MessageDialog.show("The Main Screen already exists this may have resulted in errors.");
-        }
     }
 
-    private void fillTable() {
+    private void setupTable() {
         requitementsTable.setItems(displaying);
         readyColumn.setSortable(false);
         readyColumn.setMinWidth(40);
@@ -154,18 +158,43 @@ public class MainScreen extends Application {
         textColumn.setPrefWidth(tableWidth - readyWidth - nameWidth - typeWidth - stateWidth - reviewWidth - 50);
     }
 
+    /**
+     * Setup the Table fields, the Menu Listeners, and the ScreenManager.
+     */
     private void setup() {
+        setupTable();
         setupMenuListeners();
+        //Set this in ScreemManager
+        try {
+            ScreenManager.setMainScreen(this);
+        } catch (Exception ex) {
+            Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+            MessageDialog.show("The Main Screen already exists this may have resulted in errors.");
+        }
+
     }
 
+    /**
+     * Setup the Main Menu Listeners and the Right Click Menu Listeners.
+     */
     private void setupMenuListeners() {
         setupMainMenuListeners();
-        //Context Menu
-        setupFilters();
+        setupRightClickMenuListeners();
     }
 
+    /**
+     * Setup the Main Menu Listeners. Project Menu and Edit Menu.
+     */
     private void setupMainMenuListeners() {
-        //ProjectMenu
+        setupProjectMenu();
+        setupEditMenu();
+    }
+
+    /**
+     * Setup the Project Menu Listeners.
+     */
+    private void setupProjectMenu() {
+        //New Project
         newProjectMenuItem.setOnAction((ActionEvent event) -> {
             NewProject newProjectWizard = new NewProject(false);
             try {
@@ -177,9 +206,11 @@ public class MainScreen extends Application {
                 Logger.getLogger(SplashScreen.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+        //Save Project
         saveProjectMenuItem.setOnAction((ActionEvent event) -> {
             Project.getProject().save();
         });
+        //Open Project
         openProjectMenuItem.setOnAction((ActionEvent event) -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open");
@@ -195,14 +226,22 @@ public class MainScreen extends Application {
                 ScreenManager.getMainScreen().refresh();
             }
         });
+    }
 
-        //EditMenu
+    /**
+     * Setup the Edit Menu Listeners.
+     */
+    private void setupEditMenu() {
+        //AddRequirement
         addNewRequirementMenuItem.setOnAction((ActionEvent event) -> {
             new AddRequirementDialog().start();
         });
     }
 
-    private void setupFilters() {
+    /**
+     * Setup the Right CLick Menu Listeners.
+     */
+    private void setupRightClickMenuListeners() {
         //Text Filter
         filterTextColumnMenuItem.setOnAction((ActionEvent event) -> {
             List<RequirementFilter> values = new ArrayList<>();
@@ -249,6 +288,10 @@ public class MainScreen extends Application {
         });
     }
 
+    /**
+     * This operation refreshes the requirements being displayed. A refresh
+     * removes all filters.
+     */
     public void refresh() {
         data.clear();
         displaying.clear();
@@ -260,13 +303,25 @@ public class MainScreen extends Application {
         displaying.addAll(data);
     }
 
+    /**
+     * This operation refreshes only one requirement.
+     *
+     * @param requirement the requirement being refreshed.
+     */
     public void refresh(Requirement requirement) {
         if (!data.contains(requirement)) {
             data.add(requirement);
             displaying.add(requirement);
+        } else {
+            //TODO: refresh an already existing requirement.
         }
     }
 
+    /**
+     * This operation filters the requirements view.
+     *
+     * @param selectedFilters the filter that is being applied.
+     */
     public void setFilter(List<RequirementFilter> selectedFilters) {
         displaying.clear();
         selectedFilters.stream().forEach((filter) -> {

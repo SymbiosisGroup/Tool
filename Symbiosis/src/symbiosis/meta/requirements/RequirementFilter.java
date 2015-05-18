@@ -33,12 +33,25 @@ public class RequirementFilter {
     private final Requirement requirement;
     private final FilterProperty selectedFilterProperty;
 
+    /**
+     * Default constructor for the Requirement Filter.
+     *
+     * @param requirement is the requirement this filter is filtering.
+     * @param selectedFilterProperty is the property this filter is filtering.
+     */
     public RequirementFilter(Requirement requirement, FilterProperty selectedFilterProperty) {
         selected = new SimpleBooleanProperty();
         this.requirement = requirement;
         this.selectedFilterProperty = selectedFilterProperty;
     }
 
+    /**
+     * This this operation binds the 'selected' booleanProperty to the
+     * checkBoxValue parameter.
+     *
+     * @param checkBoxValue is the boolean value of the checkBox it is going to
+     * be bind to.
+     */
     public void bindSelectedProperty(Property checkBoxValue) {
         this.selected.bindBidirectional(checkBoxValue);
     }
@@ -98,6 +111,10 @@ public class RequirementFilter {
         return Objects.equals(this.getFilter(), other.getFilter());
     }
 
+    /**
+     * This is the FilterProperty. This is used to specify what property this
+     * filter is filtering on.
+     */
     public enum FilterProperty {
 
         TEXT,

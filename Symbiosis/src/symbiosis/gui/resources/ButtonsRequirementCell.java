@@ -33,6 +33,8 @@ import symbiosis.meta.traceability.ReviewState;
 import symbiosis.project.Project;
 
 /**
+ * A ButtonRequirementCell is a cell in a TableView that displays one of the
+ * action buttons for a Requirement.
  *
  * @author Jeroen Berkvens
  * @company EQUA
@@ -47,12 +49,20 @@ public class ButtonsRequirementCell extends TableCell<Requirement, Object> {
 
     private final TableColumn tableColumn;
 
+    /**
+     * This is the default constructor for the ButtonRequirement Cell.
+     *
+     * @param param is the TableColumn where this cell is part of.
+     */
     public ButtonsRequirementCell(Object param) {
+        //Get Column
         tableColumn = (TableColumn) param;
+        //Set Button width and spacing
         approveButton.setMinWidth(50);
         rejectButton.setMinWidth(50);
         removeButton.setMinWidth(50);
         hBox.setSpacing(10);
+        //Approve Action
         approveButton.setOnAction((ActionEvent t) -> {
             final TableRow<Requirement> tableRow = getTableRow();
             final Requirement rowItem = tableRow == null ? null : tableRow.getItem();
@@ -61,6 +71,7 @@ public class ButtonsRequirementCell extends TableCell<Requirement, Object> {
             }
             ScreenManager.getMainScreen().refresh();
         });
+        //Reject Action
         rejectButton.setOnAction((ActionEvent t) -> {
             final TableRow<Requirement> tableRow = getTableRow();
             final Requirement rowItem = tableRow == null ? null : tableRow.getItem();
@@ -68,6 +79,7 @@ public class ButtonsRequirementCell extends TableCell<Requirement, Object> {
                 rowItem.reject(new ExternalInput("Manually Rejected", Project.getProject().getCurrentUser()));
             }
         });
+        //Remove Action
         removeButton.setOnAction((ActionEvent t) -> {
             final TableRow<Requirement> tableRow = getTableRow();
             final Requirement rowItem = tableRow == null ? null : tableRow.getItem();
@@ -77,14 +89,24 @@ public class ButtonsRequirementCell extends TableCell<Requirement, Object> {
         });
     }
 
+    /**
+     * The override of the GUI update function. In this function it returns the
+     * correct buttons.
+     *
+     * @param object is used by the super function.
+     * @param empty is true if the cell is empty.
+     */
     @Override
     protected void updateItem(Object object, boolean empty) {
+        //Super function
         super.updateItem(object, empty);
         if (!empty) {
+            //Get ReviewState
             final TableRow<Requirement> tableRow = getTableRow();
             final Requirement rowItem = tableRow == null ? null : tableRow.getItem();
             ReviewState reviewState = rowItem == null ? null : rowItem.getReviewState();
             if (reviewState != null) {
+                //Set Buttons
                 if (reviewState == ReviewState.ADDED) {
                     hBox.getChildren().clear();
                     hBox.getChildren().add(approveButton);

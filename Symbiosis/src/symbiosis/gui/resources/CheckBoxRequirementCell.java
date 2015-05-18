@@ -27,6 +27,8 @@ import javafx.scene.layout.HBox;
 import symbiosis.meta.requirements.Requirement;
 
 /**
+ * A CheckBoxRequirementCell is a cell in a TableView that displays the ready
+ * CheckBox of a Requirement.
  *
  * @author Jeroen Berkvens
  * @company EQUA
@@ -38,19 +40,35 @@ public class CheckBoxRequirementCell extends TableCell<Requirement, Object> {
 
     private final TableColumn tableColumn;
 
+    /**
+     * Default Constructor initializing the default states.
+     *
+     * @param param the TableComumn this cell is part of.
+     */
     public CheckBoxRequirementCell(Object param) {
         tableColumn = (TableColumn) param;
         tableColumn.setSortable(false);
         ready.setDisable(true);
     }
 
+
+    /**
+     * The override of the GUI update function. In this function it returns the
+     * CheckBox.
+     *
+     * @param object is used by the super function.
+     * @param empty is true if the cell is empty.
+     */
     @Override
     protected void updateItem(Object object, boolean empty) {
+        //Super function
         super.updateItem(object, empty);
         if (!empty) {
+            //Get Requirement
             final TableRow<Requirement> tableRow = getTableRow();
             final Requirement rowItem = tableRow == null ? null : tableRow.getItem();
             if (rowItem != null) {
+                //Set isRealized
                 ready.setSelected(rowItem.isRealized());
             }
             setGraphic(ready);
