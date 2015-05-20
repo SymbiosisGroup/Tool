@@ -6,13 +6,16 @@
 package equa.util;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
  *
  * @author frankpeeters
  */
-public class GraphicalPrefs {
+public class GraphicalPrefs implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String[] ASPECTS = {"Requirements", "FactTypes", "Roles",
         "FactTypeOfRoles", "ClassHeader", "ClassOperations"};

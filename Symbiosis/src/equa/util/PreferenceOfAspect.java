@@ -6,13 +6,15 @@
 package equa.util;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 /**
  *
  * @author frankpeeters
  */
-public class PreferenceOfAspect {
+public class PreferenceOfAspect implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     public static final int DEFAULT_SIZE = 12;
     public static final Color DEFAULT_BACKGROUND = Color.white;
     public static final Color DEFAULT_FOREGROUND = Color.black;
@@ -55,6 +57,5 @@ public class PreferenceOfAspect {
     public void setFontColor(Color fontColor) {
         this.fontColor = fontColor;
     }
-
 
 }
