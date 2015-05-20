@@ -41,8 +41,11 @@ import equa.project.ProjectMemberRole;
 import equa.project.ProjectRole;
 import equa.util.Naming;
 import equa.swing.gui.SwingUtils;
+import equa.util.GraphicalPrefs;
+import equa.util.PreferenceOfAspect;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
@@ -73,7 +76,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     public static final Color UNRELIABLE = Color.gray;
     private ObjectModel om;
     private Frame parent;
-    private Desktop desktop;
     private DockKey key;
     private boolean reliableClasses;
     private boolean doublejDoc = false;
@@ -82,18 +84,16 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     /**
      * Creates new TypeConfigurator
      */
-    public TypeConfigurator(Desktop desktop, ObjectModel om) {
+    public TypeConfigurator(Frame parent, ObjectModel om) {
         this.om = om;
-        this.desktop = desktop;
-        this.parent = desktop.getFrame();
+        this.parent = parent;
         this.key = new DockKey("ObjectModel Configurator");
         this.key.setCloseEnabled(false);
         initComponents();
-        
+
 //        JScrollPane scrollBar = new JScrollPane(panel,
 //            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 //            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
         pnClass.setSize(splitPane.getWidth() / 2, splitPane.getHeight());
         pnFactType.setSize(splitPane.getWidth() / 2, splitPane.getHeight());
         tfFactType.setLocation(0, 0);
@@ -117,6 +117,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
                 tbRolesMousePressed(evt);
             }
         });
+
     }
 
     public void setObjectModel(ObjectModel om) {
@@ -674,7 +675,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         spFTs.setPreferredSize(new java.awt.Dimension(1000, 1500));
         spFTs.setViewportView(tbFactTypes);
 
-        tbFactTypes.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         tbFactTypes.setModel(new equa.configurator.FactTypeTableModel(om));
         tbFactTypes.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tbFactTypes.setFillsViewportHeight(true);
@@ -733,7 +733,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         spOperations.setName("spOperations"); // NOI18N
         spOperations.setPreferredSize(new java.awt.Dimension(600, 0));
 
-        lsOperations.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         lsOperations.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lsOperations.setName("lsOperations"); // NOI18N
         lsOperations.setPreferredSize(null);
@@ -752,6 +751,41 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         add(splitPane, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    public void initPrefs(GraphicalPrefs prefs){
+
+        PreferenceOfAspect prefCH = prefs.getPreference("ClassHeader");
+        PreferenceOfAspect prefCO = prefs.getPreference("ClassOperations");
+
+        tfObjecttype.setFont(new Font("Lucida Grande", Font.BOLD, prefCH.getFontSize()));
+        tfObjecttype.setBackground(prefCH.getBackground());
+        lsOperations.setFont(new Font("Lucida Grande", Font.PLAIN, prefCO.getFontSize()));
+        lsOperations.setBackground(prefCO.getBackground());
+        if (reliableClasses) {
+            tfObjecttype.setForeground(prefCH.getFontColor());
+            lsOperations.setForeground(prefCO.getFontColor());
+
+        } else {
+            tfObjecttype.setForeground(UNRELIABLE);
+            lsOperations.setForeground(UNRELIABLE);
+        }
+
+        PreferenceOfAspect prefFTs = prefs.getPreference("FactTypes");
+        tbFactTypes.setFont(new Font("Lucida Grande", Font.PLAIN, prefFTs.getFontSize()));
+        tbFactTypes.setBackground(prefFTs.getBackground());
+        tbFactTypes.setForeground(prefFTs.getFontColor());
+        
+        PreferenceOfAspect prefFTRoles = prefs.getPreference("FactTypeOfRoles");
+        tfFactType.setFont(new Font("Lucida Grande",Font.BOLD, prefFTRoles.getFontSize()));
+        tfFactType.setBackground(prefFTRoles.getBackground());
+        tfFactType.setForeground(prefFTRoles.getFontColor());
+        
+        PreferenceOfAspect prefRoles = prefs.getPreference("Roles");
+        tbRoles.setFont(new Font("Lucida Grande",Font.PLAIN, prefRoles.getFontSize()));
+        tbRoles.setBackground(prefRoles.getBackground());
+        tbRoles.setForeground(prefRoles.getFontColor());
+        
+    }
+    
     public final void refresh() {
 
         tbFactTypes.setVisible(false);
@@ -770,15 +804,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             ((TitledBorder) spOperations.getBorder()).setTitle("Operations Class (verbose version)");
         }
 
-        if (reliableClasses) {
-            tfObjecttype.setForeground(RELIABLE);
-            lsOperations.setForeground(RELIABLE);
-
-        } else {
-            tfObjecttype.setForeground(UNRELIABLE);
-            lsOperations.setForeground(UNRELIABLE);
-        }
-
+        
         FactType ft = getSelectedFactType();
         if (ft == null) {
             lsOperations.setModel(new DefaultListModel<Operation>());
@@ -796,7 +822,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 //                roles = ft.size() + " roles";
 //            }
             tfFactType.setText(" " + ft.getName() + " [" + ft.getExtendedKind() + "]");
-               // + " with " + roles + ":"*/);
+            // + " with " + roles + ":"*/);
 
             if (ft.isClass()) {
                 ObjectType ot = ft.getObjectType();

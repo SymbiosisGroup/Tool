@@ -1,5 +1,6 @@
 package equa.project;
 
+import equa.util.GraphicalPrefs;
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -22,6 +23,8 @@ public abstract class ProjectRole implements Comparable<ProjectRole>, Serializab
     private long projectRoleId;
     @Column
     private RoleId id;
+
+    private GraphicalPrefs prefs;
     /**
      *
      */
@@ -82,6 +85,17 @@ public abstract class ProjectRole implements Comparable<ProjectRole>, Serializab
 
     public void setProjectRoleId(long projectRoleId) {
         this.projectRoleId = projectRoleId;
+    }
+
+    public GraphicalPrefs getPrefs() {
+        if (prefs == null) {
+            return GraphicalPrefs.DEFAULT;
+        }
+        return prefs;
+    }
+
+    public void setPrefs(GraphicalPrefs prefs) {
+        this.prefs = prefs;
     }
 
 }

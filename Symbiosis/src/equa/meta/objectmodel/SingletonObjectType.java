@@ -82,7 +82,7 @@ public class SingletonObjectType extends ObjectType {
 
     public String getExtendedKind() {
 
-        return "SINGLETON";
+        return "SNG";
 
     }
 

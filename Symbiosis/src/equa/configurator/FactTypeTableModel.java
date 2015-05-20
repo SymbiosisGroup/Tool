@@ -31,7 +31,7 @@ public class FactTypeTableModel extends AbstractTableAdapter<FactType> {
 
         switch (columnIndex) {
             case 0:
-                return factType.getKind();
+                return factType.getExtendedKind();
             case 1:
                 return factType.getName();
             case 2:

@@ -17,7 +17,7 @@ import javax.swing.table.TableColumnModel;
  */
 public class SwingUtils {
 
-    public static final int ROWHEIGHT = 16;
+    // public static final int ROWHEIGHT = 16;
     public static final int MINWIDTH = 35;
     public static final int MAXWIDTH = 1500;
 

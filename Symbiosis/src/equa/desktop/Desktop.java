@@ -47,7 +47,10 @@ import equa.project.dialog.LoginDialog;
 import equa.project.dialog.NewProjectWizardProvider;
 import equa.project.dialog.OpenProjectJPADialog;
 import equa.project.dialog.ParticipantDialog;
+import equa.project.dialog.PreferenceDialog;
 import equa.requirementsGui.RequirementConfigurator;
+import equa.util.GraphicalPrefs;
+import equa.util.PreferenceOfFactBreakdown;
 import fontys.observer.PropertyListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -180,6 +183,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     private JMenuItem miValueTypes;
     private JMenuItem projectNameMenuItem;
     private JMenuItem propertiesMenuItem;
+    private JMenuItem preferencesMenuItem;
 
     public Desktop(SingleFrameApplication app) {
         super(app);
@@ -214,6 +218,21 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     public Desktop(SingleFrameApplication app, File startUp) {
         this(app);
         openProject(startUp);
+    }
+
+    public GraphicalPrefs getPrefs() {
+        if (projectController == null) {
+            return GraphicalPrefs.DEFAULT;
+        }
+        Project project = projectController.getProject();
+        if (project == null) {
+            return GraphicalPrefs.DEFAULT;
+        }
+        ProjectRole current = project.getCurrentUser();
+        if (current == null) {
+            return GraphicalPrefs.DEFAULT;
+        }
+        return current.getPrefs();
     }
 
     public DockingDesktop getDockingRoot() {
@@ -268,7 +287,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 
             dockingRoot.close(typeConfigurator);
         }
-        typeConfigurator = new TypeConfigurator(this, projectController.getProject().getObjectModel());
+        typeConfigurator = new TypeConfigurator(getFrame(), projectController.getProject().getObjectModel());
         dockingRoot.createTab(requirementConfigurator, typeConfigurator, 2, false);
 
         if (messages != null) {
@@ -519,9 +538,25 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             changeProjectRoleMenuItem.setEnabled(true);
 
         }
+        initPrefs();
+
+    }
+
+    public void initPrefs() {
         if (requirementConfigurator != null) {
+            requirementConfigurator.initPrefs(getPrefs());
             requirementConfigurator.refresh();
         }
+        if (typeConfigurator != null) {
+            typeConfigurator.initPrefs(getPrefs());
+        }
+
+        PreferenceOfFactBreakdown pref = (PreferenceOfFactBreakdown) getPrefs().getPreference("FactBreakdown");
+        Node.READY_COLOR = pref.getReady();
+        Node.VALUE_COLOR = pref.getEditable();
+        Node.SUPERTYPE_COLOR = pref.getInherits();
+        Node.COLLECTION_COLOR = pref.getCollection();
+        FactBreakdown.setFontSize(pref.getFontSize());
     }
 
     /**
@@ -1045,6 +1080,23 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 } catch (NumberFormatException exc) {
                     JOptionPane.showMessageDialog(getFrame(), exc.getMessage());
                 }
+            }
+        });
+
+        preferencesMenuItem = new JMenuItem("Personal Preferences");
+        viewMenu.add(preferencesMenuItem);
+        preferencesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ProjectRole role = projectController.getCurrentUser();
+                if (role != null) {
+                    PreferenceDialog dialog = new PreferenceDialog(getFrame(), role);
+                    dialog.setVisible(true);
+                    initPrefs();
+
+                }
+
             }
         });
 

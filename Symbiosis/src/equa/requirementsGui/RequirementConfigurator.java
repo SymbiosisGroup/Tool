@@ -36,6 +36,7 @@ import com.vlsolutions.swing.docking.Dockable;
 import equa.controller.IView;
 import equa.controller.ProjectController;
 import equa.controller.SwingProjectController;
+import equa.desktop.Desktop;
 import equa.meta.ChangeNotAllowedException;
 import equa.meta.objectmodel.FactType;
 import equa.meta.objectmodel.Initializer;
@@ -62,7 +63,11 @@ import equa.project.Project;
 import equa.project.ProjectRole;
 import equa.project.dialog.EnterRequirementDialog;
 import equa.swing.gui.SwingUtils;
+import equa.util.GraphicalPrefs;
+import equa.util.PreferenceOfAspect;
 import fontys.observer.PropertyListener;
+import java.awt.Color;
+import java.awt.Font;
 import static javax.swing.JTable.AUTO_RESIZE_OFF;
 import javax.swing.ListSelectionModel;
 
@@ -336,7 +341,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         spOther.setViewportView(filterTables[OTHER_FILTER]);
 
         for (int i = 0; i < filterTables.length; i++) {
-                  filterTables[i].setFont(new java.awt.Font("Lucida Grande", 0, 12));
+            filterTables[i].setFont(new java.awt.Font("Lucida Grande", 0, 12));
             filterTables[i].setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
             filterTables[i].getColumnModel().getColumn(0).setPreferredWidth(8);
         }
@@ -359,6 +364,8 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
             "Requirements", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         tblRequirements = new RequirementsTable(new RequirementsTableModel(filteredRequirements, project));
         tblRequirements.setFont(new java.awt.Font("Lucida Grande", 0, 12));
+        tblRequirements.setBackground(Color.white);
+        tblRequirements.setForeground(Color.black);
         panelRequirements.setLayout(new BoxLayout(panelRequirements, BoxLayout.X_AXIS));
         spRequirements = new JScrollPane(tblRequirements, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         spRequirements.setMinimumSize(new Dimension(1500, 1500));
@@ -563,6 +570,13 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
             }
         });
         requirementPopupMenu.add(mntmRollbackRequirement);
+    }
+
+    public void initPrefs(GraphicalPrefs prefs) {
+        PreferenceOfAspect pref = prefs.getPreference("Requirements");
+        tblRequirements.setFont(new java.awt.Font("Lucida Grande", Font.PLAIN, pref.getFontSize()));
+        tblRequirements.setBackground(pref.getBackground());
+        tblRequirements.setForeground(pref.getFontColor());
     }
 
     private void initCategories() {
