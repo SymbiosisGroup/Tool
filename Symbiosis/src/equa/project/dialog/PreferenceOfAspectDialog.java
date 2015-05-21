@@ -29,6 +29,13 @@ public class PreferenceOfAspectDialog extends javax.swing.JDialog {
         background = poa.getBackground();
         fontColor = poa.getFontColor();
         initComponents();
+
+        int index = -1;
+        for (int i = 0; i < cbFontSize.getItemCount(); i++) {
+            if (Integer.parseInt(cbFontSize.getItemAt(i).toString())==poa.getFontSize()){
+                cbFontSize.setSelectedIndex(i);
+            }
+        }
     }
 
     public int getFontSize() {
@@ -76,6 +83,7 @@ public class PreferenceOfAspectDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         cbFontSize.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "12", "14", "16", "18", "20", "22", "24" }));
+        cbFontSize.setSelectedIndex(2);
         cbFontSize.setName("cbFontSize"); // NOI18N
 
         jLabel1.setText("Font Size");
@@ -185,7 +193,7 @@ public class PreferenceOfAspectDialog extends javax.swing.JDialog {
 
         JColorChooser colorChooser = new JColorChooser(Color.black);
         colorChooser.setVisible(true);
-        fontColor =  JColorChooser.showDialog(getParent(), getTitle() + " font color", Color.black);
+        fontColor = JColorChooser.showDialog(getParent(), getTitle() + " font color", Color.black);
         btFontColor.setBackground(fontColor);
         btFontColor.invalidate();
     }//GEN-LAST:event_btFontColorActionPerformed
@@ -198,7 +206,6 @@ public class PreferenceOfAspectDialog extends javax.swing.JDialog {
         btBackground.invalidate();
     }//GEN-LAST:event_btBackgroundActionPerformed
 
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btBackground;

@@ -47,8 +47,10 @@ public class PreferenceDialog extends javax.swing.JDialog {
         btReady = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(170, 300));
 
         jPanel1.setName("jPanel1"); // NOI18N
+        jPanel1.setPreferredSize(new java.awt.Dimension(200, 297));
 
         btRequirements.setText("Requirements");
         btRequirements.setName("btRequirements"); // NOI18N
@@ -82,7 +84,8 @@ public class PreferenceDialog extends javax.swing.JDialog {
             }
         });
 
-        btFactBreakdown.setText("FactBreakdown");
+        btFactBreakdown.setText("Fact Breakdown");
+        btFactBreakdown.setEnabled(false);
         btFactBreakdown.setName("btFactBreakdown"); // NOI18N
         btFactBreakdown.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -92,6 +95,7 @@ public class PreferenceDialog extends javax.swing.JDialog {
 
         jPanel2.setBackground(new java.awt.Color(153, 153, 153));
         jPanel2.setName("jPanel2"); // NOI18N
+        jPanel2.setPreferredSize(new java.awt.Dimension(183, 20));
 
         btReset.setText("Reset");
         btReset.setName("btReset"); // NOI18N
@@ -116,9 +120,9 @@ public class PreferenceDialog extends javax.swing.JDialog {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btReset)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btReady)
-                .addContainerGap(211, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btReady, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,45 +138,66 @@ public class PreferenceDialog extends javax.swing.JDialog {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(btFactBreakdown, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btRoles, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btFactTypes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btRequirements, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btClassOperations, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addContainerGap(227, Short.MAX_VALUE)))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btFactBreakdown, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btRoles, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btFactTypes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btRequirements, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btClassOperations, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(249, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btRequirements)
+                .addGap(18, 18, 18)
+                .addComponent(btFactTypes)
+                .addGap(18, 18, 18)
+                .addComponent(btRoles)
+                .addGap(18, 18, 18)
+                .addComponent(btClassOperations)
+                .addGap(18, 18, 18)
+                .addComponent(btFactBreakdown)
+                .addGap(18, 18, 18)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(btRequirements)
-                    .addGap(18, 18, 18)
-                    .addComponent(btFactTypes)
-                    .addGap(18, 18, 18)
-                    .addComponent(btRoles)
-                    .addGap(18, 18, 18)
-                    .addComponent(btClassOperations)
-                    .addGap(18, 18, 18)
-                    .addComponent(btFactBreakdown)
-                    .addContainerGap(74, Short.MAX_VALUE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btReadyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReadyActionPerformed
+        setVisible(false);
+    }//GEN-LAST:event_btReadyActionPerformed
+
+    private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btResetActionPerformed
+        projectRole.setPrefs(GraphicalPrefs.DEFAULT);
+        setVisible(false);
+    }//GEN-LAST:event_btResetActionPerformed
+
+    private void btFactBreakdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFactBreakdownActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btFactBreakdownActionPerformed
+
+    private void btClassOperationsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btClassOperationsActionPerformed
+        showDialog("ClassOperations");
+    }//GEN-LAST:event_btClassOperationsActionPerformed
+
+    private void btRolesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRolesActionPerformed
+        showDialog("Roles");
+    }//GEN-LAST:event_btRolesActionPerformed
+
+    private void btFactTypesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFactTypesActionPerformed
+        showDialog("FactTypes");
+    }//GEN-LAST:event_btFactTypesActionPerformed
 
     private void btRequirementsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRequirementsActionPerformed
         showDialog("Requirements");
@@ -186,31 +211,6 @@ public class PreferenceDialog extends javax.swing.JDialog {
                 new PreferenceOfAspect(dialog.getFontSize(), dialog.getFontColor(), dialog.getBackground()));
         }
     }
-
-    private void btFactTypesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFactTypesActionPerformed
-        showDialog("FactTypes");
-    }//GEN-LAST:event_btFactTypesActionPerformed
-
-    private void btRolesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRolesActionPerformed
-        showDialog("Roles");
-    }//GEN-LAST:event_btRolesActionPerformed
-
-    private void btClassOperationsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btClassOperationsActionPerformed
-        showDialog("ClassOperations");
-    }//GEN-LAST:event_btClassOperationsActionPerformed
-
-    private void btFactBreakdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFactBreakdownActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btFactBreakdownActionPerformed
-
-    private void btReadyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReadyActionPerformed
-        setVisible(false);
-    }//GEN-LAST:event_btReadyActionPerformed
-
-    private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btResetActionPerformed
-        projectRole.setPrefs(GraphicalPrefs.DEFAULT);
-        setVisible(false);
-    }//GEN-LAST:event_btResetActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
