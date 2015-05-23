@@ -6,8 +6,8 @@
 package equa.project.dialog;
 
 import equa.project.ProjectRole;
-import equa.util.GraphicalPrefs;
-import equa.util.PreferenceOfAspect;
+import equa.gui.GraphicalPrefs;
+import equa.gui.PreferenceOfAspect;
 import java.awt.Frame;
 
 /**

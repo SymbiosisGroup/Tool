@@ -5,7 +5,7 @@
  */
 package equa.project.dialog;
 
-import equa.util.PreferenceOfAspect;
+import equa.gui.PreferenceOfAspect;
 import java.awt.Color;
 import javax.swing.JColorChooser;
 

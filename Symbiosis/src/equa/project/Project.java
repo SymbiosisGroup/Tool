@@ -58,6 +58,7 @@ import equa.util.DataSet;
 import fontys.observer.BasicPublisher;
 import fontys.observer.PropertyListener;
 import fontys.observer.Publisher;
+import java.util.Collections;
 
 /**
  * Class to represent a Project, which stores the participants and models. <br>
@@ -336,14 +337,17 @@ public class Project implements Serializable, Publisher {
         this.name = name;
     }
 
-    /**
-     * Unconstrained RETRIEVE operation.
-     *
-     * @return the iterator with all categories that can be used in this
-     * Project.
-     */
-    public Iterator<Category> getCategories() {
-        return categories.iterator();
+//    /**
+//     * Unconstrained RETRIEVE operation.
+//     *
+//     * @return the iterator with all categories that can be used in this
+//     * Project.
+//     */
+//    public Iterator<Category> getCategoriesIterator() {
+//        return categories.iterator();
+//    }
+    public Set<Category> getCategories() {
+        return Collections.unmodifiableSet(categories);
     }
 
     /**
@@ -358,7 +362,7 @@ public class Project implements Serializable, Publisher {
      * <b>null</b> is returned.
      */
     public Category getCategory(String code) {
-        Iterator<Category> itCategories = getCategories();
+        Iterator<Category> itCategories = categories.iterator();
         while (itCategories.hasNext()) {
             Category category = itCategories.next();
             if (category.getCode().equalsIgnoreCase(code)

@@ -4,6 +4,7 @@
  */
 package equa.configurator;
 
+import com.sun.javafx.font.freetype.FTFactory;
 import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
 import static equa.code.ImportType.Collection;
@@ -40,15 +41,17 @@ import equa.meta.traceability.ExternalInput;
 import equa.project.ProjectMemberRole;
 import equa.project.ProjectRole;
 import equa.util.Naming;
-import equa.swing.gui.SwingUtils;
-import equa.util.GraphicalPrefs;
-import equa.util.PreferenceOfAspect;
+import equa.gui.swing.SwingUtils;
+import equa.gui.GraphicalPrefs;
+import equa.gui.PreferenceOfAspect;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -63,6 +66,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
 /**
@@ -751,7 +755,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         add(splitPane, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    public void initPrefs(GraphicalPrefs prefs){
+    public void initPrefs(GraphicalPrefs prefs) {
 
         PreferenceOfAspect prefCH = prefs.getPreference("ClassHeader");
         PreferenceOfAspect prefCO = prefs.getPreference("ClassOperations");
@@ -773,19 +777,18 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         tbFactTypes.setFont(new Font("Lucida Grande", Font.PLAIN, prefFTs.getFontSize()));
         tbFactTypes.setBackground(prefFTs.getBackground());
         tbFactTypes.setForeground(prefFTs.getFontColor());
-        
+
         PreferenceOfAspect prefFTRoles = prefs.getPreference("FactTypeOfRoles");
-        tfFactType.setFont(new Font("Lucida Grande",Font.BOLD, prefFTRoles.getFontSize()));
+        tfFactType.setFont(new Font("Lucida Grande", Font.BOLD, prefFTRoles.getFontSize()));
         tfFactType.setBackground(prefFTRoles.getBackground());
         tfFactType.setForeground(prefFTRoles.getFontColor());
-        
+
         PreferenceOfAspect prefRoles = prefs.getPreference("Roles");
-        tbRoles.setFont(new Font("Lucida Grande",Font.PLAIN, prefRoles.getFontSize()));
+        tbRoles.setFont(new Font("Lucida Grande", Font.PLAIN, prefRoles.getFontSize()));
         tbRoles.setBackground(prefRoles.getBackground());
         tbRoles.setForeground(prefRoles.getFontColor());
-        
     }
-    
+
     public final void refresh() {
 
         tbFactTypes.setVisible(false);
@@ -804,7 +807,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             ((TitledBorder) spOperations.getBorder()).setTitle("Operations Class (verbose version)");
         }
 
-        
         FactType ft = getSelectedFactType();
         if (ft == null) {
             lsOperations.setModel(new DefaultListModel<Operation>());
@@ -2255,6 +2257,13 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         tbFactTypes.getColumn(FactTypeTableModel.COLUMN_NAMES[2]).setMinWidth(360);
         tbFactTypes.getColumn(FactTypeTableModel.COLUMN_NAMES[3]).setMinWidth(50);
         tbFactTypes.getColumn(FactTypeTableModel.COLUMN_NAMES[4]).setMinWidth(50);
+
+        JTableHeader header = tbFactTypes.getTableHeader();
+        header.setToolTipText("FT = Pure Fact Type; OT = Concrete Object Type; AT = Abstract Object Type; "
+            + "SG = Singleton Object Type; VT = Value Type; CB = Constrained Base Type; "
+            + "SQ = Sequence Type; ST = Set Type");
+
+
     }
 
     public void setReliable(boolean reliable) {

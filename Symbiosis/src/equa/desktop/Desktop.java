@@ -49,8 +49,8 @@ import equa.project.dialog.OpenProjectJPADialog;
 import equa.project.dialog.ParticipantDialog;
 import equa.project.dialog.PreferenceDialog;
 import equa.requirementsGui.RequirementConfigurator;
-import equa.util.GraphicalPrefs;
-import equa.util.PreferenceOfFactBreakdown;
+import equa.gui.GraphicalPrefs;
+import equa.gui.PreferenceOfFactBreakdown;
 import fontys.observer.PropertyListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -1139,7 +1139,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                     try (BufferedReader in = new BufferedReader(new FileReader(file))) {
                         Map<String, List<String>> reqs = scanReqs(in);
                         ArrayList<Category> cats = new ArrayList<>();
-                        Iterator<Category> it = project.getCategories();
+                        Iterator<Category> it = project.getCategories().iterator();
                         while (it.hasNext()) {
                             cats.add(it.next());
                         }
@@ -1737,7 +1737,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             return;
         }
 
-        File file = new File(fileChooser.getSelectedFile() + ".txt");
+        File file = new File(fileChooser.getSelectedFile() + "");
         {
             try (PrintWriter out = new PrintWriter(new FileWriter(file))) {
                 Project project = projectController.getProject();
@@ -1752,9 +1752,10 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 
                 while (itActions.hasNext()) {
                     Requirement req = itActions.next();
-                    //  if (req.isManuallyCreated()) 
-                    if (!req.getCategory().equals(Category.SYSTEM)) {
-                        out.println(req.getId() + ":\t" + req.getText());
+                    if (req.isManuallyCreated()) {
+                        if (!req.getCategory().equals(Category.SYSTEM)) {
+                            out.println(req.getId() + ":\t" + req.getText());
+                        }
                     }
                 }
                 Iterator<FactRequirement> itFacts = rm.facts();
@@ -1763,9 +1764,10 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 
                 while (itFacts.hasNext()) {
                     Requirement req = itFacts.next();
-                    //  if (req.isManuallyCreated()) 
-                    if (!req.getCategory().equals(Category.SYSTEM)) {
-                        out.println(req.getId() + ":\t" + req.getText());
+                    if (req.isManuallyCreated()) {
+                        if (!req.getCategory().equals(Category.SYSTEM)) {
+                            out.println(req.getId() + ":\t" + req.getText());
+                        }
                     }
                 }
                 Iterator<RuleRequirement> itRules = rm.rules();
@@ -1774,9 +1776,10 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 
                 while (itRules.hasNext()) {
                     Requirement req = itRules.next();
-                    //  if (req.isManuallyCreated()) 
-                    if (!req.getCategory().equals(Category.SYSTEM)) {
-                        out.println(req.getId() + ":\t" + req.getText());
+                    if (req.isManuallyCreated()) {
+                        if (!req.getCategory().equals(Category.SYSTEM)) {
+                            out.println(req.getId() + ":\t" + req.getText());
+                        }
                     }
                 }
                 Iterator<QualityAttribute> itQAs = rm.attributes();
@@ -1785,12 +1788,14 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 
                 while (itQAs.hasNext()) {
                     Requirement req = itQAs.next();
-                    //  if (req.isManuallyCreated()) 
-                    if (!req.getCategory().equals(Category.SYSTEM)) {
-                        out.println(req.getId() + ":\t" + req.getText());
+                    if (req.isManuallyCreated()) {
+                        if (!req.getCategory().equals(Category.SYSTEM)) {
+                            out.println(req.getId() + ":\t" + req.getText());
+                        }
                     }
                 }
                 out.println();
+
                 showMessage("Requirements have been written to " + file.getPath(), "Requirements as Text");
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(getFrame(), ex.getMessage());

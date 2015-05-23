@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package equa.util;
+package equa.gui;
 
+import equa.gui.PreferenceOfAspect;
 import java.awt.Color;
 
 /**

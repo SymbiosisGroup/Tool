@@ -62,12 +62,15 @@ import equa.meta.traceability.RemovedState;
 import equa.project.Project;
 import equa.project.ProjectRole;
 import equa.project.dialog.EnterRequirementDialog;
-import equa.swing.gui.SwingUtils;
-import equa.util.GraphicalPrefs;
-import equa.util.PreferenceOfAspect;
+import equa.gui.swing.SwingUtils;
+import equa.gui.GraphicalPrefs;
+import equa.gui.PreferenceOfAspect;
+import equa.meta.traceability.SystemCategory;
 import fontys.observer.PropertyListener;
 import java.awt.Color;
 import java.awt.Font;
+import java.util.Collections;
+import java.util.Set;
 import static javax.swing.JTable.AUTO_RESIZE_OFF;
 import javax.swing.ListSelectionModel;
 
@@ -97,6 +100,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
     private JMenuItem mntmEventRuleAssignment;
     private JMenuItem mntmInitializeAssignment;
     private JScrollPane spRequirements;
+    private JScrollPane spCategories;
 
     private JPanel panelCategories;
     private JPanel panelState;
@@ -118,24 +122,20 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
             project = projectController.getProject();
             projectController.addView(this);
             initView();
-            initCategories();
-            deselectSYS();
-            refresh();
         } else if (!controller.getProject().equals(project)) {
             project = controller.getProject();
-            initCategories();
-            deselectSYS();
-            refresh();
         }
-
+        initCategories();
+        deselectSYS();
+        refresh();
     }
 
     @Override
     public void refresh() {
         selectFilteredRequirements();
         SwingUtils.resize(tblRequirements);
-        tblRequirements.setVisible(true);
-        spRequirements.updateUI();
+        //tblRequirements.setVisible(true);
+        //spRequirements.updateUI();
         initPopup();
     }
 
@@ -200,18 +200,16 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         panelOther = new JPanel();
 
         //***** Categories ***************************************************************
-        JScrollPane spCat = new JScrollPane();
-        spCat.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        spCategories = new JScrollPane();
+        spCategories.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         GroupLayout gl_panelCategories = new GroupLayout(panelCategories);
         gl_panelCategories.setHorizontalGroup(
             gl_panelCategories.createParallelGroup(Alignment.LEADING)
-            .addComponent(spCat, GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE));
+            .addComponent(spCategories, GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE));
         gl_panelCategories.setVerticalGroup(
             gl_panelCategories.createParallelGroup(Alignment.LEADING)
-            .addComponent(spCat, GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE));
+            .addComponent(spCategories, GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE));
         panelCategories.setLayout(gl_panelCategories);
-        initCategories();
-        spCat.setViewportView(filterTables[CATEGORY]);
 
         //***** Requirement Kind *********************************************************
         JScrollPane spKind = new JScrollPane();
@@ -340,9 +338,9 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         filterTables[OTHER_FILTER] = new JTable(new FilterTableModel(this, "OtherFilter", others));
         spOther.setViewportView(filterTables[OTHER_FILTER]);
 
-        for (int i = 0; i < filterTables.length; i++) {
+        // init of filterTables[0], see initCategories()
+        for (int i = 1; i < filterTables.length; i++) {
             filterTables[i].setFont(new java.awt.Font("Lucida Grande", 0, 12));
-            filterTables[i].setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
             filterTables[i].getColumnModel().getColumn(0).setPreferredWidth(8);
         }
 
@@ -580,17 +578,12 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
     }
 
     private void initCategories() {
-        if (projectController.getProject() == null) {
-            return;
-        }
-        Iterator<Category> itCategories = projectController.getProject().getCategories();
         ArrayList<RequirementFilter> categories;
-        categories = new ArrayList<>();
-        while (itCategories.hasNext()) {
-            categories.add(itCategories.next());
-        }
-
+        categories = new ArrayList<>(projectController.getProject().getCategories());
         filterTables[CATEGORY] = new JTable(new FilterTableModel(this, "Categories", categories));
+        filterTables[CATEGORY].setFont(new java.awt.Font("Lucida Grande", 0, 12));
+        filterTables[CATEGORY].getColumnModel().getColumn(0).setPreferredWidth(8);
+        spCategories.setViewportView(filterTables[CATEGORY]);
     }
 
     private boolean filtered(Requirement req) {
@@ -604,15 +597,17 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
     }
 
     private void deselectSYS() {
-        FilterTableModel tableModel = (FilterTableModel) filterTables[CATEGORY].getModel();
-        for (int row = 0; row < tableModel.getRowCount(); row++) {
-            Category cat = (Category) tableModel.getValueAt(row, 1);
-            if (cat.equals(Category.SYSTEM)) {
-                tableModel.setValueAt(Boolean.FALSE, row, 0);
+        FilterTableModel catFilterTableModel = (FilterTableModel) filterTables[CATEGORY].getModel();
+        for (int row = 0; row < catFilterTableModel.getRowCount(); row++) {
+            Category cat = (Category) catFilterTableModel.getValueAt(row, 1);
+            if (cat.equals(SystemCategory.SYSTEM)) {
+                catFilterTableModel.setValueAt(Boolean.FALSE, row, 0);
             } else {
-                tableModel.setValueAt(Boolean.TRUE, row, 0);
+                catFilterTableModel.setValueAt(Boolean.TRUE, row, 0);
             }
+
         }
+
     }
 
     public class RequirementsTable extends JTable {
@@ -759,7 +754,6 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
             }
         }
         tblRequirements.setModel(new RequirementsTableModel(filteredRequirements, project));
-        //(new TableColumnAdjuster(tblRequirements)).adjustColumns();
     }
 
     public void openEnterRequirementDialog() {

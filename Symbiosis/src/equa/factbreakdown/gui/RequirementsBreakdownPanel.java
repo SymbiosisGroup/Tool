@@ -22,7 +22,7 @@ import equa.controller.IView;
 import equa.controller.ProjectController;
 import equa.controller.SwingProjectController;
 import equa.meta.requirements.FactRequirement;
-import equa.swing.gui.StepByStepListCellRenderer;
+import equa.gui.swing.StepByStepListCellRenderer;
 
 public class RequirementsBreakdownPanel extends JPanel implements IView, Dockable {
 

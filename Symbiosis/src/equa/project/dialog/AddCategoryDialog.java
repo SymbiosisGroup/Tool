@@ -28,7 +28,7 @@ import equa.meta.traceability.Category;
 import equa.project.Project;
 import equa.project.ProjectRole;
 import equa.project.StakeholderRole;
-import equa.swing.gui.JTextFieldLimit;
+import equa.gui.swing.JTextFieldLimit;
 
 @SuppressWarnings("serial")
 public class AddCategoryDialog extends JDialog implements IView, WindowListener {

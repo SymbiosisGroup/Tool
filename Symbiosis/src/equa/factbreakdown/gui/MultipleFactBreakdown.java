@@ -21,7 +21,7 @@ import javax.swing.border.TitledBorder;
 import equa.controller.IView;
 import equa.controller.ProjectController;
 import equa.meta.requirements.FactRequirement;
-import equa.swing.gui.StepByStepListCellRenderer;
+import equa.gui.swing.StepByStepListCellRenderer;
 
 @SuppressWarnings("serial")
 public class MultipleFactBreakdown extends JFrame implements IView,

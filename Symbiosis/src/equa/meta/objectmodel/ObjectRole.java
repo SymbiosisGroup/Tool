@@ -607,13 +607,7 @@ public class ObjectRole extends Role {
                 RequirementModel rm = om.getProject().getRequirementModel();
                 ProjectRole projectRole = om.getProject().getCurrentUser();
                 SubstitutionType target = targetType();
-                Category cat = null;
-                if (target instanceof BaseType) {
-                    cat = getCategory();
-                } else {
-                    cat = ((ObjectType) target).getFactType().getCategory();
-                }
-                ActionRequirement action = rm.addActionRequirement(cat,
+                ActionRequirement action = rm.addActionRequirement(getCategory(),
                     "Some actor of the system must get the opportunity to add a "
                     + target.getName(),
                     new ExternalInput(justification, projectRole));
@@ -644,13 +638,7 @@ public class ObjectRole extends Role {
                 RequirementModel rm = om.getProject().getRequirementModel();
                 ProjectRole projectRole = om.getProject().getCurrentUser();
                 SubstitutionType target = targetType();
-                Category cat = null;
-                if (target instanceof BaseType) {
-                    cat = getCategory();
-                } else {
-                    cat = ((ObjectType) target).getFactType().getCategory();
-                }
-                ActionRequirement action = rm.addActionRequirement(cat,
+                ActionRequirement action = rm.addActionRequirement(getCategory(),
                     "Some actor of the system must get the opportunity to remove a "
                     + target.getName(),
                     new ExternalInput(justification, projectRole));

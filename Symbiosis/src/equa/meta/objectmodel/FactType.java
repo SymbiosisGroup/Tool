@@ -1714,15 +1714,12 @@ public class FactType extends ParentElement implements Type, ITerm,
 
     @Override
     public Role getElementAt(int index) {
-        Iterator<Role> it = roles();
-
-        int i = 0;
-        while (i < index && it.hasNext()) {
-            i++;
-            it.next();
-        }
-        if (i == index && it.hasNext()) {
-            return it.next();
+        if (0 <= index && index < roles.size()) {
+            if (ot == null) {
+                return roles.get(index);
+            } else {
+                return roles.get(ot.getOTE().getRoleNumber(index));
+            }
         }
         return null;
     }

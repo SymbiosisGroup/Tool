@@ -93,7 +93,7 @@ public class EnterRequirementDialog extends JDialog implements IView, WindowList
         getContentPane().add(cbKind);
 
         cbCategory = new JComboBox<Category>();
-        Iterator<Category> categories = projectController.getProject().getCategories();
+        Iterator<Category> categories = projectController.getProject().getCategories().iterator();
         while (categories.hasNext()) {
             Category cat = categories.next();
             if (!cat.getCode().equalsIgnoreCase(Category.SYSTEM.getCode())) {
@@ -417,7 +417,7 @@ public class EnterRequirementDialog extends JDialog implements IView, WindowList
     public void refresh() {
         cbCategory.removeAllItems();
 
-        Iterator<Category> categories = projectController.getProject().getCategories();
+        Iterator<Category> categories = projectController.getProject().getCategories().iterator();
         while (categories.hasNext()) {
             Category cat = categories.next();
             if (!cat.getCode().equalsIgnoreCase(Category.SYSTEM.getCode())) {

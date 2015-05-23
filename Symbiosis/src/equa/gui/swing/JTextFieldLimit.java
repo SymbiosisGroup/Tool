@@ -1,4 +1,4 @@
-package equa.swing.gui;
+package equa.gui.swing;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;

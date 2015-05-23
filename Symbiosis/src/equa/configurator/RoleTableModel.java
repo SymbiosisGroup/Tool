@@ -23,11 +23,11 @@ public class RoleTableModel extends AbstractTableAdapter<Role> {
         Role role = getRow(rowIndex);
         switch (columnIndex) {
             case 0:
-                return role.detectRoleName();
+                return " " + role.detectRoleName();
             case 1:
-                return role.getSubstitutionType().toString();
+                return " " + role.getSubstitutionType().toString();
             case 2:
-                return role.getConstraintString();
+                return " " + role.getConstraintString();
             default:
                 return null;
         }

@@ -25,9 +25,10 @@ public class SystemCategory extends Category {
     /**
      * Static {@link Category} of {@link Requirement}s.
      */
-    public static SystemCategory SYSTEM = new SystemCategory();
+    public final static SystemCategory SYSTEM = new SystemCategory();
 
     private SystemCategory() {
+        super("SYS","System",null);
     }
 
     /**

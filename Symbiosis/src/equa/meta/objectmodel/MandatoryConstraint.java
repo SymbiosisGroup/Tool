@@ -26,9 +26,10 @@ public class MandatoryConstraint extends StaticConstraint {
     public MandatoryConstraint(Role role, RuleRequirement source) throws ChangeNotAllowedException {
         super(role, source);
 
-        if (role.getSubstitutionType().isSingleton()) {
+        if (role.getSubstitutionType().isSingleton() && !role.getParent().isDerivable()) {
             throw new ChangeNotAllowedException("mandatory constraints are not "
-                + "allowed in case of a role played by a singleton object type");
+                + "allowed in case of a role played by a singleton object type"
+                + "(except when this fact type is derivable).");
         }
 
         this.role = role;

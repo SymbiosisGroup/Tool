@@ -295,7 +295,7 @@ public class BaseValueRole extends Role {
 
     @Override
     public boolean isCandidateAutoIncr() {
-        return bt.equals(BaseType.NATURAL) && getDefaultValueString()!=null;
+        return bt.equals(BaseType.NATURAL) && getDefaultValueString()==null;
     }
 
     @Override

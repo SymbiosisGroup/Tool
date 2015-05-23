@@ -8,10 +8,11 @@ import equa.meta.traceability.*;
 import equa.project.Project;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
 @SuppressWarnings("serial")
-public class RequirementsTableModel extends DefaultTableModel {
+public class RequirementsTableModel extends AbstractTableModel {
 
     public static final int COLUMN_NUMBER = 0;
     public static final int COLUMN_NAME = 1;
@@ -110,22 +111,7 @@ public class RequirementsTableModel extends DefaultTableModel {
         }
     }
 
-//    List<String> options(ReviewState state) {
-//        List<String> options = new ArrayList<>();
-//        if (state instanceof AddedState) {
-//            options.add("ok");
-//            options.add("rj");
-//        } else if (state instanceof ApprovedState) {
-//            options.add("rb");
-//        } else if (state instanceof ChangedState) {
-//            options.add("ok");
-//            options.add("rj");
-//        } else if (state instanceof RemovedState) {
-//            options.add("ok");
-//            options.add("rj");
-//        }
-//        return options;
-//    }
+
     public Requirement getRequirementAt(int rowIndex) {
         try {
             return requirements.get(rowIndex);

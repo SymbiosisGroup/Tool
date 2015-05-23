@@ -439,7 +439,7 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
     @Override
     public Operation getElementAt(int index) {
 
-        if (index < operations.size()) {
+        if (0<=index && index < operations.size()) {
             Iterator<Operation> it = getOperations(true);
             int i = 0;
             while (i < index) {

@@ -25,6 +25,7 @@ import equa.util.NumberIssue;
 import fontys.observer.BasicPublisher;
 import fontys.observer.PropertyListener;
 import fontys.observer.Publisher;
+import java.util.LinkedList;
 
 /**
  *
@@ -402,7 +403,7 @@ public class RequirementModel extends Model implements Publisher, Serializable {
      * @return an iterator over all requirements of this model
      */
     public Iterator<Requirement> requirements() {
-        TreeSet<Requirement> reqs = new TreeSet<Requirement>(actions);
+        LinkedList<Requirement> reqs = new LinkedList<>(actions);
         reqs.addAll(facts);
         reqs.addAll(rules);
         reqs.addAll(qualityAttributes);

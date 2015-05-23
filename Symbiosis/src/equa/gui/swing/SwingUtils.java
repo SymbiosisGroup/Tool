@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package equa.swing.gui;
+package equa.gui.swing;
 
 import java.awt.Component;
 import java.awt.Dimension;

@@ -24,8 +24,8 @@ public class FilterTableModel extends AbstractTableModel {
     private final RequirementConfigurator requirementConfigurator;
     private int selectedItems;
 
-    public FilterTableModel(RequirementConfigurator requirementViewer, String tableName, List<RequirementFilter> filters) {
-        this.requirementConfigurator = requirementViewer;
+    public FilterTableModel(RequirementConfigurator requirementConfigurator, String tableName, List<RequirementFilter> filters) {
+        this.requirementConfigurator = requirementConfigurator;
         this.tableName = tableName;
         this.filters = filters;
         initSelected(filters.size());
@@ -47,8 +47,8 @@ public class FilterTableModel extends AbstractTableModel {
     }
 
     @Override
-    public Class<?> getColumnClass(int c) {
-        if (c == 0) {
+    public Class<?> getColumnClass(int column) {
+        if (column == 0) {
             return Boolean.class;
         } else {
             return RequirementFilter.class;
@@ -56,8 +56,8 @@ public class FilterTableModel extends AbstractTableModel {
     }
 
     @Override
-    public String getColumnName(int col) {
-        if (col == 0) {
+    public String getColumnName(int column) {
+        if (column == 0) {
             return "";
         } else {
             return tableName;
@@ -65,11 +65,11 @@ public class FilterTableModel extends AbstractTableModel {
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        if (columnIndex == 0) {
-            return selected[rowIndex];
+    public Object getValueAt(int row, int column) {
+        if (column == 0) {
+            return selected[row];
         } else {
-            return filters.get(rowIndex);
+            return filters.get(row);
         }
     }
 
@@ -91,20 +91,6 @@ public class FilterTableModel extends AbstractTableModel {
         }
     }
 
-    public void replaceKeys(List<RequirementFilter> filters) {
-        this.filters = filters;
-        initSelected(filters.size());
-    }
-
-    public boolean isFiltered() {
-
-        return selectedItems > 0;
-    }
-
-    public boolean isKeySelected(int nr) {
-        return selected[nr];
-    }
-
     private void initSelected(int size) {
         selected = new Boolean[size];
         for (int i = 0; i < size; i++) {
@@ -115,6 +101,7 @@ public class FilterTableModel extends AbstractTableModel {
 
     public boolean accepts(Requirement req) {
         if (selectedItems == 0) {
+            //  none of the checkboxes are selected, holds as: all checkboxes are selected
             return true;
         }
         for (int i = 0; i < selected.length; i++) {

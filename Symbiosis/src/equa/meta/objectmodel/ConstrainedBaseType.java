@@ -64,7 +64,7 @@ public class ConstrainedBaseType extends ObjectType implements ListModel<Object>
     @Override
     public void remove(ModelElement member) {
         if (vc != null) {
-           
+
         } else {
             super.remove(member);
         }
@@ -75,9 +75,9 @@ public class ConstrainedBaseType extends ObjectType implements ListModel<Object>
 
         listenerList = new EventListenerList();
     }
-    
-     public String getExtendedKind() {
-         return "CBT";
+
+    public String getExtendedKind() {
+        return "CB";
     }
 
     @Override

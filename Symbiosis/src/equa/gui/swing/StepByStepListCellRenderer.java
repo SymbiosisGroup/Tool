@@ -1,4 +1,4 @@
-package equa.swing.gui;
+package equa.gui.swing;
 
 import java.awt.Color;
 import java.awt.Component;

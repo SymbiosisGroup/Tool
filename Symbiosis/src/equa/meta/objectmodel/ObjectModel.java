@@ -1598,16 +1598,21 @@ public class ObjectModel extends Model implements
 
     @Override
     public FactType getElementAt(int index) {
-        Iterator<FactType> it = typesIterator();
-
-        int i = 0;
-        while (i < index && it.hasNext()) {
-            i++;
-            it.next();
+        String[] names = typeRepository.getNames();
+        if (0<=index && index< names.length){
+            return typeRepository.getFactType(names[index]);
         }
-        if (i == index && it.hasNext()) {
-            return it.next();
-        }
+        
+//        Iterator<FactType> it = typesIterator();
+//
+//        int i = 0;
+//        while (i < index && it.hasNext()) {
+//            i++;
+//            it.next();
+//        }
+//        if (i == index && it.hasNext()) {
+//            return it.next();
+//        }
         return null;
     }
 

@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import equa.meta.DuplicateException;
+import equa.meta.requirements.ActionRequirement;
 import equa.meta.requirements.Requirement;
 import equa.meta.requirements.RequirementFilter;
 import equa.project.Project;
@@ -38,7 +39,7 @@ public class Category implements Comparable<Category>, Serializable, Requirement
     /**
      * Static Category of requirements, see {@link SystemCategory}.
      */
-    public static Category SYSTEM = SystemCategory.SYSTEM;
+    public final static Category SYSTEM = SystemCategory.SYSTEM;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)//, generator = "cat_seq")
@@ -213,7 +214,7 @@ public class Category implements Comparable<Category>, Serializable, Requirement
     @Override
     public String toString() {
         String s
-                = code;
+            = code;
         if (owner != null) {
             s += ", " + owner.getName();
         } else {
@@ -345,4 +346,5 @@ public class Category implements Comparable<Category>, Serializable, Requirement
     public boolean acccepts(Requirement requirement) {
         return requirement.getCategory().equals(this);
     }
+
 }

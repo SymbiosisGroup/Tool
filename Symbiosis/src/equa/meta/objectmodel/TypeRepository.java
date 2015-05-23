@@ -21,6 +21,7 @@ import javax.persistence.MapKeyColumn;
 import equa.meta.ChangeNotAllowedException;
 import equa.meta.DuplicateException;
 import equa.util.Naming;
+import java.util.Set;
 
 /**
  * Class that functions as a repository of {@link FactType}s via a Map data
@@ -45,6 +46,7 @@ public class TypeRepository implements Serializable {
     @ElementCollection
     @MapKeyColumn(name = "ft")
     private Map<String, FactType> types;
+    transient String[] names;
 
     /**
      * DEAFULT CONSTRUCTOR that prepares a new Map to store {@link FactType}s.
@@ -75,6 +77,14 @@ public class TypeRepository implements Serializable {
         return types.get(name.toLowerCase());
     }
 
+    public String[] getNames() {
+        if (names == null) {
+            Set<String> keys = types.keySet();
+            names = keys.toArray(new String[]{});
+        }
+        return names;
+    }
+
     /**
      * Constrained UPDATE operation. The update of the Map of {@link FactType}s
      * in this TypeRepository is constrained by inner-logic to validate if the
@@ -91,6 +101,7 @@ public class TypeRepository implements Serializable {
             return false;
         }
         types.put(nameToLower, candidate);
+        names = null;
         return true;
     }
 
@@ -108,6 +119,7 @@ public class TypeRepository implements Serializable {
     public boolean removeFactType(String name) {
         if (types.containsKey(name.toLowerCase())) {
             types.remove(name.toLowerCase());
+            names = null;
             return true;
         } else {
             return false;
@@ -133,7 +145,7 @@ public class TypeRepository implements Serializable {
      * classes naming conventions.
      */
     public void renameFactType(String newName, FactType candidate)
-            throws DuplicateException, ChangeNotAllowedException {
+        throws DuplicateException, ChangeNotAllowedException {
         String newNameToLower = newName.toLowerCase();
         if (newNameToLower.equals(candidate.getName().toLowerCase())) {
             candidate.rename(Naming.withCapital(newName));
@@ -153,6 +165,7 @@ public class TypeRepository implements Serializable {
                 removeFactType(candidate.getName());
                 candidate.rename(Naming.withCapital(newName));
                 types.put(newNameToLower, candidate);
+                names = null;
             }
         }
     }

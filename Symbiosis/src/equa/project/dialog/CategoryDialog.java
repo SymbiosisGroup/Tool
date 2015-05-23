@@ -98,7 +98,7 @@ public class CategoryDialog extends JDialog implements IView, WindowListener {
 
     protected void refreshCategories() {
         Project project = projectController.getProject();
-        Iterator<Category> categories = project.getCategories();
+        Iterator<Category> categories = project.getCategories().iterator();
         categoriesModel.clear();
         while (categories.hasNext()) {
             categoriesModel.addElement(categories.next());

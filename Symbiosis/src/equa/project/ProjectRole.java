@@ -1,6 +1,6 @@
 package equa.project;
 
-import equa.util.GraphicalPrefs;
+import equa.gui.GraphicalPrefs;
 import java.io.Serializable;
 
 import javax.persistence.Column;
