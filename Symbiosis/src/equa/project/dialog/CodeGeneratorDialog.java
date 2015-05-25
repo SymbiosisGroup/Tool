@@ -151,6 +151,7 @@ public class CodeGeneratorDialog extends JDialog {
                         desktop.showMessage("The OM contains an error; Please generate behaviour with registries", "Generating Source Code");
                     } else {
                         desktop.showMessage("The source code has been generated to destination " + txtLocation.getText(), "Generating Source Code");
+                        desktop.setLatestSrcLocation(txtLocation.getText());
                     }
                     CodeGeneratorDialog.this.dispose();
                 } catch (IOException e1) {
