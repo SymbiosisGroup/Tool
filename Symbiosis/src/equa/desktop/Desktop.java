@@ -1398,15 +1398,17 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                         if (ot != null) {
                             try {
                                 ot.importAlgorithms(f);
-                                Languages.JAVA.language().generate(om, true, true, true, latestSrcLocation);
 
                             } catch (SyntaxException ex) {
                                 Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, ex);
-                            } catch (FileNotFoundException e) {
-                                Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, e);
-                                showMessage("Sourcecode location could not be found. Please try to generate the source code manually to complete synchronization.", "Error");
                             }
                         }
+                    }
+                    try {
+                        Languages.JAVA.language().generate(om, true, true, true, latestSrcLocation);
+                    } catch (FileNotFoundException e) {
+                        Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, e);
+                        showMessage("Sourcecode location could not be found. Please try to generate the source code manually to complete synchronization.", "Error");
                     }
                 }
             }
