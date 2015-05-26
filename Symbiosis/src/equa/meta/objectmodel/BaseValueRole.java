@@ -63,7 +63,7 @@ public class BaseValueRole extends Role {
         if (autoIncrement) {
             if (!bt.equals(BaseType.NATURAL)) {
                 throw new ChangeNotAllowedException(
-                    "auto increment only allowed in case of natural number role");
+                    "Auto increment only allowed in case of natural number role");
             }
             if (getDefaultValueString() != null) {
                 defaultValue.remove();
@@ -74,7 +74,7 @@ public class BaseValueRole extends Role {
             ProjectRole projectRole = om.getProject().getCurrentUser();
 
             RuleRequirement autoIncrRule = rm.addRuleRequirement(getParent().getCategory(),
-                "auto increment",
+                "Auto increment concerning <" + getRoleName() + "> of <" + getParent().getName() +">",
                 new ExternalInput("", projectRole));
             autoIncr = new AutoIncrConstraint(this, autoIncrRule);
 

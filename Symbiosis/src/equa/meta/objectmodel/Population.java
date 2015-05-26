@@ -464,7 +464,7 @@ public class Population extends ParentElement implements Serializable {
             tuple.remove();
         }
         tuples.clear();
-        super.remove();
+       // super.remove();
     }
 
     Category getCategory() {

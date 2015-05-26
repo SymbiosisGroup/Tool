@@ -60,6 +60,9 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -816,6 +819,19 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
+        mainPanel.addComponentListener(new ComponentAdapter() {
+
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if (requirementConfigurator != null && requirementConfigurator.isShowing()) {
+                    requirementConfigurator.refresh();
+                }
+                if (typeConfigurator !=null && typeConfigurator.isShowing()){
+                    typeConfigurator.refresh();
+                }
+            }
+
+        });
         menuBar = new javax.swing.JMenuBar();
         projectMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -1745,57 +1761,68 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 out.println("Name of Project: " + project.getName());
 
                 RequirementModel rm = project.getRequirementModel();
-
-                Iterator<ActionRequirement> itActions = rm.actions();
+                Iterator<Requirement> itReqs = rm.requirements();
                 out.println();
-                out.println("@action");
 
-                while (itActions.hasNext()) {
-                    Requirement req = itActions.next();
+                while (itReqs.hasNext()) {
+                    Requirement req = itReqs.next();
                     if (req.isManuallyCreated()) {
                         if (!req.getCategory().equals(Category.SYSTEM)) {
-                            out.println(req.getId() + ":\t" + req.getText());
+                            out.println("@" + req.getReqType() + "\t" + req.getId());
+                            out.println(req.getText());
                         }
                     }
                 }
-                Iterator<FactRequirement> itFacts = rm.facts();
-                out.println();
-                out.println("@fact");
 
-                while (itFacts.hasNext()) {
-                    Requirement req = itFacts.next();
-                    if (req.isManuallyCreated()) {
-                        if (!req.getCategory().equals(Category.SYSTEM)) {
-                            out.println(req.getId() + ":\t" + req.getText());
-                        }
-                    }
-                }
-                Iterator<RuleRequirement> itRules = rm.rules();
-                out.println();
-                out.println("@rule");
-
-                while (itRules.hasNext()) {
-                    Requirement req = itRules.next();
-                    if (req.isManuallyCreated()) {
-                        if (!req.getCategory().equals(Category.SYSTEM)) {
-                            out.println(req.getId() + ":\t" + req.getText());
-                        }
-                    }
-                }
-                Iterator<QualityAttribute> itQAs = rm.attributes();
-                out.println();
-                out.println("@qa");
-
-                while (itQAs.hasNext()) {
-                    Requirement req = itQAs.next();
-                    if (req.isManuallyCreated()) {
-                        if (!req.getCategory().equals(Category.SYSTEM)) {
-                            out.println(req.getId() + ":\t" + req.getText());
-                        }
-                    }
-                }
-                out.println();
-
+//                Iterator<ActionRequirement> itActions = rm.actions();
+//                out.println();
+//                out.println("@action");
+//
+//                while (itActions.hasNext()) {
+//                    Requirement req = itActions.next();
+//                    if (req.isManuallyCreated()) {
+//                        if (!req.getCategory().equals(Category.SYSTEM)) {
+//                            out.println(req.getId() + ":\t" + req.getText());
+//                        }
+//                    }
+//                }
+//                Iterator<FactRequirement> itFacts = rm.facts();
+//                out.println();
+//                out.println("@fact");
+//
+//                while (itFacts.hasNext()) {
+//                    Requirement req = itFacts.next();
+//                    if (req.isManuallyCreated()) {
+//                        if (!req.getCategory().equals(Category.SYSTEM)) {
+//                            out.println(req.getId() + ":\t" + req.getText());
+//                        }
+//                    }
+//                }
+//                Iterator<RuleRequirement> itRules = rm.rules();
+//                out.println();
+//                out.println("@rule");
+//
+//                while (itRules.hasNext()) {
+//                    Requirement req = itRules.next();
+//                    if (req.isManuallyCreated()) {
+//                        if (!req.getCategory().equals(Category.SYSTEM)) {
+//                            out.println(req.getId() + ":\t" + req.getText());
+//                        }
+//                    }
+//                }
+//                Iterator<QualityAttribute> itQAs = rm.attributes();
+//                out.println();
+//                out.println("@qa");
+//
+//                while (itQAs.hasNext()) {
+//                    Requirement req = itQAs.next();
+//                    if (req.isManuallyCreated()) {
+//                        if (!req.getCategory().equals(Category.SYSTEM)) {
+//                            out.println(req.getId() + ":\t" + req.getText());
+//                        }
+//                    }
+//                }
+//                out.println();
                 showMessage("Requirements have been written to " + file.getPath(), "Requirements as Text");
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(getFrame(), ex.getMessage());

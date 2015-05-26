@@ -229,7 +229,7 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
         pnEventSource.setName("pnEventSource"); // NOI18N
         pnEventSource.setPreferredSize(new java.awt.Dimension(200, 260));
 
-        cbExtending.setText("add/insert");
+        cbExtending.setText("extending");
         cbExtending.setName("cbExtending"); // NOI18N
         cbExtending.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -237,7 +237,7 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
             }
         });
 
-        cbRemoving.setText("remove");
+        cbRemoving.setText("removing");
         cbRemoving.setName("cbRemoving"); // NOI18N
         cbRemoving.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -245,7 +245,7 @@ public class EventRuleAssignmentDialog extends javax.swing.JDialog {
             }
         });
 
-        cbUpdating.setText("set/adjust");
+        cbUpdating.setText("updating");
         cbUpdating.setName("cbUpdating"); // NOI18N
 
         jScrollPane1.setMinimumSize(new java.awt.Dimension(100, 100));

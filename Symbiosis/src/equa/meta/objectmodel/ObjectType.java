@@ -1278,7 +1278,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             Relation relation = it.next().getRelation();
             if (relation != null) {
                 SubstitutionType type = relation.targetType();
-                if (!type.isValueType() && !type.equals(responsible) && !type.isSingleton()) {
+                if (!type.isValueType() && !type.equals(responsible) /*&& !type.isSingleton()*/) {
                     return true;
                 }
             }
@@ -1663,11 +1663,11 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
 
         boolean withRemove = false;
 
-        if (!isLight() && relation.isNavigable() && relation.hasMultipleTarget() && relation.isRemovable()) {
+//        if (!isLight() && relation.isNavigable() && relation.hasMultipleTarget() && relation.isRemovable()) {
 //            Method removeAllMethod = new RemoveAllMethod(relation, this);
 //            codeClass.addOperation(removeAllMethod);
 //            withRemove = true;
-        }
+//        }
         Relation inverse = relation.inverse();
         if (relation.isRemovable()) {
             Method removeMethod = new RemoveMethod(relation, this);
@@ -1688,7 +1688,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             }
         }
 
-        if (withRemove && relation.isComposition()) {
+        if (withRemove && relation.isCreational()) {
             SubstitutionType target = relation.targetType();
             if (target instanceof ObjectType) {
                 ObjectType targetObjectType = (ObjectType) target;

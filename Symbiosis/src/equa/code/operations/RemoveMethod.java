@@ -74,43 +74,66 @@ public class RemoveMethod extends Method implements IActionOperation {
 
         Relation inv = relation.inverse();
 
+        IndentedList trueStatement = new IndentedList();
+        boolean withIf = false;
+
+        // removing at inverse side
         if (relation.isCreational()) {
-            if (getParams().size() > 0) {
-                ObjectType ot = (ObjectType) getParams().get(0).getType();
-                if (ot.getCodeClass().getOperation("stripYourself") != null) {
-                    list.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator() + "stripYourself();");
+            ObjectType ot = (ObjectType) relation.targetType();
+            if (ot.containsObjectFields()) {
+                if (getParams().size() > 0) {
+                    trueStatement.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator() + "stripYourself();");
+                } else {
+                    withIf = true;
+                    trueStatement.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator() + "stripYourself();");
                 }
             }
         } else if (inv != null && inv.isNavigable() && getAccess().equals(AccessModifier.PUBLIC)) {
             if (inv instanceof BooleanRelation) {
-                Operation booleanProp = inv.getOwner().getCodeClass().getProperty(inv);
-                list.addLineAtCurrentIndentation(l.setProperty(relation.name(), booleanProp.getName(), "false"));
+                withIf = true;
+                String caller = relation.fieldName();
+                String method = "set" + Naming.withCapital(inv.name()) + "(false)";
+                trueStatement.addLineAtCurrentIndentation(caller + l.memberOperator() + method + l.endStatement());
             } else {
-                Operation remove = inv.getOwner().getCodeClass().getOperation("remove", inv);
+                String caller;
+                if (getParams().isEmpty()) {
+                    withIf = true;
+                    caller = relation.fieldName();
+                } else {
+                    caller = getParams().get(0).getName();
+                }
                 List<ActualParam> actualParams = new ArrayList<>();
                 if (inv.hasMultipleTarget()) {
                     actualParams.add(new This());
                 }
-                list.addLineAtCurrentIndentation(l.callMethod(relation.name(), remove.getName(), actualParams) + l.endStatement());
+                if (inv instanceof BooleanRelation) {
+                    Operation booleanProp = inv.getOwner().getCodeClass().getProperty(inv);
+                    trueStatement.addLineAtCurrentIndentation(caller + l.memberOperator() + booleanProp.callString() + l.endStatement());
+                } else {
+                    Operation remove = inv.getOwner().getCodeClass().getOperation("remove", inv);
+                    trueStatement.addLineAtCurrentIndentation(caller + l.memberOperator() + remove.callString(actualParams) + l.endStatement());
+                }
             }
         }
 
-        // if its a collection we call collection.remove(role);
-        if (relation.hasMultipleTarget()) {
-            list.addLineAtCurrentIndentation(l.removeStatement(relation, getParams().get(0).getName()));
-
+        // removing at this side
+        if (!getParams().isEmpty()) {
+            trueStatement.addLineAtCurrentIndentation(l.removeStatement(relation, getParams().get(0).getName()));
         } else {
-            //else we either set the boolean of the defined property to false.
-            if (relation.targetType() instanceof BaseType && !relation.targetType().equals(BaseType.STRING)) {
-                list.addLineAtCurrentIndentation(l.assignment(relation.fieldName() + "Defined", "false"));
+            // else we either set the boolean of the defined property to false.
+            if (relation.targetType() instanceof BaseType && ((BaseType) relation.targetType()).getUndefinedString() == null) {
+                trueStatement.addLineAtCurrentIndentation(l.assignment(relation.fieldName() + "Defined", "false"));
                 // or we set the field to null
             } else {
-                if (relation.isComposition()) {
-                    list.addLineAtCurrentIndentation(relation.fieldName() + l.memberOperator() + "stripYourself();");
-                }
-                list.addLineAtCurrentIndentation(l.assignment(relation.fieldName(), "null"));
+                trueStatement.addLineAtCurrentIndentation(l.assignment(l.thisKeyword() + l.memberOperator() + relation.fieldName(), "null"));
             }
+        }
 
+        if (withIf) {
+            IndentedList ifStatement = l.ifStatement(l.thisKeyword() + l.memberOperator() + relation.fieldName() + " != null", trueStatement);
+            list.addLinesAtCurrentIndentation(ifStatement);
+        } else {
+            list.addLinesAtCurrentIndentation(trueStatement);
         }
 
         list.addLinesAtCurrentIndentation(l.postProcessing(this));

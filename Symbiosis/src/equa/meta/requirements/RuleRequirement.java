@@ -40,7 +40,7 @@ public class RuleRequirement extends Requirement {
      * @param parent of requirement, the requirements model.
      */
     RuleRequirement(int nr, Category cat, String text,
-            ExternalInput source, RequirementModel parent) {
+        ExternalInput source, RequirementModel parent) {
         super(nr, cat, text, source, parent);
     }
 
@@ -54,7 +54,7 @@ public class RuleRequirement extends Requirement {
 
     @Override
     public boolean isRealized() {
-        if (isSystemRule()) {
+        if (getCategory().equals(Category.SYSTEM)) {
             return true;
         }
         return getRealizedModelElement() != null;

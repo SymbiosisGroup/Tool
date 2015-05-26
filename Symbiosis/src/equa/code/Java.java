@@ -1030,6 +1030,25 @@ public class Java implements Language {
                     list.addLinesAtCurrentIndentation(ifStatement(condition, ifTrue));
                 }
 
+                if (inverse != null && inverse.isNavigable() && p.getAccessSetter().equals(AccessModifier.PUBLIC)) {
+
+                    // removing old value at the inverse side
+                    IndentedList trueStatement = new IndentedList();
+                    String removable = "";
+                    if (inverse.hasMultipleTarget()) {
+                        removable = thisKeyword();
+                    }
+
+                    trueStatement.addLineAtCurrentIndentation(
+                        thisKeyword() + memberOperator() + p.getName() + memberOperator() + "stripYourself();");
+                    if (p.getRelation().isMandatory()) {
+                        list.addLinesAtCurrentIndentation(trueStatement);
+                    } else {
+                        IndentedList ifStatement = ifStatement("this." + p.getName() + " != null", trueStatement);
+                        list.addLinesAtCurrentIndentation(ifStatement);
+                    }
+                }
+
                 list.addLineAtCurrentIndentation(createInstance(target, TEMP1, target.getName(), constructorParams.toArray(new String[0])));
 
                 // setting of the field
@@ -1062,6 +1081,10 @@ public class Java implements Language {
                     list.addLinesAtCurrentIndentation(ifStatement(condition, ifTrue));
                 }
 
+                // symmetric relations are by definition two way navigable
+//                if (p.getCodeClass().getParent().equals(p.getReturnType())) {
+//                    inverse = p.getRelation();
+//                }
                 if (inverse != null && inverse.isNavigable() && p.getAccessSetter().equals(AccessModifier.PUBLIC)) {
 
                     // removing old value at the inverse side
@@ -1071,8 +1094,7 @@ public class Java implements Language {
                         removable = thisKeyword();
                     }
 
-                    trueStatement.addLineAtCurrentIndentation(
-                        removeExternalStatement(p.getName(), inverse, removable));
+                    trueStatement.addLineAtCurrentIndentation(removeExternalStatement(p.getName(), inverse, removable));
                     if (p.getRelation().isMandatory()) {
                         list.addLinesAtCurrentIndentation(trueStatement);
                     } else {
@@ -1845,20 +1867,20 @@ public class Java implements Language {
         List<RoleEvent> events = o.getRelation().getEvents();
         for (RoleEvent e : events) {
             if (operation.canTrigger(e)) {
-                FactType booleanFT = e.getCondition();
+                //             FactType booleanFT = e.getCondition();
                 IndentedList trueStatement = new IndentedList();
-                trueStatement.addLineAtCurrentIndentation("this." + e.getNameOfHandler() + "();");
-                if (booleanFT != null) {
-                    Relation booleanRelation = new BooleanRelation((ObjectType) cc.getParent(), booleanFT.getResponsibleRole());
-
-                    Property condition = cc.getProperty(booleanRelation);
-                    //trueStatement.add(bodyStart());
-
-                    //trueStatement.add(bodyClosure());
-                    list.addLinesAtCurrentIndentation(ifStatement(booleanCall(condition.getName()), trueStatement));
-                } else {
-                    list.addLinesAtCurrentIndentation(trueStatement);
-                }
+                trueStatement.addLineAtCurrentIndentation(callMethod(thisKeyword(), e.getNameOfHandler(), e.getParams()) + endStatement());
+//                    if (booleanFT != null) {
+//                    Relation booleanRelation = new BooleanRelation((ObjectType) cc.getParent(), booleanFT.getResponsibleRole());
+//
+//                    Property condition = cc.getProperty(booleanRelation);
+//                    //trueStatement.add(bodyStart());
+//
+//                    //trueStatement.add(bodyClosure());
+//                    list.addLinesAtCurrentIndentation(ifStatement(booleanCall(condition.getName()), trueStatement));
+//                } else {
+                list.addLinesAtCurrentIndentation(trueStatement);
+//                }
             }
         }
 
@@ -1929,10 +1951,10 @@ public class Java implements Language {
             return newInstance(r.targetType(), r.getDefaultValueString() + "");
         } else {
             // compatibility problem
-            if (r.getDefaultValue()==null){
+            if (r.getDefaultValue() == null) {
                 return r.getDefaultValueString();
-            } 
-            return newInstance(r.targetType(), (Tuple)r.getDefaultValue());
+            }
+            return newInstance(r.targetType(), (Tuple) r.getDefaultValue());
         }
     }
 

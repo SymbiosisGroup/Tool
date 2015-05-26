@@ -620,11 +620,12 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         pnFactType.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         pnFactType.setMinimumSize(new java.awt.Dimension(0, 0));
         pnFactType.setName("pnFactType"); // NOI18N
+        pnFactType.setPreferredSize(new java.awt.Dimension(1500, 1654));
         pnFactType.setLayout(new java.awt.BorderLayout());
 
         pnRoles.setBorder(new javax.swing.border.MatteBorder(null));
         pnRoles.setName("pnRoles"); // NOI18N
-        pnRoles.setPreferredSize(new java.awt.Dimension(452, 150));
+        pnRoles.setPreferredSize(new java.awt.Dimension(1500, 150));
         pnRoles.setLayout(new java.awt.BorderLayout());
 
         tfFactType.setEditable(false);
@@ -634,7 +635,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         tfFactType.setText("No FactType Selected");
         tfFactType.setBorder(null);
         tfFactType.setName("tfFactType"); // NOI18N
-        tfFactType.setPreferredSize(new java.awt.Dimension(1000, 30));
+        tfFactType.setPreferredSize(new java.awt.Dimension(1500, 30));
         tfFactType.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tfFactTypeActionPerformed(evt);
@@ -676,7 +677,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         spFTs.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         spFTs.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         spFTs.setName("spFTs"); // NOI18N
-        spFTs.setPreferredSize(new java.awt.Dimension(1000, 1500));
+        spFTs.setPreferredSize(new java.awt.Dimension(1500, 1500));
         spFTs.setViewportView(tbFactTypes);
 
         tbFactTypes.setModel(new equa.configurator.FactTypeTableModel(om));
@@ -961,8 +962,9 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             for (UniquenessConstraint uc : ucs) {
 
                 uc.remove();
-
+                
             }
+            ft.removePermissions();
             reliableClasses = false;
             refresh();
         } else {
@@ -1794,6 +1796,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
     }//GEN-LAST:event_miDeleteEventRuleActionPerformed
 
     private void splitPaneComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_splitPaneComponentResized
+        splitPane.invalidate();
         refresh();
     }//GEN-LAST:event_splitPaneComponentResized
 

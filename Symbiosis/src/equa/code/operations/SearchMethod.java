@@ -38,6 +38,9 @@ public class SearchMethod extends Method implements IActionOperation {
 
     public SearchMethod(Relation relation, ObjectType concreteObjectType, ObjectType parent) {
         super(parent, "get" + Naming.withCapital(relation.name()), null, parent.getCodeClass());
+        if (!concreteObjectType.equals(relation.targetType())){
+            this.name = "get" + concreteObjectType.getName();
+        }
         this.relation = relation;
         List<Param> params = new ArrayList<>();
         for (Relation idrelation : concreteObjectType.getFactType().identifyingRelations()) {

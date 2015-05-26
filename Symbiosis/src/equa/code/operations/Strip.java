@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import equa.code.ImportType;
 import equa.code.IndentedList;
 import equa.code.Language;
+import equa.meta.classrelations.BooleanRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.RoleEvent;
 import equa.meta.objectmodel.ObjectType;
@@ -37,16 +38,19 @@ public class Strip extends Method {
         for (Relation relation : ot.relations(true, false)) {
             Relation inverse = relation.inverse();
             String caller;
+            ObjectType responsible = ot.getResponsible();
             if (inverse != null && (inverse.isNavigable() || relation.getOwner().equals(inverse.getOwner()))
-                && !inverse.isResponsible() && !inverse.isMandatory()) {
+                && responsible != relation.targetType() /*&& !inverse.isMandatory()*/) {
                 String removableObject = "";
                 if (inverse.isSeqRelation() || inverse.isSetRelation()) {
                     removableObject = l.thisKeyword();
                 }
 
                 String method = null;
-                if (ot.creates(relation.targetType())) {
-                    method = "stripYourself()";
+                if (inverse.isMandatory()) {
+                    if (inverse.getOwner().containsObjectFields()) {
+                        method = "stripYourself()";
+                    }
                 } else {
                     if (inverse.isNavigable()) {
                         method = "remove" + Naming.withCapital(inverse.name()) + "(" + removableObject + ")";
@@ -55,32 +59,53 @@ public class Strip extends Method {
                     }
                 }
 
-                if (relation.isSetRelation() || relation.isSeqRelation()) {
-                    IndentedList body = new IndentedList();
-                    caller = relation.name();
+                if (method != null) {
 
-                    body.addLineAtCurrentIndentation(caller + l.memberOperator() + method + l.endStatement());
-                    list.addLinesAtCurrentIndentation(
-                        l.forEachLoop(relation.targetType(), caller,
-                            l.thisKeyword() + l.memberOperator() + relation.fieldName(),
-                            body));
-                } else if (relation.isMapRelation()) {
-                    throw new UnsupportedOperationException("todo: removing of map content");
-                } else {
-                    // removing old value at the inverse side
-                    IndentedList trueStatement = new IndentedList();
-                    caller = l.thisKeyword() + l.memberOperator() + relation.fieldName();
-                    trueStatement.addLineAtCurrentIndentation(caller + l.memberOperator() + method + l.endStatement());
-                    if (relation.isMandatory()) {
-                        list.addLinesAtCurrentIndentation(trueStatement);
+                    if (relation.isSetRelation() || relation.isSeqRelation()) {
+                        IndentedList body = new IndentedList();
+                        caller = relation.name();
+
+                        body.addLineAtCurrentIndentation(caller + l.memberOperator() + method + l.endStatement());
+                        list.addLinesAtCurrentIndentation(
+                            l.forEachLoop(relation.targetType(), caller,
+                                l.thisKeyword() + l.memberOperator() + relation.fieldName(),
+                                body));
+                        list.addLineAtCurrentIndentation(l.clear(relation));
+
+                    } else if (relation.isMapRelation()) {
+                        throw new UnsupportedOperationException("todo: removing of map content");
                     } else {
-                        IndentedList ifStatement = l.ifStatement(l.negate(l.equalsStatement(relation.fieldName(), "null")), trueStatement);
-                        list.addLinesAtCurrentIndentation(ifStatement);
-                    }
+                        // removing old value at the inverse side
+                        IndentedList trueStatement = new IndentedList();
+                        caller = l.thisKeyword() + l.memberOperator() + relation.fieldName();
+                        String finalValue;
+                        if (relation instanceof BooleanRelation) {
+                            caller = inverse.getOwner().getName() + l.memberOperator() + "getSingleton()";
+                            finalValue = "false";
+                        } else {
+                            finalValue = "null";
+                        }
+                        trueStatement.addLineAtCurrentIndentation(caller + l.memberOperator() + method + l.endStatement());
+                        trueStatement.addLineAtCurrentIndentation(l.assignment(relation.fieldName(), finalValue));
+                        if (relation.isMandatory()) {
+                            list.addLinesAtCurrentIndentation(trueStatement);
+                        } else {
+                            IndentedList ifStatement = l.ifStatement(l.negate(l.equalsStatement(relation.fieldName(), finalValue)), trueStatement);
+                            list.addLinesAtCurrentIndentation(ifStatement);
+                        }
 
+                    }
                 }
             }
+            
         }
+        supercall(ot, list, l);
+        //list.addLinesAtCurrentIndendation(l.postProcessing(this));
+        list.addLinesAtCurrentIndentation(l.bodyClosure());
+        return list;
+    }
+
+    private void supercall(ObjectType ot, IndentedList list, Language l) {
         boolean supercall = false;
         while (ot.supertypes().hasNext()) {
             ot = ot.supertypes().next();
@@ -91,10 +116,6 @@ public class Strip extends Method {
         if (supercall) {
             list.addLineAtCurrentIndentation(l.superCall(this, this.getParams()) + l.endStatement());
         }
-        
-        //list.addLinesAtCurrentIndendation(l.postProcessing(this));
-        list.addLinesAtCurrentIndentation(l.bodyClosure());
-        return list;
     }
 
     private String removeExternalStatement(Language l, String caller, Relation inverse) {

@@ -7,6 +7,8 @@ package equa.meta.objectmodel;
 import equa.meta.requirements.Requirement;
 import equa.meta.traceability.ModelElement;
 import equa.meta.traceability.ParentElement;
+import equa.meta.traceability.Source;
+import equa.meta.traceability.SynchronizationMediator;
 
 /**
  *
@@ -47,5 +49,14 @@ public abstract class Constraint extends ModelElement implements ObjectModelReal
     @Override
     public boolean isManuallyCreated() {
         return false;
+    }
+    
+    @Override
+    public void remove(){
+        for (SynchronizationMediator mediator : this.mediators){
+           mediator.removeForward();
+        }
+        this.mediators.clear();
+        super.remove();
     }
 }

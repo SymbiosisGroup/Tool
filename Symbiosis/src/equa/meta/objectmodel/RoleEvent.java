@@ -105,17 +105,20 @@ public class RoleEvent extends Constraint {
             code = new IndentedList();
         }
 
-//        Role eventRole = (Role) getParent();
-//        if (eventRole.getParent().isObjectType()) {
-//            ObjectType type = (ObjectType) eventRole.getSubstitutionType();
-//            params.add(new Param(Naming.withoutCapital(type.getName()), type, new ObjectTypeRelation(type,eventRole)));
-//        } else {
-//            Role cp = eventRole.getParent().counterpart(eventRole);
-//            if (cp != null) {
-//                params.add(new Param(Naming.withoutCapital(cp.getRoleName()), cp.getSubstitutionType(), 
-//                    new FactTypeRelation((ObjectType) eventRole.getSubstitutionType(), eventRole)));
-//            }
-//        }
+        {
+            Role eventRole = (Role) getParent();
+            if (eventRole.getParent().isObjectType()) {
+                ObjectType type = (ObjectType) eventRole.getSubstitutionType();
+                params.add(new Param(Naming.withoutCapital(type.getName()), type, new ObjectTypeRelation(type, eventRole)));
+            } else {
+                Role cp = eventRole.getParent().counterpart(eventRole);
+                if (cp != null) {
+                    params.add(new Param(Naming.withoutCapital(cp.getRoleName()), cp.getSubstitutionType(),
+                        new FactTypeRelation((ObjectType) eventRole.getSubstitutionType(), eventRole)));
+                }
+            }
+        }
+
         ObjectModel om = (ObjectModel) getParent().getParent().getParent();
         Language l = om.getProject().getLastUsedLanguage();
         ot.addAlgorithm(handlerName, AccessModifier.PRIVATE, false, false, null, params, code, api, false,
@@ -146,10 +149,24 @@ public class RoleEvent extends Constraint {
     public void setNegation(boolean negation) {
         this.negation = negation;
     }
+    
+    public List<Param> getParams(){
+        return params;
+    }
 
     @Override
     public String getAbbreviationCode() {
-        return ((Requirement) creationSource()).getId();
+        String abbrev = ((Requirement) creationSource()).getId();
+        if (extending) {
+            abbrev += "_ext";
+        }
+        if (updating) {
+            abbrev += "_upd";
+        }
+        if (removing) {
+            abbrev += "_rem";
+        }
+        return abbrev;
     }
 
     @Override

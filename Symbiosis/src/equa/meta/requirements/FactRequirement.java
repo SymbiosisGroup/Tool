@@ -85,6 +85,7 @@ public class FactRequirement extends Requirement {
      */
     @Override
     public boolean isRealized() {
+        if (getCategory().equals(Category.SYSTEM)) return true;
         Tuple tuple = getRealizedTuple();
         return tuple != null;
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <VLDocking version="2.1">
 <DockingDesktop name="">
-<DockingPanel>
+<DockingPanel x="0" y="23" width="1416" height="540">
 <TabbedDockable>
 <Dockable>
 <Key dockName="ReqModel Configurator"/>

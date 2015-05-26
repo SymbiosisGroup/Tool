@@ -17,6 +17,7 @@ import equa.code.ImportType;
 import equa.code.IndentedList;
 import equa.code.Language;
 import equa.code.systemoperations.UnknownMethod;
+import equa.meta.classrelations.BooleanRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.RoleEvent;
 import equa.meta.objectmodel.ObjectType;
@@ -80,8 +81,12 @@ public class AddObjectTypeMethod extends Method implements IActionOperation {
         List<Param> idParams = idParams();
         if (relation.isAddable()) {
             if (!idParams.isEmpty()) {
-                //Method search = (Method) getCodeClass().getOperation("get" + concreteOT.getName(), relation);
-                Method search = (Method) getCodeClass().getOperation("get" + Naming.withCapital(relation.name()), relation);Call searchCall = search.call(idParams);
+                String searchName = "get" + Naming.withCapital(relation.name());
+                if (!concreteOT.equals(relation.targetType())) {
+                    searchName = "get" + concreteOT.getName();
+                }
+                Method search = (Method) getCodeClass().getOperation(searchName, relation);
+                Call searchCall = search.call(idParams);
                 UnknownMethod unknown = getObjectModel().getUnknownMethod();
                 List<ActualParam> actualParams = new ArrayList<>();
                 actualParams.add(searchCall);
@@ -154,24 +159,39 @@ public class AddObjectTypeMethod extends Method implements IActionOperation {
         }
         list.addLineAtCurrentIndentation(l.createInstance(getReturnType().getType(), TEMP1, concreteOT.getName(), constructorParams.toArray(new String[0])));
         Relation inverse = relation.inverse();
-        if (relation.isSeqRelation() || autoIncr) {
+//        if (relation.isSeqRelation() || autoIncr) 
+        {
             list.addLineAtCurrentIndentation(l.addCollection(relation.fieldName(), relation.collectionType().getKind(), TEMP1));
             //if a value is added to the collection and the inverse relation is navigable, we have to register.
-            
-            if (inverse.isNavigable() && inverse.isCollectionReturnType()) {
-                
-                list.addLineAtCurrentIndentation(l.callMethod(TEMP1, inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()));
+
+            if (inverse.isNavigable()) {
+                if (inverse.isCollectionReturnType()) {
+                    list.addLineAtCurrentIndentation(l.callMethod(TEMP1, inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()));
+                } else if (inverse instanceof BooleanRelation) {
+                    // wrong : JAVA code, it's to specific
+                    list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator()
+                        + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
+                } 
             }
 
-        } else {
-            //if a value is added to the collection and the inverse relation is navigable, we have to register.
-            if (inverse.isNavigable() && inverse.isCollectionReturnType()) {
-                list.addLineAtCurrentIndentation(l.callMethod(TEMP1, inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()));
-            }
-            //we add the item
-            list.addLineAtCurrentIndentation(l.addCollection(relation.fieldName(), relation.collectionType().getKind(), TEMP1));
-
-        }
+        } 
+//        else {
+//            //if a value is added to the collection and the inverse relation is navigable, we have to register.
+//            if (inverse.isNavigable() && inverse.isCollectionReturnType()) {
+//                list.addLineAtCurrentIndentation(l.callMethod(TEMP1, inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()));
+//            } else if (inverse instanceof BooleanRelation) {
+//                // wrong : JAVA code, it's to specific
+//                list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator()
+//                    + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
+//            } else {
+//                // wrong : JAVA code, it's to specific
+//                list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator()
+//                    + "set" + Naming.withCapital(inverse.fieldName()) + "(" + l.thisKeyword() + ")" + l.endStatement());
+//            }
+//            //we add the item
+//            list.addLineAtCurrentIndentation(l.addCollection(relation.fieldName(), relation.collectionType().getKind(), TEMP1));
+//
+//        }
         list.addLinesAtCurrentIndentation(l.postProcessing(this));
         list.addLineAtCurrentIndentation(l.returnStatement(TEMP1));
         list.addLinesAtCurrentIndentation(l.bodyClosure());

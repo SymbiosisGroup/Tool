@@ -490,6 +490,9 @@
               <Dimension value="[0, 0]"/>
             </Property>
             <Property name="name" type="java.lang.String" value="pnFactType" noResource="true"/>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[1500, 1654]"/>
+            </Property>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
@@ -508,7 +511,7 @@
                 </Property>
                 <Property name="name" type="java.lang.String" value="pnRoles" noResource="true"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[452, 150]"/>
+                  <Dimension value="[1500, 150]"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -537,7 +540,7 @@
                     </Property>
                     <Property name="name" type="java.lang.String" value="tfFactType" noResource="true"/>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[1000, 30]"/>
+                      <Dimension value="[1500, 30]"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -607,7 +610,7 @@
                 <Property name="verticalScrollBarPolicy" type="int" value="22"/>
                 <Property name="name" type="java.lang.String" value="spFTs" noResource="true"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[1000, 1500]"/>
+                  <Dimension value="[1500, 1500]"/>
                 </Property>
                 <Property name="viewportView" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
                   <ComponentRef name="tbFactTypes"/>

@@ -4,6 +4,7 @@
  */
 package equa.code.operations;
 
+import static equa.code.CodeNames.TEMP1;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +13,7 @@ import equa.code.Field;
 import equa.code.ImportType;
 import equa.code.IndentedList;
 import equa.code.Language;
+import equa.meta.classrelations.BooleanRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.RoleEvent;
 import equa.meta.objectmodel.ObjectType;
@@ -45,6 +47,13 @@ public class RegisterMethod extends Method implements IRelationalOperation {
         IndentedList list = new IndentedList();
         list.addLinesAtCurrentIndentation(l.operationHeader(this));
         list.addLineAtCurrentIndentation(l.addCollection(relation.fieldName(), relation.collectionType().getKind(), getParams().get(0).getName()));
+        Relation inverse = relation.inverse();
+//        if (getParent().equals(relation.targetType())) {
+//            if (inverse.isCollectionReturnType()) {
+//                list.addLineAtCurrentIndentation(l.callMethod(getParams().get(0).getName(), getName(), l.thisKeyword()) + l.endStatement());
+//            }
+//        }
+
         list.addLinesAtCurrentIndentation(l.postProcessing(this));
         list.addLinesAtCurrentIndentation(l.bodyClosure());
 

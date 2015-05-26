@@ -2191,7 +2191,6 @@ public class FactType extends ParentElement implements Type, ITerm,
 
     public void removeYourself() {
 
-        disconnectRelations();
         if (derivableConstraint != null) {
             derivableConstraint.remove();
             derivableConstraint = null;
@@ -2205,11 +2204,14 @@ public class FactType extends ParentElement implements Type, ITerm,
             defaultBooleanValue = null;
         }
 
-        population.remove();
-        for (Role role : new ArrayList<Role>(roles)) {
+
+      //  disconnectRelations();
+        for (Role role : new ArrayList<>(roles)) {
             role.remove();
         }
         roles.clear();
+        
+        population.remove();
 
         super.remove();
 
@@ -2774,6 +2776,12 @@ public class FactType extends ParentElement implements Type, ITerm,
     void removeQualifiers() {
         for (Role r : roles) {
             r.setQualifier(null);
+        }
+    }
+
+    public void removePermissions() {
+        for(Role role : roles){
+            role.removePermissions();
         }
     }
 

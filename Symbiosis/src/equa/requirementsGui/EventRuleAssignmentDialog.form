@@ -146,7 +146,7 @@
           <SubComponents>
             <Component class="javax.swing.JCheckBox" name="cbExtending">
               <Properties>
-                <Property name="text" type="java.lang.String" value="add/insert"/>
+                <Property name="text" type="java.lang.String" value="extending"/>
                 <Property name="name" type="java.lang.String" value="cbExtending" noResource="true"/>
               </Properties>
               <Events>
@@ -155,7 +155,7 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="cbRemoving">
               <Properties>
-                <Property name="text" type="java.lang.String" value="remove"/>
+                <Property name="text" type="java.lang.String" value="removing"/>
                 <Property name="name" type="java.lang.String" value="cbRemoving" noResource="true"/>
               </Properties>
               <Events>
@@ -164,7 +164,7 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="cbUpdating">
               <Properties>
-                <Property name="text" type="java.lang.String" value="set/adjust"/>
+                <Property name="text" type="java.lang.String" value="updating"/>
                 <Property name="name" type="java.lang.String" value="cbUpdating" noResource="true"/>
               </Properties>
             </Component>

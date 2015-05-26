@@ -76,7 +76,6 @@ public class ObjectRole extends Role {
 
     @Override
     void removeUniquenessConstraint(UniquenessConstraint constraint) {
-        removePermissions();
         for (RoleEvent event : events) {
             event.remove();
         }
@@ -120,9 +119,9 @@ public class ObjectRole extends Role {
             return defaultValue.getValueString();
         }
     }
-    
+
     public Value getDefaultValue() {
-         if (defaultValue == null || !ot.isValueType()) {
+        if (defaultValue == null || !ot.isValueType()) {
             return null;
         } else {
             return defaultValue.getValue();
@@ -163,7 +162,7 @@ public class ObjectRole extends Role {
             }
         }
         events.add(new RoleEvent(rule, this, eventCondition, negation,
-            extending,  updating, removing, eventHandler));
+            extending, updating, removing, eventHandler));
     }
 
     public boolean removeEvent(FactType condition, boolean negation,
@@ -607,7 +606,13 @@ public class ObjectRole extends Role {
                 RequirementModel rm = om.getProject().getRequirementModel();
                 ProjectRole projectRole = om.getProject().getCurrentUser();
                 SubstitutionType target = targetType();
-                ActionRequirement action = rm.addActionRequirement(getCategory(),
+                Category cat = getCategory();
+                if (ot.getFactType().isGenerated()) {
+                    if (target instanceof ObjectType) {
+                        cat = ((ObjectType) target).getFactType().getCategory();
+                    }
+                }
+                ActionRequirement action = rm.addActionRequirement(cat,
                     "Some actor of the system must get the opportunity to add a "
                     + target.getName(),
                     new ExternalInput(justification, projectRole));
@@ -638,7 +643,13 @@ public class ObjectRole extends Role {
                 RequirementModel rm = om.getProject().getRequirementModel();
                 ProjectRole projectRole = om.getProject().getCurrentUser();
                 SubstitutionType target = targetType();
-                ActionRequirement action = rm.addActionRequirement(getCategory(),
+                Category cat = getCategory();
+                if (ot.getFactType().isGenerated()) {
+                    if (target instanceof ObjectType) {
+                        cat = ((ObjectType) target).getFactType().getCategory();
+                    }
+                }
+                ActionRequirement action = rm.addActionRequirement(cat,
                     "Some actor of the system must get the opportunity to remove a "
                     + target.getName(),
                     new ExternalInput(justification, projectRole));
@@ -781,8 +792,8 @@ public class ObjectRole extends Role {
             }
 
             for (RoleEvent event : events) {
-                Requirement rule = (Requirement) event.mostRecentSource();
-                sb.append(rule.getId()).append(" ");
+              //  Requirement rule = (Requirement) event.mostRecentSource();
+                sb.append(event.getAbbreviationCode()).append(" ");
                 eventSource = "";
             }
             if (isEventSource()) {
@@ -862,7 +873,7 @@ public class ObjectRole extends Role {
 
     @Override
     public boolean isResponsible() {
-        if (/*!getParent().isValueType() &&*/ (isAddable() || isRemovable() || isSettable() || isInsertable() || isAdjustable() || isComposition()
+        if (/*!getParent().isValueType() &&*/(isAddable() || isRemovable() || isSettable() || isInsertable() || isAdjustable() || isComposition()
             || isBoolean())) {
             return true;
         }
@@ -903,7 +914,8 @@ public class ObjectRole extends Role {
         } else if (member.equals(defaultValue)) {
 
             defaultValue = null;
-        } else {
+        } else 
+        {
 
             super.remove(member);
         }
@@ -984,7 +996,7 @@ public class ObjectRole extends Role {
 
     @Override
     public boolean isCandidateDefaultValue() {
-       return ot.isValueType();
+        return ot.isValueType();
     }
 
 }
