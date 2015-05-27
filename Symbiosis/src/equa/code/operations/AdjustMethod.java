@@ -92,7 +92,9 @@ public class AdjustMethod extends Method implements IActionOperation {
     public void initSpec() {
         Operation property = getCodeClass().getOperation(relation.name());
         BinaryExpression newValue = new BinaryExpression(property.call(qualifierParams(relation)), Operator.PLUS, getParams().get(0));
-
+        
+        boolean NEGATED = true;
+        
         IFormalPredicate preCondition = null;
         if (!relation.isMandatory()) {
             IBooleanOperation isDefined = (IBooleanOperation) getCodeClass().getOperation("isDefined", relation);
@@ -103,9 +105,11 @@ public class AdjustMethod extends Method implements IActionOperation {
                 Call propertyCall = property.call(qualifierParams(relation));
                 actualParams.add(propertyCall);
                 actualParams.add(undefined);
-                preCondition = new BooleanCall(isEqual, actualParams, true);
+                // pre: not undefined
+                preCondition = new BooleanCall(isEqual, actualParams, NEGATED);
             } else {
-                preCondition = new BooleanCall(isDefined, qualifierParams(relation), false);
+                // pre: call of isDefined true
+                preCondition = new BooleanCall(isDefined, qualifierParams(relation), !NEGATED);
             }
         }
 
@@ -126,7 +130,7 @@ public class AdjustMethod extends Method implements IActionOperation {
         if (relation.targetType() instanceof ObjectType) {
             ConstrainedBaseType cbt = (ConstrainedBaseType) relation.targetType();
             IBooleanOperation correctValue = (IBooleanOperation) cbt.getCodeClass().getOperation("isCorrectValue");
-            BooleanCall bc = new BooleanCall(correctValue, actualParams, true);
+            BooleanCall bc = new BooleanCall(correctValue, actualParams, NEGATED);
             bc.setCalled((ObjectType) cbt.getCodeClass().getParent());
             IFormalPredicate predicate = bc;
             setEscape(predicate, new InformalPredicate(self() + " stays unchanged"));
@@ -134,7 +138,7 @@ public class AdjustMethod extends Method implements IActionOperation {
             BaseType bt = (BaseType) relation.targetType();
             if (bt.equals(BaseType.NATURAL)) {
                 IBooleanOperation isNatural = getObjectModel().getIsNaturalMethod();
-                IFormalPredicate predicate = new BooleanCall(isNatural, actualParams, true);
+                IFormalPredicate predicate = new BooleanCall(isNatural, actualParams, NEGATED);
                 setEscape(predicate, new InformalPredicate(self() + " stays unchanged"));
             }
         }

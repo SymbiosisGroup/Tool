@@ -694,6 +694,9 @@ public class Java implements Language {
 
     @Override
     public String negate(String statement) {
+        if (statement.startsWith("!")){
+            return statement.substring(1);
+        }
         return "!(" + statement + ")";
     }
 
@@ -859,7 +862,8 @@ public class Java implements Language {
             BooleanCall bc = operands.next();
             if (pre) {
                 String condition = bc.expressIn(this);
-                if (!bc.isNegated()) {
+               // if (!bc.isNegated()) 
+                {
                     condition = negate(condition);
                 }
                 fullCondition.append(condition);
