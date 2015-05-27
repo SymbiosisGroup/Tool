@@ -82,7 +82,7 @@ public class SymbiosisTest {
 
     @Test
     public void testStaffAssociation() throws IOException, ClassNotFoundException {
-        initFields(new File(rootPath, "__SymbiosisTest/SA/"), "SA1.sym");
+        initFields(new File(rootPath, "__SA/"), "StaffAssociation3.sym");
         generateBehaviour();
         generateSource();
     }
