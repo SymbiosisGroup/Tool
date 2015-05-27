@@ -41,7 +41,7 @@ public class FTBox extends FTorOTBox {
 
         if (getWidthInPixels(typeExpression) > widthFullRoleBox) {
             line = WordUtils.wrap(typeExpression, getTextLengthFromPixels(typeExpression, widthFullRoleBox));
-            countLines = line.split(System.getProperty("line.separator")).length;
+            countLines = line.split(System.lineSeparator()).length;
         } else {
             line = typeExpression;
         }
