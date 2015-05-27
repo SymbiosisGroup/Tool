@@ -48,6 +48,13 @@ public class RegisterMethod extends Method implements IRelationalOperation {
         list.addLinesAtCurrentIndentation(l.operationHeader(this));
         list.addLineAtCurrentIndentation(l.addCollection(relation.fieldName(), relation.collectionType().getKind(), getParams().get(0).getName()));
         Relation inverse = relation.inverse();
+        if (inverse != null && inverse.isNavigable() && this.getAccess().equals(AccessModifier.PUBLIC)) {
+            ObjectType otInv = (ObjectType) relation.targetType();
+            Operation register = otInv.getCodeClass().getOperation(NAME, inverse);
+            List<ActualParam> params = new ArrayList<>();
+            params.add(new This());
+            list.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator() + register.callString(params) + l.endStatement());
+        }
 //        if (getParent().equals(relation.targetType())) {
 //            if (inverse.isCollectionReturnType()) {
 //                list.addLineAtCurrentIndentation(l.callMethod(getParams().get(0).getName(), getName(), l.thisKeyword()) + l.endStatement());
