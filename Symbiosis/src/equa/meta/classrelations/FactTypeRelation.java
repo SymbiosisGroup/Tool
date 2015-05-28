@@ -75,7 +75,7 @@ public class FactTypeRelation extends Relation {
             return null;
         } else {
             if (!relatedRole.isMandatory() && !role.isCreational() && role.getSubstitutionType().isSingleton()) {
-                return new BooleanRelation((ObjectType) relatedRole.getSubstitutionType(), relatedRole);
+                return new BooleanSingletonRelation((ObjectType) relatedRole.getSubstitutionType(), relatedRole);
             } else {
                 return new FactTypeRelation((ObjectType) relatedRole.getSubstitutionType(), relatedRole);
             }

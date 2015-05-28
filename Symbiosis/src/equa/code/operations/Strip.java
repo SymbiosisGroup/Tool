@@ -9,6 +9,7 @@ import equa.code.ImportType;
 import equa.code.IndentedList;
 import equa.code.Language;
 import equa.meta.classrelations.BooleanRelation;
+import equa.meta.classrelations.BooleanSingletonRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.RoleEvent;
 import equa.meta.objectmodel.ObjectType;
@@ -52,11 +53,19 @@ public class Strip extends Method {
                         method = "stripYourself()";
                     }
                 } else {
-                    if (inverse.isNavigable()) {
+
+                    ObjectType targetResponsible = inverse.getOwner().getResponsible();
+                    if (targetResponsible == relation.getOwner()) {
+                        if (inverse.getOwner().containsObjectFields()) {
+                            method = "stripYourself()";
+                        }
+                    } else if (inverse.isNavigable()) {
                         method = "remove" + Naming.withCapital(inverse.name()) + "(" + removableObject + ")";
-                    } else {
-                        method = "remove" + Naming.withCapital(relation.name()) + "(" + removableObject + ")";
+//                        else {
+//                                method = "remove" + Naming.withCapital(relation.name()) + "(" + removableObject + ")";
+//                            }
                     }
+
                 }
 
                 if (method != null) {
@@ -70,7 +79,7 @@ public class Strip extends Method {
                             l.forEachLoop(relation.targetType(), caller,
                                 l.thisKeyword() + l.memberOperator() + relation.fieldName(),
                                 body));
-                        list.addLineAtCurrentIndentation(l.clear(relation));
+                        // list.addLineAtCurrentIndentation(l.clear(relation));
 
                     } else if (relation.isMapRelation()) {
                         throw new UnsupportedOperationException("todo: removing of map content");
@@ -79,14 +88,14 @@ public class Strip extends Method {
                         IndentedList trueStatement = new IndentedList();
                         caller = l.thisKeyword() + l.memberOperator() + relation.fieldName();
                         String finalValue;
-                        if (relation instanceof BooleanRelation) {
+                        if (relation instanceof BooleanSingletonRelation) {
                             caller = inverse.getOwner().getName() + l.memberOperator() + "getSingleton()";
                             finalValue = "false";
                         } else {
                             finalValue = "null";
                         }
                         trueStatement.addLineAtCurrentIndentation(caller + l.memberOperator() + method + l.endStatement());
-                        trueStatement.addLineAtCurrentIndentation(l.assignment(relation.fieldName(), finalValue));
+                        //  trueStatement.addLineAtCurrentIndentation(l.assignment(relation.fieldName(), finalValue));
                         if (relation.isMandatory()) {
                             list.addLinesAtCurrentIndentation(trueStatement);
                         } else {
@@ -97,9 +106,11 @@ public class Strip extends Method {
                     }
                 }
             }
-            
+
         }
+
         supercall(ot, list, l);
+
         //list.addLinesAtCurrentIndendation(l.postProcessing(this));
         list.addLinesAtCurrentIndentation(l.bodyClosure());
         return list;

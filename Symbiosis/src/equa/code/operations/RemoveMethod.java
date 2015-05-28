@@ -10,6 +10,7 @@ import equa.code.ImportType;
 import equa.code.IndentedList;
 import equa.code.Language;
 import equa.meta.classrelations.BooleanRelation;
+import equa.meta.classrelations.BooleanSingletonRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.BaseType;
 import equa.meta.objectmodel.RoleEvent;
@@ -89,7 +90,7 @@ public class RemoveMethod extends Method implements IActionOperation {
                 }
             }
         } else if (inv != null && inv.isNavigable() && getAccess().equals(AccessModifier.PUBLIC)) {
-            if (inv instanceof BooleanRelation) {
+            if (inv instanceof BooleanSingletonRelation) {
                 withIf = true;
                 String caller = relation.fieldName();
                 String method = "set" + Naming.withCapital(inv.name()) + "(false)";
@@ -106,7 +107,7 @@ public class RemoveMethod extends Method implements IActionOperation {
                 if (inv.hasMultipleTarget()) {
                     actualParams.add(new This());
                 }
-                if (inv instanceof BooleanRelation) {
+                if (inv instanceof BooleanSingletonRelation) {
                     Operation booleanProp = inv.getOwner().getCodeClass().getProperty(inv);
                     trueStatement.addLineAtCurrentIndentation(caller + l.memberOperator() + booleanProp.callString() + l.endStatement());
                 } else {

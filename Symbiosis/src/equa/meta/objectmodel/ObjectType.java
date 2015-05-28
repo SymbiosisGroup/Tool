@@ -86,6 +86,7 @@ import equa.meta.MismatchException;
 import equa.meta.NotParsableException;
 import equa.meta.SyntaxException;
 import equa.meta.classrelations.BooleanRelation;
+import equa.meta.classrelations.BooleanSingletonRelation;
 import equa.meta.classrelations.CollectionIdRelation;
 import equa.meta.classrelations.FactTypeRelation;
 import equa.meta.classrelations.IdRelation;
@@ -149,7 +150,6 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     private Set<String> fieldsAlgorithms;
     private Set<String> constantsAlgorithms;
     private Initializer initializer;
-
 
     public Initializer getInitializer() {
         return initializer;
@@ -265,34 +265,34 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     public Set<String> getImports() {
         return importsAlgorithms;
     }
-    
+
     public Set<String> getFields() {
         return fieldsAlgorithms;
     }
-    
+
     public Set<String> getConstants() {
         return constantsAlgorithms;
     }
 
     private void addImports(List<String> imports) {
-        if (importsAlgorithms==null){
-           importsAlgorithms = new HashSet<>(); 
+        if (importsAlgorithms == null) {
+            importsAlgorithms = new HashSet<>();
         }
         this.importsAlgorithms.clear();
         this.importsAlgorithms.addAll(imports);
     }
-    
+
     private void addFields(Set<String> fields) {
-        if (fieldsAlgorithms==null){
-           fieldsAlgorithms = new HashSet<>(); 
+        if (fieldsAlgorithms == null) {
+            fieldsAlgorithms = new HashSet<>();
         }
         this.fieldsAlgorithms.clear();
         this.fieldsAlgorithms.addAll(fields);
     }
-    
+
     private void addConstants(Set<String> constants) {
-        if (constantsAlgorithms==null){
-           constantsAlgorithms = new HashSet<>(); 
+        if (constantsAlgorithms == null) {
+            constantsAlgorithms = new HashSet<>();
         }
         this.constantsAlgorithms.clear();
         this.constantsAlgorithms.addAll(constants);
@@ -301,14 +301,14 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     public void importAlgorithms(File f) throws SyntaxException {
         String filetext = Util.getString(f);
         Project project = ((ObjectModel) getParent().getParent()).getProject();
-        ExternalInput source;
+        Source source;
         source = new ExternalInput("", project.getCurrentUser());
         Language l = project.getLastUsedLanguage();
 
         addImports(l.getImports(filetext));
         addConstants(l.getConstants(filetext));
         addFields(l.getFields(filetext));
-        
+
         Map<OperationHeader, ImportedOperation> map = l.getOperations(filetext, getName() + TEMPLATE);
         Map<OperationHeader, Algorithm> algorithmsOld = new HashMap<>(algorithms);
         //removeLanguageAlgorithms();
@@ -328,8 +328,11 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         // adding non-removable algorithms
         for (Entry<OperationHeader, Algorithm> e : algorithmsOld.entrySet()) {
             if (!e.getValue().isRemovable()) {
+                if (!e.getValue().sources().isEmpty()) {
+                    source = e.getValue().sources().get(0);
+                }
                 addAlgorithm(e.getKey(), new IndentedList(), e.getValue().getAPI(), false, e.getValue().getLanguage(),
-                    e.getValue().sources().get(0));
+                    source);
             }
         }
 
@@ -645,19 +648,19 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             throw new ChangeNotAllowedException(("SUPERTYPE ") + supertype.getName() + (" IS A SUBTYPE OF") + (" THIS OBJECTTYPE ")
                 + getName());
         }
-        if(supertype.equals(this)){
-             throw new ChangeNotAllowedException(("SUPERTYPE ") + supertype.getName() + (" EQUALS ") + (" THIS OBJECTTYPE ")
+        if (supertype.equals(this)) {
+            throw new ChangeNotAllowedException(("SUPERTYPE ") + supertype.getName() + (" EQUALS ") + (" THIS OBJECTTYPE ")
                 + getName());
         }
-        
-        if (supertype.isSingleton()){
-             throw new ChangeNotAllowedException("A SINGLETON AS SUPERTYPE IS NOT ALLOWED.");
+
+        if (supertype.isSingleton()) {
+            throw new ChangeNotAllowedException("A SINGLETON AS SUPERTYPE IS NOT ALLOWED.");
         }
-        
+
         List<Relation> idSuper = supertype.identifyingRelations();
-        if (!idSuper.isEmpty()){
+        if (!idSuper.isEmpty()) {
             List<Relation> idSub = identifyingRelations();
-            if (!idSub.isEmpty()){
+            if (!idSub.isEmpty()) {
                 throw new ChangeNotAllowedException("Super- and subtype do have both identifying relations; "
                     + "they need to be identical; "
                     + "unfortunately, if identical, this situation is still not supported");
@@ -1070,7 +1073,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
                 } else {
                     Role counterpart = role.getParent().counterpart(role);
                     if (counterpart != null && !role.isMandatory() && !counterpart.isCreational() && counterpart.getSubstitutionType().isSingleton()) {
-                        relation = new BooleanRelation(this, role);
+                        relation = new BooleanSingletonRelation(this, role);
                     } else {
                         relation = new FactTypeRelation(this, role);
                     }
@@ -2435,9 +2438,10 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         }
     }
 
-     public String getExtendedKind() {
+    public String getExtendedKind() {
         return getKind();
     }
+
     boolean containsTuplesOfOtherSubtypes(ObjectType subtype) {
         if (subtypes.contains(subtype)) {
             for (ObjectType sub : subtypes) {

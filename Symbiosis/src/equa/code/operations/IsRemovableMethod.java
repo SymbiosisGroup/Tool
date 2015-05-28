@@ -17,6 +17,7 @@ import static equa.code.ImportType.ObjectEquals;
 import equa.code.IndentedList;
 import equa.code.Language;
 import equa.meta.classrelations.BooleanRelation;
+import equa.meta.classrelations.BooleanSingletonRelation;
 import equa.meta.classrelations.ObjectTypeRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.BaseType;
@@ -94,7 +95,7 @@ public class IsRemovableMethod extends Method implements IRelationalOperation {
                         if (!inverse.isCollectionReturnType()) {
                             // We have a relation to a single OT so we check if it is
                             // null (or true)
-                            if (inverse instanceof BooleanRelation) {
+                            if (inverse instanceof BooleanSingletonRelation) {
                                 condition = l.equalsStatement(inverse.fieldName(), "true");
 //                            ObjectType singleton = fanRelation.getOwner();
 //                            Operation getSingleton = singleton.getCodeClass().getOperation("getSingleton");

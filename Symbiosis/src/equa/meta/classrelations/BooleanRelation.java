@@ -47,22 +47,12 @@ public class BooleanRelation extends Relation {
 
     @Override
     public boolean isNavigable() {
-        Relation inv = inverse();
-        if (inv != null) {
-            return role.isNavigable();
-        } else {
             return true;
-        }
     }
 
     @Override
     public Relation inverse() {
-        Role counterpart = role.getParent().counterpart(role);
-        if (counterpart != null && !role.isMandatory() && !counterpart.isCreational() && counterpart.getSubstitutionType().isSingleton()) {
-            return new FactTypeRelation((ObjectType) counterpart.getSubstitutionType(), counterpart);
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override

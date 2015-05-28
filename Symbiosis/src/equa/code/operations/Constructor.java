@@ -14,6 +14,7 @@ import equa.code.IndentedList;
 import equa.code.Language;
 import equa.meta.DuplicateException;
 import equa.meta.classrelations.BooleanRelation;
+import equa.meta.classrelations.BooleanSingletonRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.BaseType;
 import equa.meta.objectmodel.BaseValue;
@@ -300,7 +301,7 @@ public class Constructor extends OperationWithParams {
                             if (inverse.isCollectionReturnType()) {
 
                                 list.addLineAtCurrentIndentation(l.callMethod(r.fieldName(), inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()) + l.endStatement());
-                            } else if (inverse instanceof BooleanRelation) {
+                            } else if (inverse instanceof BooleanSingletonRelation) {
                                 // wrong : JAVA code, it's to specific
                                 list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + r.fieldName() + l.memberOperator()
                                     + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());

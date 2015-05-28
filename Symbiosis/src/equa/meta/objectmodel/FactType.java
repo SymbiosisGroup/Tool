@@ -632,9 +632,8 @@ public class FactType extends ParentElement implements Type, ITerm,
         }
 
         derivableConstraint = new DerivableConstraint(this, rule, text);
-        for (Role role : roles) {
-            role.removePermissions();
-        }
+        removePermissions();
+
         fireListChanged();
         publisher.inform(this, "derivable", null, derivableConstraint.getSpec());
     }
@@ -2204,13 +2203,12 @@ public class FactType extends ParentElement implements Type, ITerm,
             defaultBooleanValue = null;
         }
 
-
-      //  disconnectRelations();
+        //  disconnectRelations();
         for (Role role : new ArrayList<>(roles)) {
             role.remove();
         }
         roles.clear();
-        
+
         population.remove();
 
         super.remove();
@@ -2780,7 +2778,7 @@ public class FactType extends ParentElement implements Type, ITerm,
     }
 
     public void removePermissions() {
-        for(Role role : roles){
+        for (Role role : roles) {
             role.removePermissions();
         }
     }

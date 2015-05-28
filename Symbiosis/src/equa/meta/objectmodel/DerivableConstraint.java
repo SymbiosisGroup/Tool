@@ -137,7 +137,7 @@ public class DerivableConstraint extends StaticConstraint {
             code = new IndentedList();
         }
 
-        Algorithm alg = ot.addAlgorithm(oh, code, api, false, null, sources().get(0));
+        Algorithm alg = ot.addAlgorithm(oh, code, api, false, Language.JAVA, sources().get(0));
         
     }
 

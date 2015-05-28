@@ -18,6 +18,7 @@ import equa.code.IndentedList;
 import equa.code.Language;
 import equa.code.systemoperations.UnknownMethod;
 import equa.meta.classrelations.BooleanRelation;
+import equa.meta.classrelations.BooleanSingletonRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.RoleEvent;
 import equa.meta.objectmodel.ObjectType;
@@ -167,7 +168,7 @@ public class AddObjectTypeMethod extends Method implements IActionOperation {
             if (inverse.isNavigable()) {
                 if (inverse.isCollectionReturnType()) {
                     list.addLineAtCurrentIndentation(l.callMethod(TEMP1, inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()));
-                } else if (inverse instanceof BooleanRelation) {
+                } else if (inverse instanceof BooleanSingletonRelation) {
                     // wrong : JAVA code, it's to specific
                     list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator()
                         + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());

@@ -66,6 +66,7 @@ import equa.code.operations.STorCT;
 import equa.code.operations.SubParam;
 import equa.meta.Message;
 import equa.meta.classrelations.BooleanRelation;
+import equa.meta.classrelations.BooleanSingletonRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.BaseType;
 import equa.meta.objectmodel.ConstrainedBaseType;
@@ -457,7 +458,8 @@ public class Java implements Language {
                 CodeClass cc = ot.getCodeClass();
                 File file = new File(loc + "/" + cc.getDirectory() + ot.getName() + ".java");
                 try (PrintStream ps = new PrintStream(file)) {
-                    String code = cc.getCode(this, orm);
+                    // orm disabled
+                    String code = cc.getCode(this, false);
                     ps.append(code);
                 }
             }
@@ -694,7 +696,7 @@ public class Java implements Language {
 
     @Override
     public String negate(String statement) {
-        if (statement.startsWith("!")){
+        if (statement.startsWith("!")) {
             return statement.substring(1);
         }
         return "!(" + statement + ")";
@@ -862,7 +864,7 @@ public class Java implements Language {
             BooleanCall bc = operands.next();
             if (pre) {
                 String condition = bc.expressIn(this);
-               // if (!bc.isNegated()) 
+                // if (!bc.isNegated()) 
                 {
                     condition = negate(condition);
                 }
@@ -907,7 +909,7 @@ public class Java implements Language {
     public IndentedList propertyCode(Property p) {
         IndentedList list = new IndentedList();
         if (p.isGetter()) {
-            String[] commentLines = p.getSpec().split(System.getProperty("line.separator"));
+            String[] commentLines = p.getSpec().split(System.lineSeparator());
             if (commentLines.length != 0) {
                 list.addLineAtCurrentIndentation(docStart());
                 for (String s : commentLines) {
@@ -970,7 +972,7 @@ public class Java implements Language {
             if (p.isGetter()) {
                 list.addLineAtCurrentIndentation("");
             }
-            String[] commentLines = p.getSetter().getSpec().split(System.getProperty("line.separator"));
+            String[] commentLines = p.getSetter().getSpec().split(System.lineSeparator());
             if (commentLines.length != 0) {
                 list.addLineAtCurrentIndentation(docStart());
                 for (String s : commentLines) {
@@ -1112,7 +1114,7 @@ public class Java implements Language {
                     } else if (inverse.isMapRelation()) {
                         list.addLineAtCurrentIndentation(p.getName() + memberOperator() + setAtStatement(((IndexedProperty) p).setterParams(), p.getRelation().fieldName())
                         );
-                    } else if (inverse instanceof BooleanRelation) {
+                    } else if (inverse instanceof BooleanSingletonRelation) {
                         list.addLineAtCurrentIndentation(p.getName() + memberOperator() + "set" + Naming.withCapital(inverse.name() + "(true)")
                             + endStatement());
                     } else {
@@ -1440,6 +1442,31 @@ public class Java implements Language {
         // We remove the class closing
         remainingCodeToParse = remainingCodeToParse.substring(0, remainingCodeToParse.lastIndexOf("}"));
 
+        String withoutComment = withoutComment(remainingCodeToParse);
+        // first pass without comments
+        while (withoutComment.contains("{")) {
+            int openBrace = withoutComment.indexOf("{");
+            int startBodyText = openBrace + 1;
+            int closeBrace = withoutComment.indexOf("}");
+            int nextOpenBrace = withoutComment.substring(startBodyText, closeBrace).indexOf("{");
+            while (nextOpenBrace >= 0) {
+                openBrace += 1 + nextOpenBrace;
+                closeBrace += 1 + withoutComment.substring(closeBrace + 1).indexOf("}");
+                nextOpenBrace = withoutComment.substring(openBrace + 1, closeBrace).indexOf("{");
+            }
+
+            IndentedList api = new IndentedList();
+            OperationHeader oh = getOH(withoutComment.substring(0, startBodyText - 1), className);
+            int startHeader = 0;
+            String method = withoutComment.substring(startHeader, closeBrace + 1);
+
+            method = skipStartingEmptyLinesAndOverride(method);
+
+            map.put(oh, new ImportedOperation(oh, api, IndentedList.fromString(method, -1)));
+
+            withoutComment = withoutComment.substring(closeBrace + 1);
+        }
+        //second pass with comments
         while (remainingCodeToParse.contains("{")) {
             int openBrace = remainingCodeToParse.indexOf("{");
             int startBodyText = openBrace + 1;
@@ -1453,31 +1480,80 @@ public class Java implements Language {
 
             IndentedList api = getDocumentation(remainingCodeToParse.substring(0, startBodyText - 1));
             OperationHeader oh = getOH(remainingCodeToParse.substring(0, startBodyText - 1), className);
-            int startHeader = remainingCodeToParse.substring(0, openBrace).indexOf("*/");
-            if (startHeader == -1) {
-                startHeader = 0;
-            } else {
-                startHeader += 2;
+            if (map.containsKey(oh)) {
+                int startHeader = remainingCodeToParse.substring(0, openBrace).indexOf("*/");
+                if (startHeader == -1) {
+                    startHeader = 0;
+                } else {
+                    startHeader += 2;
+                }
+                String method = remainingCodeToParse.substring(startHeader, closeBrace + 1);
+
+                method = skipStartingEmptyLinesAndOverride(method);
+
+                map.put(oh, new ImportedOperation(oh, api, IndentedList.fromString(method, -1)));
             }
-            String method = remainingCodeToParse.substring(startHeader, closeBrace + 1);
-
-            method = skipStartingEmptyLinesAndOverride(method);
-
-            map.put(oh, new ImportedOperation(oh, api, IndentedList.fromString(method, -1)));
-
             remainingCodeToParse = remainingCodeToParse.substring(closeBrace + 1);
         }
 
         return map;
     }
 
+    static String withoutComment(String s) {
+        StringBuilder sb = new StringBuilder();
+        String remaining = new String(s);
+        int nextComment = nextComment(remaining);
+        int lengthSeparator;
+        while (nextComment != -1) {
+            int endOfComment;
+            if (remaining.substring(nextComment).startsWith("/*")) {
+                lengthSeparator = 2;
+                endOfComment = remaining.indexOf("*/");
+                if (!extendWithoutComment(endOfComment, sb, remaining, nextComment)) {
+                    return "";
+                }
+            } else {
+                lengthSeparator = System.lineSeparator().length();
+                endOfComment = remaining.indexOf(System.lineSeparator());
+                if (!extendWithoutComment(endOfComment, sb, remaining, nextComment)) {
+                    return "";
+                }
+            }
+            remaining = remaining.substring(endOfComment + lengthSeparator);
+            nextComment = nextComment(remaining);
+        }
+        return sb.toString();
+    }
+
+    private static boolean extendWithoutComment(int endOfComment, StringBuilder sb, String remaining, int nextComment) {
+        if (endOfComment == -1) {
+            // error in code
+            return false;
+        } else {
+            sb.append(remaining.substring(0, nextComment));
+        }
+        return true;
+    }
+
+    static int nextComment(String s) {
+        int index1 = s.indexOf("/*");
+        int index2 = s.indexOf("//");
+        if (index1 == -1) {
+            return index2;
+        }
+        if (index2 == -1) {
+            return index1;
+        }
+        return Math.min(index1, index2);
+    }
+
     private static String skipStartingEmptyLinesAndOverride(String text) {
         int start = 0;
-        int endOfLine = text.indexOf(System.getProperty("line.separator"));
-        int endOfLineLength = System.getProperty("line.separator").length();
+        int endOfLine = text.indexOf(System.lineSeparator());
+        int endOfLineLength = System.lineSeparator().length();
         while (endOfLine != -1 && text.substring(start, start + endOfLine).trim().isEmpty()) {
             start += endOfLine + endOfLineLength;
-            endOfLine = text.substring(start).indexOf(System.getProperty("line.separator"));
+            endOfLine = text.substring(start).indexOf(System.lineSeparator());
         }
         text = text.substring(start);
 //        start = 0;
@@ -1487,10 +1563,10 @@ public class Java implements Language {
 //        }
 //        text = text.substring(start);
         start = 0;
-        endOfLine = text.indexOf(System.getProperty("line.separator"));
+        endOfLine = text.indexOf(System.lineSeparator());
         while (endOfLine != -1 && text.substring(start, start + endOfLine).trim().isEmpty()) {
             start += endOfLine + endOfLineLength;
-            endOfLine = text.substring(start).indexOf(System.getProperty("line.separator"));
+            endOfLine = text.substring(start).indexOf(System.lineSeparator());
         }
 
         return text.substring(start).replace("@Override", "");
@@ -1510,7 +1586,7 @@ public class Java implements Language {
                 IndentedList list = new IndentedList();
                 list.addLineAtCurrentIndentation(docStart());
                 while (start == 0) {
-                    start = sourcecode.indexOf(System.getProperty("line.separator"));
+                    start = sourcecode.indexOf(System.lineSeparator());
                     list.addLineAtCurrentIndentation(docLine(sourcecode.substring(2, start)));
                     sourcecode = sourcecode.substring(start + 2).trim();
                     start = sourcecode.indexOf("* ");
@@ -1538,11 +1614,11 @@ public class Java implements Language {
 
     int searchEndOfCommentLine(String text) {
         if (text.trim().startsWith("//")) {
-            int next = text.indexOf(System.getProperty("line.separator"));
+            int next = text.indexOf(System.lineSeparator());
             if (next == -1) {
                 return -1;
             } else {
-                return next + System.getProperty("line.separator").length();
+                return next + System.lineSeparator().length();
             }
         }
         return -1;
@@ -1562,7 +1638,7 @@ public class Java implements Language {
     }
 
     private OperationHeader getOH(String header, String className) {
-        String signature = skipComment(header).replaceAll(System.getProperty("line.separator"), " ");
+        String signature = skipComment(header).replaceAll(System.lineSeparator(), " ");
         String[] parts = signature.trim().split("\\s+");
         int part = 0;
 
