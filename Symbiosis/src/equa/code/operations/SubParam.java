@@ -63,6 +63,24 @@ public class SubParam extends Param {
     public String expressIn(Language l) {
         return parent.expressIn(l) + l.memberOperator() + l.getProperty(super.getName());
     }
+    
+    public String expressWithDifferentRootIn(Language l, SubParam newRoot) {
+        return expressWithDifferentRootIn(l, newRoot, false);
+    }
+    
+    public String expressWithDifferentRootIn(Language l, SubParam newRoot, boolean entered) {
+        //&& !(((SubParam)parent).parent instanceof SubParam) && !(((SubParam)((SubParam)parent).parent).parent instanceof SubParam)
+        if (!(parent instanceof SubParam) && !entered ) {
+            return newRoot.expressWithDifferentRootIn(l, newRoot, true) + l.memberOperator() + l.getProperty(super.getName());
+        } else {
+            if (parent instanceof SubParam) {
+                return ((SubParam)parent).expressWithDifferentRootIn(l, newRoot) + l.memberOperator() + l.getProperty(super.getName());
+            } else {
+                return parent.expressIn(l) + l.memberOperator() + l.getProperty(super.getName());
+            }
+            
+        }
+    }
 
     @Override
     String propertyCalls(Language l) {

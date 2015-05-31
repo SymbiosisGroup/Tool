@@ -102,14 +102,19 @@ public class SearchLexicalMethod extends SearchMethod {
         while (params.hasNext()) {
             Param p = params.next();
             String pName = p.getName();
+            String expression;
             if (p instanceof SubParam) {
-                SubParam sp = (SubParam) p;
+                SubParam spOriginal = (SubParam) p;
+                SubParam sp = new SubParam(spOriginal.getRelation(), spOriginal.getParentParam());
                 Param root = sp.getRoot();
                 Param newRoot = new Param(sReturn, sp.getType(), sp.getRelation());
                 SubParam sRoot = new SubParam(root.getRelation(), newRoot);
-                sp.setNewRoot(sRoot);
+                //sp.setNewRoot(sRoot);
+                expression = ((SubParam)p).expressWithDifferentRootIn(l, sRoot);
+            } else {
+                expression = p.expressIn(l);
             }
-            statement += l.equalsStatement(p.expressIn(l), pName);
+            statement += l.equalsStatement(expression, pName);
             if (params.hasNext()) {
                 statement += l.and();
             }

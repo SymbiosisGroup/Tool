@@ -510,20 +510,23 @@ public class Java implements Language {
         List<JavaFileObject> list = getJavaFileContentsAsString(om, orm, loc);
         File dir = new File(loc + "/gen");
         dir.mkdir();
+        String genLoc = loc + "/gen";
         CompilationTask task = compiler.getTask(null, fileManager, diagnosticsCollector,
-            Arrays.asList(new String[]{"-d", loc + "/gen"}), null, list);
+            Arrays.asList(new String[]{"-d", genLoc}), null, list);
         Boolean result = task.call();
         List<Diagnostic<? extends JavaFileObject>> diagnostics = diagnosticsCollector.getDiagnostics();
         for (Diagnostic<? extends JavaFileObject> d : diagnostics) {
-            System.out.println(d.getLineNumber());
+            System.out.println(d.getSource().getName());
+            System.out.println(d.getLineNumber() + ":" + d.getColumnNumber());
             System.out.println(d.getMessage(null));
+            System.out.println(d.getCode());
         }
         if (result) {
             System.out.println("Compilation has succeeded");
         } else {
             System.out.println("Compilation fails.");
         }
-        jarIt(om, loc);
+        jarIt(om, genLoc);
         return result;
     }
 

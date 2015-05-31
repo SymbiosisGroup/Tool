@@ -1473,7 +1473,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 }
             }
         });
-        generateCodeMenuItem.setEnabled(false);
+        //generateCodeMenuItem.setEnabled(false);
         generateMenu.add(generateCodeMenuItem);
 
         generateCDMenuItem.setText(resourceMap.getString("generateCDMenuItem.text")); // NOI18N
