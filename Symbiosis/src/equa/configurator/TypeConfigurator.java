@@ -874,9 +874,13 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         FactType ft = getSelectedFactType();
         if (ft != null) {
             try {
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm", dialogButton);
+            if (dialogResult == JOptionPane.YES_OPTION){
                 om.removeFactType(ft);
                 reliableClasses = false;
                 refresh();
+            }
             } catch (ChangeNotAllowedException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage());
             }

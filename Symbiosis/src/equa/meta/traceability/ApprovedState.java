@@ -14,6 +14,7 @@ import equa.meta.ChangeNotAllowedException;
 import equa.meta.requirements.Requirement;
 import equa.meta.requirements.RequirementFilter;
 import equa.project.ProjectRole;
+import javax.swing.JOptionPane;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -80,7 +81,11 @@ public class ApprovedState extends ReviewState {
         {
             if (reviewable.isOwner(source.getFrom())) {
 
-                reviewable.remove();
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+                int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm", dialogButton);
+                if (dialogResult == JOptionPane.YES_OPTION) {
+                    reviewable.remove();
+                }
 
             } else {
                 reviewable.setReviewState(new RemovedState(source, this, reviewable.toString(), reviewable));

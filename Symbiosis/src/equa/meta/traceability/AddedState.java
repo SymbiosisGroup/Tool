@@ -9,6 +9,7 @@ import equa.meta.ChangeNotAllowedException;
 import equa.meta.requirements.Requirement;
 import equa.meta.requirements.RequirementFilter;
 import equa.project.ProjectRole;
+import javax.swing.JOptionPane;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -68,10 +69,15 @@ public class AddedState extends ReviewState {
     @Override
     public void rollBack(ProjectRole participant) throws ChangeNotAllowedException {
         if (isRollBackable(participant)) {
-            reviewable.remove();
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm", dialogButton);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                reviewable.remove();
+            }
+
         } else {
             throw new ChangeNotAllowedException(participant.getName() + " isn't "
-                + "author of " + reviewable.getName());
+                    + "author of " + reviewable.getName());
         }
     }
 
