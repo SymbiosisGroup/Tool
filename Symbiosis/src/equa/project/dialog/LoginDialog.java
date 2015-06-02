@@ -20,6 +20,7 @@ import java.awt.Frame;
 public class LoginDialog extends javax.swing.JDialog implements IView {
 
     private final ProjectController projectController;
+    private ProjectRole currentUser;
 
     /**
      * Creates new form LoginDialog
@@ -32,12 +33,13 @@ public class LoginDialog extends javax.swing.JDialog implements IView {
         super(parent, modal);
         projectController = controller;
         projectController.addView(this);
+        currentUser = projectController.getCurrentUser();
         initComponents();
         this.setLocationRelativeTo(parent);
         ProjectRole p = (ProjectRole) cbProjectRoles.getItemAt(0);
-        if (controller.getCurrentUser() != null && 
-            cbProjectRoles.getItemCount() > 1 && 
-            p.equals(controller.getCurrentUser())) {
+        if (controller.getCurrentUser() != null
+            && cbProjectRoles.getItemCount() > 1
+            && p.equals(controller.getCurrentUser())) {
             p = (ProjectRole) cbProjectRoles.getItemAt(1);
         }
         cbProjectRoles.setSelectedItem(p);
@@ -176,21 +178,25 @@ public class LoginDialog extends javax.swing.JDialog implements IView {
         if (cbProjectRoles.getSelectedItem() == null) {
             JOptionPane.showMessageDialog(this, "Please select your project role.");
         } else {
-            projectController.setCurrentUser((ProjectRole) cbProjectRoles.getSelectedItem());
+           // projectController.setCurrentUser((ProjectRole) cbProjectRoles.getSelectedItem());
             projectController.removeView(this);
             setVisible(false);
         }
     }//GEN-LAST:event_btOKActionPerformed
 
     private void btCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelActionPerformed
-       // cbProjectRoles.setSelectedItem(null);
+        // cbProjectRoles.setSelectedItem(null);
         projectController.removeView(this);
+        if (currentUser != null) {
+            cbProjectRoles.setSelectedItem(currentUser);
+            //projectController.setCurrentUser(currentUser);
+        }
         setVisible(false);
     }//GEN-LAST:event_btCancelActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
     {//GEN-HEADEREND:event_formWindowClosing
-      //  cbProjectRoles.setSelectedItem(null);
+        //  cbProjectRoles.setSelectedItem(null);
         projectController.removeView(this);
         setVisible(false);
     }//GEN-LAST:event_formWindowClosing

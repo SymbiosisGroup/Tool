@@ -137,6 +137,7 @@ public class ProjectRoles implements ComboBoxModel<ProjectRole>, Serializable {
 
     @Override
     public void setSelectedItem(Object anItem) {
+        
         if (anItem instanceof ProjectRole) {
             project.setCurrentUserAndInform((ProjectRole) anItem);
         } else if (anItem == null) {

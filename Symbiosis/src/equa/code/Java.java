@@ -835,7 +835,7 @@ public class Java implements Language {
 
     private void addAPI(Operation o, IndentedList list) {
         // documentation
-        String[] commentLines = o.getSpec().split(System.getProperty("line.separator"));
+        String[] commentLines = o.getSpec().split(System.lineSeparator());
         if (commentLines.length != 0) {
             list.addLineAtCurrentIndentation(docStart());
             for (String s : commentLines) {
