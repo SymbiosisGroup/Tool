@@ -2023,7 +2023,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         for (Relation relation : relations(false, false)) {
             Relation inverse = relation.inverse();
             if (inverse != null && inverse.isNavigable()) {
-                if (inverse.getOwner().getResponsible() != this && getResponsible() != inverse.getOwner()) {
+                if (/*inverse.getOwner().getResponsible() != this && */getResponsible() != inverse.getOwner()) {
                     fans.add(inverse);
                 }
             }
