@@ -46,7 +46,7 @@ public class CodeGeneratorDialog extends JDialog {
         projectController = controller;
         
         String rootNS = controller.getProject().getName().toLowerCase();
-        String currentLocation = controller.getProject().getFile().getParentFile().getPath() + File.separator + "src";//System.getProperty("user.dir");
+        String currentLocation = controller.getProject().getFile().getParentFile().getPath();//System.getProperty("user.dir");
 
         // Top Panel
         JPanel topPanel = new JPanel();

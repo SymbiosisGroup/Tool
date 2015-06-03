@@ -78,6 +78,9 @@ import equa.meta.objectmodel.Tuple;
 import equa.meta.objectmodel.TupleItem;
 import equa.meta.objectmodel.Value;
 import equa.util.Naming;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -141,9 +144,9 @@ public class Java implements Language {
         return result;
     }
 
-    private void addClass(String name, JarOutputStream jar, String dir, String loc) throws IOException {
+    private void addClass(String name, JarOutputStream jar, String dir, String buildLoc) throws IOException {
         jar.putNextEntry(new JarEntry(dir + name + ".class"));
-        InputStream is = new FileInputStream(new File(loc + "/" + dir + name + ".class"));
+        InputStream is = new FileInputStream(new File(buildLoc + "/" + dir + name + ".class"));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int ch;
         while ((ch = is.read()) != -1) {
@@ -439,6 +442,7 @@ public class Java implements Language {
 
     @Override
     public boolean generate(ObjectModel om, boolean edit, boolean orm, boolean mInh, String loc) throws FileNotFoundException {
+        String srcLoc = loc + "/src";
         om.getProject().setLastUsedLanguage(this);
         List<Message> messages = om.generateClasses(true, false);
         for (Message message : messages) {
@@ -448,7 +452,7 @@ public class Java implements Language {
         }
         String root = om.getProject().getNameSpace();
         root = root.replaceAll(" ", "_");
-        File dir = new File(loc + "/" + root + "/" + DOMAIN + "/");
+        File dir = new File(srcLoc + "/" + root + "/" + DOMAIN + "/");
         dir.mkdirs();
         deleteFiles(dir);
 
@@ -456,7 +460,7 @@ public class Java implements Language {
             if (ft.isClass()) {
                 ObjectType ot = ft.getObjectType();
                 CodeClass cc = ot.getCodeClass();
-                File file = new File(loc + "/" + cc.getDirectory() + ot.getName() + ".java");
+                File file = new File(srcLoc + "/" + cc.getDirectory() + ot.getName() + ".java");
                 try (PrintStream ps = new PrintStream(file)) {
                     // orm disabled
                     String code = cc.getCode(this, false);
@@ -466,13 +470,13 @@ public class Java implements Language {
         }
 
         if (edit) {
-            generateTemplates(om, loc);
+            generateTemplates(om, srcLoc);
         }
 
         CodeClass cc = om.getCodeClass();
-        dir = new File(loc + "/" + cc.getDirectory());
+        dir = new File(srcLoc + "/" + cc.getDirectory());
         dir.mkdirs();
-        File file = new File(loc + "/" + cc.getDirectory() + SYSTEM_CLASS + ".java");
+        File file = new File(srcLoc + "/" + cc.getDirectory() + SYSTEM_CLASS + ".java");
         try (PrintStream ps = new PrintStream(file)) {
             ps.append(cc.getCode(this, orm));
         }
@@ -504,15 +508,15 @@ public class Java implements Language {
     }
 
     private boolean generateLib(ObjectModel om, boolean orm, String loc) throws IOException {
+        String buildLoc = loc + "/build";
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnosticsCollector = new DiagnosticCollector<>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticsCollector, null, null);
         List<JavaFileObject> list = getJavaFileContentsAsString(om, orm, loc);
-        File dir = new File(loc + "/gen");
+        File dir = new File(buildLoc);
         dir.mkdir();
-        String genLoc = loc + "/gen";
         CompilationTask task = compiler.getTask(null, fileManager, diagnosticsCollector,
-            Arrays.asList(new String[]{"-d", genLoc}), null, list);
+            Arrays.asList(new String[]{"-d", buildLoc}), null, list);
         Boolean result = task.call();
         List<Diagnostic<? extends JavaFileObject>> diagnostics = diagnosticsCollector.getDiagnostics();
         for (Diagnostic<? extends JavaFileObject> d : diagnostics) {
@@ -526,7 +530,7 @@ public class Java implements Language {
         } else {
             System.out.println("Compilation fails.");
         }
-        jarIt(om, genLoc);
+        jarIt(om, loc, buildLoc);
         return result;
     }
 
@@ -658,17 +662,18 @@ public class Java implements Language {
         return r.fieldName() + memberOperator() + "indexOf(" + param + ")";
     }
 
-    private void jarIt(ObjectModel om, String loc) throws IOException {
-        JarOutputStream jar = new JarOutputStream(new FileOutputStream(loc + "/" + om.getProject().getName() + ".jar"));
+    private void jarIt(ObjectModel om, String loc, String buildLoc) throws IOException {
+        String distLoc = loc + "/dist";
+        Files.createDirectories(Paths.get(distLoc));
+        JarOutputStream jar = new JarOutputStream(new FileOutputStream(distLoc + "/" + om.getProject().getName() + ".jar"));
         for (FactType ft : om.types()) {
             if (ft.isClass()) {
                 ObjectType ot = ft.getObjectType();
-                addClass(ot.getName(), jar, ot.getCodeClass().getDirectory(), loc);
+                addClass(ot.getName(), jar, ot.getCodeClass().getDirectory(), buildLoc);
             }
         }
-        addClass(SYSTEM_CLASS, jar, om.getCodeClass().getDirectory(), loc);
+        addClass(SYSTEM_CLASS, jar, om.getCodeClass().getDirectory(), buildLoc);
         jar.close();
-        deleteFiles(new File(loc + "/gen"));
     }
 
     @Override
