@@ -156,7 +156,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
                 mntmRollbackRequirement.setEnabled(req.isRollBackable(currentUser));
 
                 if (req.getCategory().isOwner(currentUser) && req.getReviewState() instanceof RemovedState) {
-                    mntmApproveRequirement.setText("Approve Remove");
+                    mntmApproveRequirement.setText("Acccept Remove");
                 } else {
                     mntmApproveRequirement.setText("Approve");
                 }
@@ -529,7 +529,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
 
         requirementPopupMenu.add(new JSeparator());
 
-        mntmApproveRequirement = new JMenuItem("Approve Requirement");
+        mntmApproveRequirement = new JMenuItem("Approve");
         mntmApproveRequirement.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -539,7 +539,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         });
         requirementPopupMenu.add(mntmApproveRequirement);
 
-        mntmRejectRequirement = new JMenuItem("Reject Requirement");
+        mntmRejectRequirement = new JMenuItem("Reject");
         mntmRejectRequirement.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -549,7 +549,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         });
         requirementPopupMenu.add(mntmRejectRequirement);
 
-        mntmRemoveRequirement = new JMenuItem("Remove Requirement");
+        mntmRemoveRequirement = new JMenuItem("Remove");
         mntmRemoveRequirement.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -559,7 +559,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
         });
         requirementPopupMenu.add(mntmRemoveRequirement);
 
-        mntmRollbackRequirement = new JMenuItem("Rollback Requirement");
+        mntmRollbackRequirement = new JMenuItem("Rollback");
         mntmRollbackRequirement.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

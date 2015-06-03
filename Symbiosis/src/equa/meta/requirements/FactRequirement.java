@@ -50,23 +50,24 @@ public class FactRequirement extends Requirement {
      * If the dependents of this fact-requirement-object have no instance of
      * Tuple, null is returned.
      *
-     * @return tuple, which sould be a dependent of this fact-requirement-object
+     * @return tuple, which should be a dependent of this fact-requirement-object
      */
     public Tuple getRealizedTuple() {
         List<ModelElement> modelElements = this.dependents();
+        if (modelElements.isEmpty()) return null;
+        
         for (ModelElement modelElement : modelElements) {
-            if (modelElement instanceof Tuple) {
+            if (modelElement instanceof Tuple) { 
                 Tuple t = (Tuple) modelElement;
-                if (!t.getFactType().isObjectType()) {
-
+                if (t.getFactType().isPureFactType()) {
                     return t;
-
                 }
-//                if (!t.getFactType().isObjectType()) {
-//                    tuple = t;
-//                } else if (tuple == null && t.getFactType().isPureFactType()) {
-//                    tuple = t;
-//                }
+            }
+        }
+        // fact was an object expression; 
+        for (int i=modelElements.size()-1; i>=0; i--){
+            if (modelElements.get(i) instanceof Tuple){
+                return (Tuple) modelElements.get(i);
             }
         }
         return null;

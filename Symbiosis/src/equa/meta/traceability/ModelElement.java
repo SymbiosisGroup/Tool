@@ -214,8 +214,6 @@ public abstract class ModelElement extends Source {
         setModifiedAtToNow();
     }
 
- 
-
     protected void removeSourceMediators() {
         List<SynchronizationMediator> copy = new ArrayList<>(sourceMediators);
         for (SynchronizationMediator sourceMediator : copy) {
@@ -226,18 +224,19 @@ public abstract class ModelElement extends Source {
 
     void removeSourceMediator(SynchronizationMediator sourceMediator) {
         if (!sourceMediators.contains(sourceMediator)) {
-//            System.out.println("mediator with source " + sourceMediator.getSource() + ";" + sourceMediator.getSource().getClass()
-//                    + " and dependent " + sourceMediator.getDependentModelElement() + ";" + sourceMediator.getDependentModelElement().getClass() + " without source");
+            System.out.println("mediator with source " + sourceMediator.getSource() + ";" + sourceMediator.getSource().getClass()
+                + " and dependent " + sourceMediator.getDependentModelElement() + ";" + sourceMediator.getDependentModelElement().getClass() + " without source");
         } else {
 
             if (sourceMediators.size() == 1) {
 
                 // this model element is without source
-                remove();
+                
                 sourceMediators.remove(sourceMediator);
-                setModifiedAtToNow();
+                remove();
 
             } else {
+                sourceMediators.remove(sourceMediator);
                 setModifiedAtToNow();
             }
         }
