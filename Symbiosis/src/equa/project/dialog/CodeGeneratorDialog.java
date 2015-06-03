@@ -41,7 +41,7 @@ public class CodeGeneratorDialog extends JDialog {
         if (edit) {
             setTitle("Generate Source Code to Edit");
         } else {
-            setTitle("Generate Code");
+            setTitle("Generate Domain Class Library");
         }
         projectController = controller;
         
@@ -150,7 +150,12 @@ public class CodeGeneratorDialog extends JDialog {
                             "Error", JOptionPane.ERROR_MESSAGE);
                         desktop.showMessage("The OM contains an error; Please generate behaviour with registries", "Generating Source Code");
                     } else {
+                        if (edit){
                         desktop.showMessage("The source code has been generated to destination " + txtLocation.getText(), "Generating Source Code");
+                        }
+                        else {
+                          desktop.showMessage("The domain class library has been generated to destination " + txtLocation.getText(), "Generating Domain Class Library");     
+                        }
                         desktop.setLatestSrcLocation(txtLocation.getText());
                     }
                     CodeGeneratorDialog.this.dispose();

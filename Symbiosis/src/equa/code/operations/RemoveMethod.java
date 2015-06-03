@@ -83,10 +83,10 @@ public class RemoveMethod extends Method implements IActionOperation {
             ObjectType ot = (ObjectType) relation.targetType();
             if (ot.containsObjectFields()) {
                 if (getParams().size() > 0) {
-                    trueStatement.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator() + "stripYourself();");
+                    trueStatement.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator() + "dispose();");
                 } else {
                     withIf = true;
-                    trueStatement.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator() + "stripYourself();");
+                    trueStatement.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator() + "dispose();");
                 }
             }
         } else if (inv != null && inv.isNavigable() && getAccess().equals(AccessModifier.PUBLIC)) {

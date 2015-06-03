@@ -26,7 +26,7 @@ public class Strip extends Method {
     private static final long serialVersionUID = 1L;
 
     public Strip(ObjectType ot) {
-        super(ot, "stripYourself", new ArrayList<Param>(), ot.getCodeClass());
+        super(ot, "dispose", new ArrayList<Param>(), ot.getCodeClass());
         setAccessModifier(AccessModifier.NAMESPACE);
     }
 
@@ -50,14 +50,14 @@ public class Strip extends Method {
                 String method = null;
                 if (inverse.isMandatory()) {
                     if (inverse.getOwner().containsObjectFields()) {
-                        method = "stripYourself()";
+                        method = "dispose()";
                     }
                 } else {
 
                     ObjectType targetResponsible = inverse.getOwner().getResponsible();
                     if (targetResponsible == relation.getOwner()) {
                         if (inverse.getOwner().containsObjectFields()) {
-                            method = "stripYourself()";
+                            method = "dispose()";
                         }
                     } else if (inverse.isNavigable()) {
                         method = "remove" + Naming.withCapital(inverse.name()) + "(" + removableObject + ")";

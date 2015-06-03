@@ -119,7 +119,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     private RequirementConfigurator requirementConfigurator;
     //private RequirementsBreakdownPanel requirementsBreakdownPanel;
     private TypeConfigurator typeConfigurator;
-    private MessageTab messages;
+    private MessageTab messagesTab;
     private java.util.Timer autoSaveTimer;
     private final static long AUTO_SAVE_DELAY = 120000; //Delay between autosaves in miliseconds.
     private boolean autosave;
@@ -296,11 +296,11 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         typeConfigurator = new TypeConfigurator(getFrame(), projectController.getProject().getObjectModel());
         dockingRoot.createTab(requirementConfigurator, typeConfigurator, 2, false);
 
-        if (messages != null) {
-            dockingRoot.close(messages);
+        if (messagesTab != null) {
+            dockingRoot.close(messagesTab);
         }
-        messages = new MessageTab();
-        dockingRoot.createTab(requirementConfigurator, messages, 3, false);
+        messagesTab = new MessageTab();
+        dockingRoot.createTab(requirementConfigurator, messagesTab, 3, false);
 
         dockingRoot.addHiddenDockable(projectNavigator, RelativeDockablePosition.LEFT);
         dockingRoot.setDockableWidth(projectNavigator, 0.1);
@@ -325,11 +325,11 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     }
 
     public void showMessage(String message, String trigger) {
-        messages.addMessage(message, trigger);
+        messagesTab.addMessage(message, trigger);
     }
 
     public void showMessages(List<Message> messages, String trigger) {
-        this.messages.addMessages(messages, trigger);
+        this.messagesTab.addMessages(messages, trigger);
     }
 
     public Project getCurrentProject() {
@@ -2095,7 +2095,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         if (init) {
             clearAndCloseTabs();
             refreshTrees();
-            messages.clear();
+            messagesTab.clear();
         } else {
             initDockingRoot();
             initStatusBar();

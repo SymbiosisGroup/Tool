@@ -1049,7 +1049,7 @@ public class Java implements Language {
                     }
 
                     trueStatement.addLineAtCurrentIndentation(
-                        thisKeyword() + memberOperator() + p.getName() + memberOperator() + "stripYourself();");
+                        thisKeyword() + memberOperator() + p.getName() + memberOperator() + "dispose();");
                     if (p.getRelation().isMandatory()) {
                         list.addLinesAtCurrentIndentation(trueStatement);
                     } else {
