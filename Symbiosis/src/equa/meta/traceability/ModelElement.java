@@ -224,8 +224,8 @@ public abstract class ModelElement extends Source {
 
     void removeSourceMediator(SynchronizationMediator sourceMediator) {
         if (!sourceMediators.contains(sourceMediator)) {
-            System.out.println("mediator with source " + sourceMediator.getSource() + ";" + sourceMediator.getSource().getClass()
-                + " and dependent " + sourceMediator.getDependentModelElement() + ";" + sourceMediator.getDependentModelElement().getClass() + " without source");
+//            System.out.println("mediator with source " + sourceMediator.getSource() + ";" + sourceMediator.getSource().getClass()
+//                + " and dependent " + sourceMediator.getDependentModelElement() + ";" + sourceMediator.getDependentModelElement().getClass() + " without source");
         } else {
 
             if (sourceMediators.size() == 1) {

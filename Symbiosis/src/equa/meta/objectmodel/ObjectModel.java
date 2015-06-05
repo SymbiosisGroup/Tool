@@ -1047,7 +1047,7 @@ public class ObjectModel extends Model implements
      */
     public FactType addFactType(String name, List<String> constants,
         List<SubstitutionType> types, List<String> roleNames,
-        List<Integer> roleNumbers, Requirement source)
+        List<Integer> roleNumbers, FactRequirement source)
         throws MismatchException, DuplicateException {
         String nameWithCapital = Naming.restyleWithCapital(name);
         if (!Naming.isTypeName(nameWithCapital)) {
@@ -1080,7 +1080,7 @@ public class ObjectModel extends Model implements
         return ft;
     }
 
-    public equa.meta.objectmodel.CollectionType addCollectionType(CollectionNode cn, boolean sequence, Requirement source)
+    public equa.meta.objectmodel.CollectionType addCollectionType(CollectionNode cn, boolean sequence, FactRequirement source)
         throws DuplicateException, MismatchException {
         String name = cn.getTypeName();
         if (BaseType.getBaseType(name) != null) {
@@ -1205,7 +1205,7 @@ public class ObjectModel extends Model implements
      */
     public FactType addObjectType(String typeName, List<String> constants,
         List<SubstitutionType> types, List<String> roleNames,
-        List<Integer> roleNumbers, Requirement source)
+        List<Integer> roleNumbers, FactRequirement source)
         throws MismatchException, ChangeNotAllowedException, DuplicateException {
 
         String nameWithCapital = Naming.restyleWithCapital(typeName);
@@ -1477,8 +1477,10 @@ public class ObjectModel extends Model implements
     @Override
     public void remove(ModelElement member) {
         if (member instanceof FactType) {
-
-            typeRepository.removeFactType(((FactType) member).getName());
+            FactType ft = (FactType) member;
+            typeRepository.removeFactType(ft.getName());
+            ft.remove();
+            
             publisher.inform(this, "removedType", null, member);
 
             fireListChanged();

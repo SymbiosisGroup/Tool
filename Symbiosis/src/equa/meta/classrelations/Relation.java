@@ -244,7 +244,8 @@ public abstract class Relation implements Comparable<Relation>, Serializable {
     public abstract boolean isSeqRelation();
 
     public boolean isSeqAutoIncrRelation() {
-        return isSeqRelation();
+        return false;
+        //return isSeqRelation();
     }
 
     public boolean isMapRelation() {

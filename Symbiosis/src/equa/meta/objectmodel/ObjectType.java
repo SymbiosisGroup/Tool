@@ -1294,18 +1294,31 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     }
 
     void generateFields(List<Relation> relations) {
-        final boolean AUTO_INCR2 = true;
+        final boolean AUTO_INCR = true;
         for (Relation r : relations) {
             if (r.isNavigable() && !r.isDerivable()/* && (r.targetType() == null || !r.targetType().isSingleton())*/) {
                 codeClass.addField(new Field(r));
             }
             if (!r.isMandatory() && !r.hasMultipleTarget() && r.targetType().getUndefinedString() == null
                 && !r.targetType().equals(BaseType.BOOLEAN)) {
-                codeClass.addField(new Field(BaseType.BOOLEAN, r.fieldName() + "Defined", !AUTO_INCR2));
+                codeClass.addField(new Field(BaseType.BOOLEAN, r.fieldName() + "Defined", !AUTO_INCR));
             }
             String autoIncrFieldName = r.getAutoIncrFieldName();
-            if (r.isResponsible() && autoIncrFieldName != null) {
-                codeClass.addField(new Field(BaseType.NATURAL, autoIncrFieldName, AUTO_INCR2));
+            if (r.isResponsible()) {
+                if (autoIncrFieldName != null) {
+                    codeClass.addField(new Field(BaseType.NATURAL, autoIncrFieldName, AUTO_INCR));
+                } else {
+                    if (r.targetType() instanceof ObjectType) {
+                        ObjectType ot = (ObjectType) r.targetType();
+                        for (ObjectType subtype : ot.subtypes) {
+                            String roleName = subtype.getFactType().hasAutoIncr();
+                            if (roleName!=null) {
+                                autoIncrFieldName = roleName + "Next" + Naming.withCapital(subtype.getName());
+                                codeClass.addField(new Field(BaseType.NATURAL, autoIncrFieldName, AUTO_INCR));
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -1732,12 +1745,13 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
                 searchMethod = new SearchMethod(relation, concreteObjectType, this);
                 Iterator<Param> itParams = searchMethod.getParams().iterator();
                 if (itParams.hasNext()) {
-                    Param param1 = itParams.next();
-                    if (param1.getType().equals(BaseType.NATURAL) && !itParams.hasNext() && !param1.getRelation().isAutoIncr()) {
-                        indexMethodNeeded = false;
-                    } else {
-                        codeClass.addOperation(searchMethod);
-                    }
+//                    Param param1 = itParams.next();
+//                    if (param1.getType().equals(BaseType.NATURAL) && !itParams.hasNext() && !param1.getRelation().isAutoIncr()) {
+//                        indexMethodNeeded = false;
+//                    }
+
+                    codeClass.addOperation(searchMethod);
+
                     if (searchLexicalNeeded(searchMethod.getParams())) {
                         codeClass.addOperation(new SearchLexicalMethod(relation, concreteObjectType, this));
                     }
@@ -2058,7 +2072,15 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
 
     @Override
     public boolean isRemovable() {
-        return getFactType().isRemovable();
+        if (getFactType().isRemovable()) {
+            return true;
+        } else {
+            if (supertypes.isEmpty()) {
+                return false;
+            } else {
+                return supertypes.iterator().next().isRemovable();
+            }
+        }
     }
 
     @Override

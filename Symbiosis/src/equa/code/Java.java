@@ -1068,7 +1068,7 @@ public class Java implements Language {
                 // setting of the field
                 if (p instanceof IndexedProperty) {
                     list.addLineAtCurrentIndentation(p.getRelation().fieldName()
-                        + memberOperator() + setAtStatement(((IndexedProperty) p).setterParams(), TEMP1));
+                        + memberOperator() + setAtStatement((IndexedProperty) p, TEMP1));
                 } else {
                     list.addLineAtCurrentIndentation(assignment(thisKeyword() + memberOperator() + p.getRelation().fieldName(), TEMP1));
                 }
@@ -1120,7 +1120,7 @@ public class Java implements Language {
                     if (inverse.isSeqRelation() || inverse.isSetRelation()) {
                         list.addLineAtCurrentIndentation(callMethod(p.getName(), inverse.getOperationName(RegisterMethod.NAME), thisKeyword()) + endStatement());
                     } else if (inverse.isMapRelation()) {
-                        list.addLineAtCurrentIndentation(p.getName() + memberOperator() + setAtStatement(((IndexedProperty) p).setterParams(), p.getRelation().fieldName())
+                        list.addLineAtCurrentIndentation(p.getName() + memberOperator() + setAtStatement((IndexedProperty) p, p.getRelation().fieldName())
                         );
                     } else if (inverse instanceof BooleanSingletonRelation) {
                         list.addLineAtCurrentIndentation(p.getName() + memberOperator() + "set" + Naming.withCapital(inverse.name() + "(true)")
@@ -1134,7 +1134,7 @@ public class Java implements Language {
                 // setting new value at field
                 if (p instanceof IndexedProperty) {
                     list.addLineAtCurrentIndentation(p.getRelation().fieldName()
-                        + memberOperator() + setAtStatement(((IndexedProperty) p).setterParams(), p.getName()));
+                        + memberOperator() + setAtStatement((IndexedProperty) p, p.getName()));
                 } else {
                     list.addLineAtCurrentIndentation(assignment(thisKeyword() + memberOperator() + p.getRelation().fieldName(), p.getName()));
                 }
@@ -1152,21 +1152,33 @@ public class Java implements Language {
 
     }
 
-    String setAtStatement(List<Param> params, String value) {
-        StringBuilder sb = new StringBuilder("set(");
-        for (int i = 0; i < params.size() - 1; i++) {
-            if (params.get(i).equals(BaseType.NATURAL)) {
-                sb.append(params.get(i).expressIn(this));
-                sb.append(" - 1");
-            } else {
+    String setAtStatement(IndexedProperty p, String value) {
+        List<Param> params = p.setterParams();
+        StringBuilder sb;
+        if (p.getRelation().isMapRelation()) {
+            sb = new StringBuilder("put(");
+            for (int i = 0; i < params.size() - 1; i++) {
+
                 sb.append(params.get(i).expressIn(this));
             }
-
             sb.append(", ");
 
+        } else {
+            sb = new StringBuilder("set(");
+            for (int i = 0; i < params.size() - 1; i++) {
+                if (params.get(i).equals(BaseType.NATURAL)) {
+                    sb.append(params.get(i).expressIn(this));
+                    sb.append(" - 1");
+                } else {
+                    sb.append(params.get(i).expressIn(this));
+                }
+                sb.append(", ");
+            }
         }
+
         sb.append(value);
-        sb.append(");");
+        sb.append(
+            ");");
         return sb.toString();
     }
 
@@ -2049,6 +2061,7 @@ public class Java implements Language {
     @Override
     public String overrideModifier() {
         return "@Override";
+
     }
 
 }

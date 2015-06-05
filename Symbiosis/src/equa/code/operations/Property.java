@@ -387,7 +387,10 @@ public class Property extends Operation implements IRelationalOperation {
                 BaseType bt = (BaseType) relation.targetType();
                 if (bt.equals(BaseType.NATURAL)) {
                     IBooleanOperation isNatural = getObjectModel().getIsNaturalMethod();
-                    IFormalPredicate predicate = new BooleanCall(isNatural, actualParams, true);
+                    List<ActualParam> params = new ArrayList<>();
+                    // amount is last param:
+                    params.add(actualParams.get(actualParams.size()-1));
+                    IFormalPredicate predicate = new BooleanCall(isNatural, params, true);
                     setEscape(predicate, new InformalPredicate(self() + " stays unchanged"));
                 }
                 

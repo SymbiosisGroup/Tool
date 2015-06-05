@@ -14,6 +14,7 @@ import equa.code.ImportType;
 import equa.code.IndentedList;
 import equa.code.Language;
 import equa.meta.classrelations.BooleanRelation;
+import equa.meta.classrelations.BooleanSingletonRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.RoleEvent;
 import equa.meta.objectmodel.ObjectType;
@@ -50,10 +51,19 @@ public class RegisterMethod extends Method implements IRelationalOperation {
         Relation inverse = relation.inverse();
         if (inverse != null && inverse.isNavigable() && this.getAccess().equals(AccessModifier.PUBLIC)) {
             ObjectType otInv = (ObjectType) relation.targetType();
-            Operation register = otInv.getCodeClass().getOperation(NAME, inverse);
-            List<ActualParam> params = new ArrayList<>();
-            params.add(new This());
-            list.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator() + register.callString(params) + l.endStatement());
+            if (inverse.isCollectionReturnType()) {
+
+                list.addLineAtCurrentIndentation(l.callMethod(getParams().get(0).getName(), inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()) + l.endStatement());
+            } else if (inverse instanceof BooleanSingletonRelation) {
+                // wrong : JAVA code, it's to specific
+                list.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator()
+                    + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
+            } else {
+                // wrong : JAVA code, it's to specific
+                list.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator()
+                    + "set" + Naming.withCapital(inverse.fieldName()) + "(" + l.thisKeyword() + ")" + l.endStatement());
+            }
+
         }
 //        if (getParent().equals(relation.targetType())) {
 //            if (inverse.isCollectionReturnType()) {

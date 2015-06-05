@@ -139,7 +139,7 @@ public class FactType extends ParentElement implements Type, ITerm,
      */
     FactType(String name, List<String> constants,
         List<SubstitutionType> types, List<String> roleNames, boolean isAnObjectType,
-        ObjectModel objectModel, Requirement source) {
+        ObjectModel objectModel, FactRequirement source) {
         super(objectModel, source);
         this.referencedTerms = new TreeSet<>();
         initListeners();
@@ -287,7 +287,7 @@ public class FactType extends ParentElement implements Type, ITerm,
      * @param objectname is not empty
      * @param source
      */
-    FactType(String typename, String objectname, ObjectModel om, Requirement source) {
+    FactType(String typename, String objectname, ObjectModel om, FactRequirement source) {
         super(om, source);
         this.referencedTerms = new TreeSet<>();
         initListeners();
@@ -351,7 +351,7 @@ public class FactType extends ParentElement implements Type, ITerm,
         factTypeClass = null;
     }
 
-    FactType(String collectionTypeName, ObjectModel om, String begin, String separator, String end, Requirement source) {
+    FactType(String collectionTypeName, ObjectModel om, String begin, String separator, String end, FactRequirement source) {
         super(om, source);
         this.referencedTerms = new TreeSet<>();
         initListeners();
@@ -372,8 +372,9 @@ public class FactType extends ParentElement implements Type, ITerm,
 
         try {
             String uniqueString = "Two facts about " + getFactTypeString() + " with the same collection values are not allowed.";
+            Category cat = ((FactRequirement) source.sources().get(0)).getCategory();
             RuleRequirement rule = om.getProject().getRequirementModel().
-                addRuleRequirement(source.getCategory(),
+                addRuleRequirement(cat,
                     uniqueString,
                     new SystemInput("redundancy or bad identification of collections is awkward"));
             new UniquenessConstraint(roles.get(0), rule);
@@ -775,7 +776,7 @@ public class FactType extends ParentElement implements Type, ITerm,
         }
 
         Requirement source = fn.getExpressionTreeModel().getSource();
-        //   addSource(source);
+        addSource(source);
         return population.addTuple(substitutionValues, roles, substitutionTypes, source);
     }
 
@@ -1219,6 +1220,26 @@ public class FactType extends ParentElement implements Type, ITerm,
             if (role.getSubstitutionType().equals(ot)) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    public boolean usesSomewhere(ObjectType ot) {
+
+        for (Role role : roles) {
+            if (role.getSubstitutionType().equals(ot)) {
+                return true;
+            }
+            if (role.getSubstitutionType() instanceof ObjectType) {
+                FactType ft = ((ObjectType) role.getSubstitutionType()).getFactType();
+                if (ft.usesSomewhere(ot)) {
+                    return true;
+                }
+            }
+        }
+        if (ot != null) {
+            return this.ot.hasSuperType(ot);
         }
 
         return false;
@@ -2061,13 +2082,13 @@ public class FactType extends ParentElement implements Type, ITerm,
         return navigableRoles > 0;
     }
 
-    public boolean hasAutoIncr() {
+    public String hasAutoIncr() {
         for (Role role : roles) {
             if (role.isAutoIncr()) {
-                return true;
+                return role.detectRoleName();
             }
         }
-        return false;
+        return null;
     }
 
     /**
@@ -2211,7 +2232,7 @@ public class FactType extends ParentElement implements Type, ITerm,
 
         population.remove();
 
-        super.remove();
+        //super.remove();
 
     }
 

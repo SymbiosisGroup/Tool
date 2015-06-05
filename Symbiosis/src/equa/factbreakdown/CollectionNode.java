@@ -20,6 +20,7 @@ import equa.meta.objectmodel.SubstitutionType;
 import equa.meta.objectmodel.Tuple;
 import equa.meta.objectmodel.TypeExpression;
 import equa.meta.objectmodel.Value;
+import equa.meta.requirements.FactRequirement;
 import equa.meta.requirements.RequirementModel;
 
 /**
@@ -252,7 +253,7 @@ public class CollectionNode extends ObjectNode implements ISubstitution {
             if (st == null) {
                 throw new ChangeNotAllowedException("element type is still not registered");
             }
-            ot = om.addCollectionType(this, sequence, getExpressionTreeModel().getSource());
+            ot = om.addCollectionType(this, sequence, (FactRequirement)getExpressionTreeModel().getSource());
         }
         RequirementModel rm = om.getProject().getRequirementModel();
         ot.getFactType().addCollectionFact(this, sequence, st, rm);

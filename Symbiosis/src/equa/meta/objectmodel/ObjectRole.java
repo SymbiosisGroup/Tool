@@ -733,9 +733,7 @@ public class ObjectRole extends Role {
         }
 
         this.ot.resignFrom(this);
-        if (ot.isSolitary()) {
-            ot.getFactType().remove();
-        }
+
         super.remove();
 
     }

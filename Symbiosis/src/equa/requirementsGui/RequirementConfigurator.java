@@ -36,12 +36,9 @@ import com.vlsolutions.swing.docking.Dockable;
 import equa.controller.IView;
 import equa.controller.ProjectController;
 import equa.controller.SwingProjectController;
-import equa.desktop.Desktop;
 import equa.meta.ChangeNotAllowedException;
 import equa.meta.objectmodel.FactType;
-import equa.meta.objectmodel.Initializer;
 import equa.meta.objectmodel.ObjectRole;
-import equa.meta.objectmodel.ObjectType;
 import equa.meta.requirements.ActionRequirement;
 import equa.meta.requirements.FactRequirement;
 import equa.meta.requirements.QualityAttribute;
@@ -69,8 +66,6 @@ import equa.meta.traceability.SystemCategory;
 import fontys.observer.PropertyListener;
 import java.awt.Color;
 import java.awt.Font;
-import java.util.Collections;
-import java.util.Set;
 import static javax.swing.JTable.AUTO_RESIZE_OFF;
 import javax.swing.ListSelectionModel;
 
@@ -158,7 +153,7 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
                 if (req.getCategory().isOwner(currentUser) && req.getReviewState() instanceof RemovedState) {
                     mntmApproveRequirement.setText("Acccept Remove");
                 } else {
-                    mntmApproveRequirement.setText("Approve");
+                    mntmApproveRequirement.setText("Accept");
                 }
                 if (req.isManuallyCreated() && (req instanceof RuleRequirement)) {
                     mntmActionRuleAssignment.setEnabled(true);

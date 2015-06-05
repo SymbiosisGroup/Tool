@@ -301,7 +301,7 @@ public class ExpressionTreeModel extends DefaultTreeModel {
         }
     }
 
-    public Requirement getSource() {
+    public FactRequirement getSource() {
         return source;
     }
 

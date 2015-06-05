@@ -92,9 +92,9 @@ public class AdjustMethod extends Method implements IActionOperation {
     public void initSpec() {
         Operation property = getCodeClass().getOperation(relation.name());
         BinaryExpression newValue = new BinaryExpression(property.call(qualifierParams(relation)), Operator.PLUS, getParams().get(0));
-        
+
         boolean NEGATED = true;
-        
+
         IFormalPredicate preCondition = null;
         if (!relation.isMandatory()) {
             IBooleanOperation isDefined = (IBooleanOperation) getCodeClass().getOperation("isDefined", relation);
@@ -130,7 +130,10 @@ public class AdjustMethod extends Method implements IActionOperation {
         if (relation.targetType() instanceof ObjectType) {
             ConstrainedBaseType cbt = (ConstrainedBaseType) relation.targetType();
             IBooleanOperation correctValue = (IBooleanOperation) cbt.getCodeClass().getOperation("isCorrectValue");
-            BooleanCall bc = new BooleanCall(correctValue, actualParams, NEGATED);
+            List<ActualParam> params = new ArrayList<>();
+                // amount is first param:
+            params.add(actualParams.get(0));
+            BooleanCall bc = new BooleanCall(correctValue, params, NEGATED);
             bc.setCalled((ObjectType) cbt.getCodeClass().getParent());
             IFormalPredicate predicate = bc;
             setEscape(predicate, new InformalPredicate(self() + " stays unchanged"));
@@ -138,7 +141,10 @@ public class AdjustMethod extends Method implements IActionOperation {
             BaseType bt = (BaseType) relation.targetType();
             if (bt.equals(BaseType.NATURAL)) {
                 IBooleanOperation isNatural = getObjectModel().getIsNaturalMethod();
-                IFormalPredicate predicate = new BooleanCall(isNatural, actualParams, NEGATED);
+                List<ActualParam> params = new ArrayList<>();
+                // amount is first param:
+                params.add(actualParams.get(0));
+                IFormalPredicate predicate = new BooleanCall(isNatural, params, NEGATED);
                 setEscape(predicate, new InformalPredicate(self() + " stays unchanged"));
             }
         }

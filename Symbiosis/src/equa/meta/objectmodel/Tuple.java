@@ -33,7 +33,7 @@ public class Tuple extends Value implements ObjectModelRealization {
      * @param source
      */
     Tuple(List<Value> values, List<Role> roles,
-            Population parent, Source source) {
+        Population parent, Source source) {
         super(parent, source);
 
         items = new ArrayList<>();
@@ -42,12 +42,15 @@ public class Tuple extends Value implements ObjectModelRealization {
             items.add(new TupleItem(values.get(i), role));
             i++;
         }
-        initSource(values);
+        initSource(values, source);
     }
 
     Tuple(List<Value> values, List<Role> roles,
-            Population parent, List<Source> sources) {
+        Population parent, List<Source> sources) {
         super(parent, sources.get(0));
+        for (int j = 1; j < sources.size(); j++) {
+            addSource(sources.get(j));
+        }
 
         items = new ArrayList<>();
         int i = 0;
@@ -55,10 +58,8 @@ public class Tuple extends Value implements ObjectModelRealization {
             items.add(new TupleItem(values.get(i), role));
             i++;
         }
-        initSource(values);
-        for (int j = 1; j < sources.size(); j++) {
-            addSource(sources.get(j));
-        }
+        initSource(values, sources);
+
     }
 
     /**
@@ -77,12 +78,15 @@ public class Tuple extends Value implements ObjectModelRealization {
         items = new ArrayList<>();
 
         items.add(new TupleItem(value, idRole));
-        initSource(value);
+        initSource(value, source);
 
     }
 
     Tuple(Value value, Role idRole, Population parent, List<Source> sources) {
         super(parent, sources.get(0));
+        for (int j = 1; j < sources.size(); j++) {
+            addSource(sources.get(j));
+        }
 
         items = new ArrayList<>();
 
@@ -90,27 +94,35 @@ public class Tuple extends Value implements ObjectModelRealization {
         for (int i = 1; i < sources.size(); i++) {
             this.addSource(sources.get(i));
         }
-        initSource(value);
+        initSource(value, sources);
 
     }
 
-    private void initSource(List<Value> values) {
+    private void initSource(List<Value> values, Source source) {
         for (Value value : values) {
-            initSource(value);
+            initSource(value, source);
         }
     }
 
-    private void initSource(Value value) {
+    private void initSource(List<Value> values, List<Source> sources) {
+        for (Value value : values) {
+            initSource(value, sources);
+        }
+    }
+    
+    private void initSource(Value value, Source source) {
         if (value instanceof Tuple) {
             Tuple tuple = (Tuple) value;
-            List<Source> sources = tuple.sources();
-            tuple.addSource(this);
-//            for (Source source : sources) {
-//                if (source instanceof Tuple) {
-//                } else {
-//                    tuple.removeSource(source);
-//                }
-//            }
+            tuple.addSource(source);
+        }
+    }
+
+    private void initSource(Value value, List<Source> sources) {
+        if (value instanceof Tuple) {
+            Tuple tuple = (Tuple) value;
+            for (int j = 0; j < sources.size(); j++) {
+                tuple.addSource(sources.get(j));
+            }
         }
     }
 
@@ -138,8 +150,8 @@ public class Tuple extends Value implements ObjectModelRealization {
             if (tuple.getFactType() == getFactType()) {
                 for (int i = 0; i < items.size(); i++) {
                     if (!items.get(i).equals(tuple.items.get(i))
-                            && !(items.get(i).getValue() instanceof UnknownValue)
-                            && !(tuple.items.get(i).getValue() instanceof UnknownValue)) {
+                        && !(items.get(i).getValue() instanceof UnknownValue)
+                        && !(tuple.items.get(i).getValue() instanceof UnknownValue)) {
                         return false;
                     }
                 }
@@ -168,7 +180,7 @@ public class Tuple extends Value implements ObjectModelRealization {
     ) {
         for (int i = 0; i < items.size(); i++) {
             if (!items.get(i).getType().equals(types.get(i))
-                    || !items.get(i).getValue().equals(values.get(i))) {
+                || !items.get(i).getValue().equals(values.get(i))) {
                 return false;
             }
         }
@@ -185,6 +197,19 @@ public class Tuple extends Value implements ObjectModelRealization {
         for (TupleItem item : items) {
             if (item.getValue() == t) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean usesSomewhere(Tuple t) {
+        for (TupleItem item : items) {
+            if (item.getValue() == t) {
+                return true;
+            } else if (item.getValue() instanceof Tuple) {
+                if (((Tuple) item.getValue()).usesSomewhere(t)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -214,7 +239,7 @@ public class Tuple extends Value implements ObjectModelRealization {
     }
 
     void removeAssociationsWithSource(Source source, ObjectModel om)
-            throws ChangeNotAllowedException {
+        throws ChangeNotAllowedException {
         for (TupleItem item : items) {
             SubstitutionType st = item.getType();
             if (st instanceof ObjectType) {
@@ -236,7 +261,7 @@ public class Tuple extends Value implements ObjectModelRealization {
         ConstrainedBaseType cbt = (ConstrainedBaseType) or.getSubstitutionType();
         TupleItem item = items.get(roleNr);
         Tuple tuple = cbt.getFactType().getPopulation().addTuple(item.getValue(),
-                or, this.sources());
+            or, this.sources());
         items.set(roleNr, new TupleItem(tuple, or));
     }
 
