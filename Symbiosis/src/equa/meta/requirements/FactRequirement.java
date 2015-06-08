@@ -63,11 +63,12 @@ public class FactRequirement extends Requirement {
      */
     public Tuple getRealizedTuple() {
         List<ModelElement> modelElements = this.dependents();
-        if (modelElements.isEmpty()) {
-            return null;
-        } else {
-            return (Tuple) modelElements.get(0);
+        for (ModelElement modelElement : modelElements) {
+            if (modelElement instanceof Tuple) {
+                return (Tuple) modelElement;
+            }
         }
+        return null;
 
 //        for (ModelElement modelElement : modelElements) {
 //            if (modelElement instanceof Tuple) {
@@ -197,11 +198,8 @@ public class FactRequirement extends Requirement {
         }
         mediators.clear();
 
-
         setModifiedAtToNow();
     }
-
-   
 
     protected void removeDependentMediator(SynchronizationMediator dependentMediator) {
         if (!mediators.contains(dependentMediator)) {

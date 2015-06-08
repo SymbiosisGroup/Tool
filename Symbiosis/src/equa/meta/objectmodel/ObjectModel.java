@@ -1159,10 +1159,6 @@ public class ObjectModel extends Model implements
         while(it.hasNext()){
             System.out.print(it.next()+", ");
         }
-        System.out.println();
-        Project project = getProject();
-        FactRequirement fact = (FactRequirement) project.getRequirementModel().getRequirement("DEF.14");
-        
 
         publisher.inform(this, "removedType", null, ft);
         fireListChanged();
