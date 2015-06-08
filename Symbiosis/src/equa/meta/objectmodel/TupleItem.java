@@ -67,7 +67,6 @@ public class TupleItem implements Serializable {
      */
     public SubstitutionType getType() {
         if (value.getType() instanceof FactType) {
-            SubstitutionType st = ((FactType) value.getType()).getObjectType();
             return ((FactType) value.getType()).getObjectType();
         }
         return (SubstitutionType) value.getType();

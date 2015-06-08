@@ -156,9 +156,12 @@ public abstract class Source implements Serializable {
 
     protected void removeDependentMediators() {
         List<SynchronizationMediator> copy = new ArrayList<>(mediators);
+        mediators.clear();
         for (SynchronizationMediator mediator : copy)  {
             mediator.removeForward();
         }
+        
+        
         setModifiedAtToNow();
     }
 
@@ -166,7 +169,7 @@ public abstract class Source implements Serializable {
         if (!mediators.contains(dependentMediator)) {
             System.out.println("remove mediator " + dependentMediator.getSource().getClass());
         } else {
-            mediators.remove(dependentMediator);   
+            mediators.remove(dependentMediator);  
            
             setModifiedAtToNow();
         }

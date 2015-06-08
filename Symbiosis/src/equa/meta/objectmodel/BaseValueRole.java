@@ -257,7 +257,7 @@ public class BaseValueRole extends Role {
     }
 
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         //try {
         if (member instanceof DefaultValueConstraint) {
             if (defaultValue != null) {
@@ -268,7 +268,7 @@ public class BaseValueRole extends Role {
                 autoIncr = null;
             }
         } else {
-            super.remove(member);
+            super.removeMember(member);
         }
     }
 

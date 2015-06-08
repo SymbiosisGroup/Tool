@@ -41,14 +41,15 @@ public class CollectionTuple extends Tuple {
 
     @Override
     public void remove() {
-        getParent().remove(this);
 
         for (Value value : values) {
             value.remove();
         }
         values.clear();
-        super.remove();
-
+        
+        removeDependentMediators();
+        removeSourceMediators();
+        getParent().removeMember(this);
     }
 
     @Override

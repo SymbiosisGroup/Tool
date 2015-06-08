@@ -112,13 +112,29 @@ public abstract class Reviewable extends ModelElement {
 
     public abstract boolean isRealized();
     
-    @Override
-    protected void removeDependentMediator(SynchronizationMediator mediator){
-        super.removeDependentMediator(mediator);
-        if (isLonely()){
-            if (!isManuallyCreated()){
-                getParent().remove(this);
-            }
-        }
-    }
+//    @Override
+//    protected void removeDependentMediator(SynchronizationMediator dependentMediator){
+//        mediators.remove(dependentMediator);   
+//           
+//            setModifiedAtToNow();
+//        if (isLonely()){
+//            if (!isManuallyCreated()){
+//                getParent().remove(this);
+//            }
+//        }
+//    }
+    
+    
+//    @Override
+//     protected void removeBackward(SynchronizationMediator mediator) {
+//        mediator.removeBackward();
+//        sourceMediators.remove(mediator);
+//
+//        if (sourceMediators.isEmpty()) {
+//           if (!isManuallyCreated()){
+//                getParent().remove(this);
+//            }
+//        }
+//        setModifiedAtToNow();
+//    }
 }

@@ -186,7 +186,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
      * the roles at the parent-facttype
      */
     ObjectType(FactType parent, List<String> constants, List<Integer> roleNumbers) {
-        super(parent, parent);
+        super(parent, null);
         init(parent, constants, roleNumbers);
         this.fieldsAlgorithms = new HashSet<>();
         this.constantsAlgorithms = new HashSet<>();
@@ -199,7 +199,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
      * @param constant
      */
     ObjectType(FactType parent, String constant) {
-        super(parent, parent);
+        super(parent, null);
         ArrayList<String> constants = new ArrayList<>();
         constants.add(Naming.withoutCapital(constant.trim()));
         init(parent, constants, null);
@@ -208,7 +208,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     }
 
     ObjectType(FactType parent, int kind) {
-        super(parent, parent);
+        super(parent, null);
         ArrayList<String> constants;
         constants = new ArrayList<>();
         if (kind == CONSTRAINED_BASETYPE) {
@@ -221,7 +221,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     }
 
     ObjectType(FactType parent) {
-        super(parent, parent);
+        super(parent, null);
         ote = new TypeExpression(parent.getFTE());
         _abstract = false;
         comparable = false;
@@ -240,7 +240,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     }
 
     ObjectType(FactType parent, CollectionTypeExpression ote) {
-        super(parent, parent);
+        super(parent, null);
         this.ote = ote;
         _abstract = false;
         comparable = false;
@@ -375,7 +375,18 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
 
     public Algorithm removeAlgorithm(OperationHeader header) {
         // algorithms.clear(); return null;
-        return algorithms.remove(header);
+        Algorithm toRemove = algorithms.get(header);
+        if (toRemove != null) {
+            toRemove.remove();
+        }
+        return toRemove;
+    }
+
+    void removeAlgorithms() {
+        Set<OperationHeader> headers = algorithms.keySet();
+        for (OperationHeader header : headers) {
+            removeAlgorithm(header);
+        }
     }
 
     public void removeLanguageAlgorithms() {
@@ -687,6 +698,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         if (!removed) {
             throw new RuntimeException(("REMOVING OF SUBTYPE HAS NOT SUCCEEDED"));
         }
+        removeSource(type);
         if (subtypes.isEmpty()) {
             remove();
         }
@@ -697,6 +709,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         List<ObjectType> toRemove = new ArrayList<>(subtypes);
         for (ObjectType subtype : toRemove) {
             subtype.supertypes.remove(this);
+            removeSource(subtype);
         }
         subtypes.clear();
     }
@@ -1312,7 +1325,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
                         ObjectType ot = (ObjectType) r.targetType();
                         for (ObjectType subtype : ot.subtypes) {
                             String roleName = subtype.getFactType().hasAutoIncr();
-                            if (roleName!=null) {
+                            if (roleName != null) {
                                 autoIncrFieldName = roleName + "Next" + Naming.withCapital(subtype.getName());
                                 codeClass.addField(new Field(BaseType.NATURAL, autoIncrFieldName, AUTO_INCR));
                             }
@@ -2085,21 +2098,19 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
 
     @Override
     public void remove() {
-        for (ObjectType subtype : subtypes) {
-            subtype.remove();
-        }
         getFactType().remove();
     }
 
-    public void removeYourself() {
-        removeBehavior();
-
-        for (ObjectType supertype : new ArrayList<ObjectType>(supertypes)) {
-            supertype.removeSubType(this);
-        }
-        supertypes.clear();
-        removeSubTypes();
+    void removeYourself() {
         super.remove();
+        removeBehavior();
+        removeAlgorithms();
+        try {
+            removeSupertypes();
+        } catch (ChangeNotAllowedException ex) {
+            Logger.getLogger(ObjectType.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     boolean relatedToAddableRole() {
@@ -2249,9 +2260,9 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
     }
 
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         if (member instanceof Operation) {
-            codeClass.remove(member);
+            codeClass.removeMember(member);
         }
     }
 

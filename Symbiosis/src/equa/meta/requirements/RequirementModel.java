@@ -126,7 +126,7 @@ public class RequirementModel extends Model implements Publisher, Serializable {
      * Requirement-class extension.
      */
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         Requirement requirement = (Requirement) member;
         if (requirement instanceof FactRequirement) {
             facts.remove((FactRequirement)requirement);

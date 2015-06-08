@@ -5,17 +5,21 @@ import equa.meta.objectmodel.FactType;
 import equa.meta.objectmodel.ObjectType;
 import equa.meta.objectmodel.Tuple;
 import equa.meta.objectmodel.Type;
+import equa.meta.traceability.ApprovedState;
 import equa.meta.traceability.Category;
 import equa.meta.traceability.ExternalInput;
 import equa.meta.traceability.Impact;
 import equa.meta.traceability.ModelElement;
 import equa.meta.traceability.SynchronizationMediator;
+import equa.project.Project;
 import equa.util.Naming;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -61,23 +65,25 @@ public class FactRequirement extends Requirement {
         List<ModelElement> modelElements = this.dependents();
         if (modelElements.isEmpty()) {
             return null;
+        } else {
+            return (Tuple) modelElements.get(0);
         }
 
-        for (ModelElement modelElement : modelElements) {
-            if (modelElement instanceof Tuple) {
-                Tuple t = (Tuple) modelElement;
-                if (t.getFactType().isPureFactType()) {
-                    return t;
-                }
-            }
-        }
-        // fact was an object expression; the last one will refer to the object expression 
-        for (int i = modelElements.size() - 1; i >= 0; i--) {
-            if (modelElements.get(i) instanceof Tuple) {
-                return (Tuple) modelElements.get(i);
-            }
-        }
-        return null;
+//        for (ModelElement modelElement : modelElements) {
+//            if (modelElement instanceof Tuple) {
+//                Tuple t = (Tuple) modelElement;
+//                if (t.getFactType().isPureFactType()) {
+//                    return t;
+//                }
+//            }
+//        }
+//        // fact was an object expression; the last one will refer to the object expression 
+//        for (int i = modelElements.size() - 1; i >= 0; i--) {
+//            if (modelElements.get(i) instanceof Tuple) {
+//                return (Tuple) modelElements.get(i);
+//            }
+//        }
+//        return null;
     }
 
     /**
@@ -109,7 +115,7 @@ public class FactRequirement extends Requirement {
         if (tuple != null) {
             FactType ft = tuple.getFactType();
             if (ft.getFTE() == null) {
-            //    System.out.println(getId() + " " + ft.getName() + " without FTE");
+                //    System.out.println(getId() + " " + ft.getName() + " without FTE");
                 return text;
             } else {
                 return Naming.withCapital(ft.getFTE().makeExpression(tuple));
@@ -185,60 +191,26 @@ public class FactRequirement extends Requirement {
 
     @Override
     protected void removeDependentMediators() {
-        Set<SynchronizationMediator> copy;
-        copy = new TreeSet<>(new SourceComparator());
-        for (SynchronizationMediator mediator : mediators) {
-            copy.add(mediator);
-        }
-
+        List<SynchronizationMediator> copy = new ArrayList<>(mediators);
         for (SynchronizationMediator mediator : copy) {
             mediator.removeForward();
         }
         mediators.clear();
-        setModifiedAtToNow();
 
+
+        setModifiedAtToNow();
     }
 
-    static class SourceComparator implements Comparator<SynchronizationMediator> {
+   
 
-        @Override
-        public int compare(SynchronizationMediator o1, SynchronizationMediator o2) {
-            if (o1.getDependentModelElement() instanceof Tuple) {
-                if (o2.getDependentModelElement() instanceof Tuple) {
-                    Tuple t1 = (Tuple) o1.getDependentModelElement();
-                    Tuple t2 = (Tuple) o2.getDependentModelElement();
-                    if (t1.usesSomewhere(t2)) {
-                        return -1;
-                    }
-                    if (t2.usesSomewhere(t1)) {
-                        return 1;
-                    }
-                    return t1.toString().compareTo(t2.toString());
-                } else {
-                    return -1;
-                }
-            } else {
-                if (o2.getDependentModelElement() instanceof Tuple) {
-                    return 1;
-                } else {
-                    if (o1.getDependentModelElement() instanceof FactType) {
-                        return -1;
-                    } else {
-                        ObjectType ot1 = ((ObjectType) o1.getDependentModelElement());
-                        ObjectType ot2 = ((ObjectType) o2.getDependentModelElement());
-                        if (ot1.getFactType().usesSomewhere(ot2)) {
-                            return -1;
-                        }
-                        if (ot2.getFactType().usesSomewhere(ot1)) {
-                            return 1;
-                        }
-                        return ot1.getName().compareTo(ot2.getName());
-                    }
-                }
-            }
+    protected void removeDependentMediator(SynchronizationMediator dependentMediator) {
+        if (!mediators.contains(dependentMediator)) {
+            System.out.println("remove mediator " + dependentMediator.getSource().getClass());
+        } else {
+            mediators.remove(dependentMediator);
 
+            setModifiedAtToNow();
         }
-
     }
 
 }

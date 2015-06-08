@@ -24,7 +24,6 @@ public class Singleton extends Tuple {
 
 //    public Singleton() {
 //    }
-
     /**
      * creation of a singleton object belonging to ot, on base of source
      *
@@ -44,6 +43,9 @@ public class Singleton extends Tuple {
 
     @Override
     public void remove() {
+        removeDependentMediators();
+        removeSourceMediators();
+        getParent().removeMember(this);
     }
 
     @Override

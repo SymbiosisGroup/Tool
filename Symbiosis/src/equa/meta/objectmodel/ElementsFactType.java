@@ -87,7 +87,7 @@ public abstract class ElementsFactType extends FactType {
         }
     
         for (Tuple t : toRemove) {
-            pop.remove(t);
+            pop.removeMember(t);
         }
     }
 }

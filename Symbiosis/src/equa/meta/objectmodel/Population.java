@@ -128,26 +128,20 @@ public class Population extends ParentElement implements Serializable {
         }
     }
 
+    // last param is always null, hence redundant
     private Tuple addTupleIfNecessary(List<Value> values, List<Role> roles,
             List<SubstitutionType> types, Source source) {
         Tuple tuple;
         int index = searchTuple(values, types);
         if (index == -1) {
-//            FactType ft = (FactType) getParent();
-//            if (ft.isObjectType()) {
-//                source = null;
-//            }
             tuple = new Tuple(values, roles, this, source);
             tuples.add(tuple);
         } else {
             tuple = tuples.get(index);
-//            if (tuple.getFactType().isPureFactType()) 
-            {
-                tuple.addSource(source);
-            }
         }
         return tuple;
     }
+    
 
     private Tuple addTupleIfNecessary(List<Value> values, List<Role> roles,
             List<SubstitutionType> types, List<Source> sources) {
@@ -378,15 +372,8 @@ public class Population extends ParentElement implements Serializable {
         for (Tuple tuple : copyTuples) {
             if (tuple.sources().contains(source)) {
                 tuple.removeSource(source);
-//                if (tuple.sources().isEmpty()) {
-//                    toRemove.add(tuple);
-//                }
             }
         }
-//        tuples.removeAll(toRemove);
-//        for (Tuple tuple : toRemove) {
-//            tuple.removeAssociationsWithSource(source, om);
-//        }
 
     }
 
@@ -419,6 +406,7 @@ public class Population extends ParentElement implements Serializable {
 //
 //        return collection;
 //    }
+    
     void replaceTupleItems(int roleNr, ObjectRole or) {
         for (Tuple tuple : tuples) {
             tuple.replaceItem(roleNr, or);
@@ -434,36 +422,36 @@ public class Population extends ParentElement implements Serializable {
     }
 
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         if (member instanceof Tuple) {
             if (tuples.remove((Tuple) member) && tuples.isEmpty()) {
                 FactType ft = (FactType) getParent();
-                ObjectType ot = ft.getObjectType();
-                if (ot != null) {
-                    try {
-                        ot.removeSupertypes();
-                        if (ot.isSolitary()) {
-                            ot.remove();
-                        }
-                    } catch (ChangeNotAllowedException ex) {
-                        Logger.getLogger(Population.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-
-                } else {
-                    ft.remove();
-                }
+                ft.remove();
+//                ObjectType ot = ft.getObjectType();
+//                if (ot != null) {
+//                    try {
+//                        ot.removeSupertypes();
+//                        if (ot.isSolitary()) {
+//                            ot.remove();
+//                        }
+//                    } catch (ChangeNotAllowedException ex) {
+//                        Logger.getLogger(Population.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//
+//                } else {
+//                    ft.remove();
+//                }
             }
         }
     }
 
     @Override
     public void remove() {
-        getParent().remove(this);
         List<Tuple> toRemove = new ArrayList<Tuple>(tuples);
         for (Tuple tuple : toRemove) {
             tuple.remove();
         }
-        tuples.clear();
+       // tuples.clear();
        // super.remove();
     }
 

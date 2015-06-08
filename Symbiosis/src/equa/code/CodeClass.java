@@ -109,7 +109,7 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
     }
 
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         if (member instanceof Operation) {
             operations.remove(member);
         }

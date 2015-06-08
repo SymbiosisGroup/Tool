@@ -1,7 +1,9 @@
 package equa.meta.objectmodel;
 
 import equa.meta.ChangeNotAllowedException;
+import equa.meta.requirements.FactRequirement;
 import equa.meta.traceability.Source;
+import equa.meta.traceability.SynchronizationMediator;
 import equa.util.Naming;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,7 +44,29 @@ public class Tuple extends Value implements ObjectModelRealization {
             items.add(new TupleItem(values.get(i), role));
             i++;
         }
-        initSource(values, source);
+        initSourceValues(values);
+    }
+
+    Tuple(Value value, Role idRole, Population parent, Source source) {
+        super(parent, source);
+
+        items = new ArrayList<>();
+
+        items.add(new TupleItem(value, idRole));
+        initSourceValue(value);
+    }
+
+    Tuple(Value value, Role idRole, Population parent, List<Source> sources) {
+        super(parent, sources.get(0));
+        for (int j = 1; j < sources.size(); j++) {
+            addSource(sources.get(j));
+        }
+
+        items = new ArrayList<>();
+
+        items.add(new TupleItem(value, idRole));
+        initSourceValue(value);
+
     }
 
     Tuple(List<Value> values, List<Role> roles,
@@ -58,8 +82,7 @@ public class Tuple extends Value implements ObjectModelRealization {
             items.add(new TupleItem(values.get(i), role));
             i++;
         }
-        initSource(values, sources);
-
+        initSourceValues(values);
     }
 
     /**
@@ -72,57 +95,16 @@ public class Tuple extends Value implements ObjectModelRealization {
         items = new ArrayList<>(0);
     }
 
-    Tuple(Value value, Role idRole, Population parent, Source source) {
-        super(parent, source);
-
-        items = new ArrayList<>();
-
-        items.add(new TupleItem(value, idRole));
-        initSource(value, source);
-
-    }
-
-    Tuple(Value value, Role idRole, Population parent, List<Source> sources) {
-        super(parent, sources.get(0));
-        for (int j = 1; j < sources.size(); j++) {
-            addSource(sources.get(j));
-        }
-
-        items = new ArrayList<>();
-
-        items.add(new TupleItem(value, idRole));
-        for (int i = 1; i < sources.size(); i++) {
-            this.addSource(sources.get(i));
-        }
-        initSource(value, sources);
-
-    }
-
-    private void initSource(List<Value> values, Source source) {
+    private void initSourceValues(List<Value> values) {
         for (Value value : values) {
-            initSource(value, source);
+            initSourceValue(value);
         }
     }
 
-    private void initSource(List<Value> values, List<Source> sources) {
-        for (Value value : values) {
-            initSource(value, sources);
-        }
-    }
-    
-    private void initSource(Value value, Source source) {
+    private void initSourceValue(Value value) {
         if (value instanceof Tuple) {
             Tuple tuple = (Tuple) value;
-            tuple.addSource(source);
-        }
-    }
-
-    private void initSource(Value value, List<Source> sources) {
-        if (value instanceof Tuple) {
-            Tuple tuple = (Tuple) value;
-            for (int j = 0; j < sources.size(); j++) {
-                tuple.addSource(sources.get(j));
-            }
+            tuple.addSource(this);
         }
     }
 
@@ -215,17 +197,17 @@ public class Tuple extends Value implements ObjectModelRealization {
         return false;
     }
 
-    void removeItems(Source source) {
-        for (TupleItem item : new ArrayList<TupleItem>(items)) {
-            Value value = item.getValue();
-            if (value instanceof Tuple) {
-                Tuple tuple = (Tuple) value;
-                if (tuple.sources().contains(source)) {
-                    tuple.removeSource(source);
-                }
-            }
-        }
-    }
+//    void removeItems(Source source) {
+//        for (TupleItem item : new ArrayList<TupleItem>(items)) {
+//            Value value = item.getValue();
+//            if (value instanceof Tuple) {
+//                Tuple tuple = (Tuple) value;
+//                if (tuple.sources().contains(source)) {
+//                    tuple.removeSource(source);
+//                }
+//            }
+//        }
+//    }
 
     @Override
     public Type getType() {
@@ -238,15 +220,15 @@ public class Tuple extends Value implements ObjectModelRealization {
         }
     }
 
-    void removeAssociationsWithSource(Source source, ObjectModel om)
-        throws ChangeNotAllowedException {
-        for (TupleItem item : items) {
-            SubstitutionType st = item.getType();
-            if (st instanceof ObjectType) {
-                ((ObjectType) st).getFactType().removeAssociationsWithSource(source, om);
-            }
-        }
-    }
+//    void removeAssociationsWithSource(Source source, ObjectModel om)
+//        throws ChangeNotAllowedException {
+//        for (TupleItem item : items) {
+//            SubstitutionType st = item.getType();
+//            if (st instanceof ObjectType) {
+//                ((ObjectType) st).getFactType().removeAssociationsWithSource(source, om);
+//            }
+//        }
+//    }
 
     void merge(int[] mapping, TupleItem newObjectTuple) {
         for (int i = mapping.length - 1; i >= 0; i--) {
@@ -267,6 +249,10 @@ public class Tuple extends Value implements ObjectModelRealization {
 
     @Override
     public void remove() {
+        // removing this tuple and if necessary its parent fact type:
+        getParent().removeMember(this);
+        removeDependentMediators();
+        removeSourceMediators();
 
         for (TupleItem item : new ArrayList<TupleItem>(items)) {
             if (item.getValue() instanceof Tuple) {
@@ -274,10 +260,10 @@ public class Tuple extends Value implements ObjectModelRealization {
                 subtuple.removeSource(this);
             }
         }
+        
+     
 
-        getParent().remove(this);
-        items.clear();
-        super.remove();
+       
     }
 
     /**
@@ -317,6 +303,44 @@ public class Tuple extends Value implements ObjectModelRealization {
     @Override
     public String getRequirementText() {
         return toString();
+    }
+
+    @Override
+    protected void removeDependentMediators() {
+        FactType ft = getFactType();
+        SynchronizationMediator ftMediator = null;
+        for (SynchronizationMediator mediator : new ArrayList<>(mediators)) {
+            if (mediator.getDependentModelElement().equals(ft)) {
+                ftMediator = mediator;
+                mediator.removeForward();
+            }
+        }
+        if (ftMediator == null) {
+            System.out.println(toString() + " without dependent fact type " + ft.getName());
+        } else {
+            mediators.remove(ftMediator);
+        }
+        List<SynchronizationMediator> copy = new ArrayList<>(mediators);
+        for (SynchronizationMediator mediator : copy) {
+            mediator.removeForward();
+        }
+
+        setModifiedAtToNow();
+    }
+
+    FactRequirement getFactRequirement() {
+        for (Source source : sources()) {
+            if (source instanceof FactRequirement) {
+                return (FactRequirement) source;
+            }
+        }
+        for (Source source : sources()) {
+            if (source instanceof Tuple) {
+                return ((Tuple) source).getFactRequirement();
+            }
+        }
+        return null;
+
     }
 
 }

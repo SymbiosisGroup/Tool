@@ -142,4 +142,10 @@ public class ObjectNode extends FactNode implements ISubstitution {
     public void setRoleNumber(int nr) {
         roleNumber = nr;
     }
+    
+    
+    @Override
+    public boolean isPureFact() {
+        return false;
+    }
 }

@@ -945,7 +945,7 @@ public abstract class Role extends ParentElement implements Serializable, Publis
     }
 
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         //  try {
         if (member instanceof UniquenessConstraint) {
             ucs.remove((UniquenessConstraint) member);

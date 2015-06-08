@@ -367,7 +367,7 @@ public abstract class Operation extends ModelElement implements IOperation, Comp
     @Override
     public void remove() {
         removeDependentMediators();
-        getParent().remove(this);
+        getParent().removeMember(this);
         removeSourceMediators();
 
     }

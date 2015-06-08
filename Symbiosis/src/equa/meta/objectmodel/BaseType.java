@@ -272,7 +272,7 @@ public class BaseType extends ParentElement implements SubstitutionType, Seriali
     }
 
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

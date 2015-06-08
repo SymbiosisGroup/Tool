@@ -176,7 +176,7 @@ public class CollectionType extends ObjectType implements Serializable {
         if (elementsFT != null) {
             elementsFT.removeTuplesOf(tuple);
         }
-        getFactType().getPopulation().remove(tuple);
+        getFactType().getPopulation().removeMember(tuple);
     }
 
 }

@@ -62,11 +62,11 @@ public class ConstrainedBaseType extends ObjectType implements ListModel<Object>
     }
 
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         if (vc != null) {
 
         } else {
-            super.remove(member);
+            super.removeMember(member);
         }
     }
 

@@ -188,20 +188,9 @@ public abstract class ModelElement extends Source {
     }
 
     public void remove() {
-
-        if (isLonely()) {
-            // this model element doesn't possess a source
-            getParent().remove(this);
-
-        } else {
-            removeDependentMediators();
-            // removing at parent will be considered via callback of removeBackward
-            // because some model elements may not be removed unconditionally
-        }
-
-        // remove mediators which act like source mediator
+        removeDependentMediators();
         removeSourceMediators();
-
+        getParent().removeMember(this);
     }
 
     protected void removeBackward(SynchronizationMediator mediator) {
@@ -209,7 +198,7 @@ public abstract class ModelElement extends Source {
         sourceMediators.remove(mediator);
 
         if (sourceMediators.isEmpty()) {
-            remove();
+            getParent().removeMember(this);
         }
         setModifiedAtToNow();
     }
@@ -223,22 +212,19 @@ public abstract class ModelElement extends Source {
     }
 
     void removeSourceMediator(SynchronizationMediator sourceMediator) {
-        if (!sourceMediators.contains(sourceMediator)) {
+//        if (!sourceMediators.contains(sourceMediator)) {
 //            System.out.println("mediator with source " + sourceMediator.getSource() + ";" + sourceMediator.getSource().getClass()
 //                + " and dependent " + sourceMediator.getDependentModelElement() + ";" + sourceMediator.getDependentModelElement().getClass() + " without source");
-        } else {
-
-            if (sourceMediators.size() == 1) {
-
-                // this model element is without source
-                
-                sourceMediators.remove(sourceMediator);
+//        } else 
+        {
+            sourceMediators.remove(sourceMediator);
+            removeBackward(sourceMediator);
+            if (sourceMediators.isEmpty()) {
+                // this model element is without source 
                 remove();
-
-            } else {
-                sourceMediators.remove(sourceMediator);
-                setModifiedAtToNow();
             }
+
+            setModifiedAtToNow();
         }
     }
 

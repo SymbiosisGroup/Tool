@@ -96,6 +96,8 @@ public class FactType extends ParentElement implements Type, ITerm,
     private transient BasicPublisher publisher;
     private DefaultValueConstraint defaultBooleanValue;
     private MutablePermission mutable;
+    @Transient
+    boolean removed = false;
 
     public FactType() {
         this.referencedTerms = new TreeSet<>();
@@ -775,9 +777,18 @@ public class FactType extends ParentElement implements Type, ITerm,
             i++;
         }
 
-        Requirement source = fn.getExpressionTreeModel().getSource();
-        addSource(source);
-        return population.addTuple(substitutionValues, roles, substitutionTypes, source);
+        Tuple tuple = population.addTuple(substitutionValues, roles, substitutionTypes, null);
+        // POST-order PROCESSING with respect to registering of sources: FT --> Tuple --> Fact
+        if (fn.isPureFact()) {
+            addSource(tuple);
+            tuple.addSource(fn.getExpressionTreeModel().getSource());
+
+        } else {
+            ot.addSource(tuple);
+            // the source of an objectNode will be set after the creation of the parentNode's tuple
+        }
+
+        return tuple;
     }
 
     /**
@@ -815,16 +826,15 @@ public class FactType extends ParentElement implements Type, ITerm,
      * @param om the objectmodel where this facttype is registered
      * @throws equa.meta.ChangeNotAllowedException
      */
-    public void removeAssociationsWithSource(Source source, ObjectModel om)
-        throws ChangeNotAllowedException {
-        if (om.getFactType(getName()) == null) {
-            throw new RuntimeException(("FACTTYPE NOT KNOWN AT OBJECTMODEL"));
-        }
-
-        population.removeAssociationsWithSource(source, om);
-        removeSource(source);
-    }
-
+//    public void removeAssociationsWithSource(Source source, ObjectModel om)
+//        throws ChangeNotAllowedException {
+//        if (om.getFactType(getName()) == null) {
+//            throw new RuntimeException(("FACTTYPE NOT KNOWN AT OBJECTMODEL"));
+//        }
+//
+//        population.removeAssociationsWithSource(source, om);
+//        removeSource(source);
+//    }
     /**
      * this facttype, without FTE, gets a FTE based on constants; a call of this
      * method when there already exists a FTE will have no effect (in that case:
@@ -833,17 +843,15 @@ public class FactType extends ParentElement implements Type, ITerm,
      * @param constants size of constants must be equal to size of facttype plus
      * one
      * @param roleNumbers the ranks of the roles in the new FTE
-     * @param source
      * @see TypeExpression
      */
-    public void addFTE(List<String> constants, List<Integer> roleNumbers, Source source) {
+    public void addFTE(List<String> constants, List<Integer> roleNumbers) {
         if (constants.size() != size() + 1) {
             throw new RuntimeException(("NUMBER OF CONSTANTS DOESN'T MATCH ")
                 + ("SIZE OF FACTTYPE"));
         }
         if (fte == null) {
             fte = new TypeExpression(this, constants, roleNumbers);
-            addSource(source);
             publisher.inform(this, "fte", null, fte);
         }
     }
@@ -2190,6 +2198,9 @@ public class FactType extends ParentElement implements Type, ITerm,
 
     @Override
     public void remove() {
+        if (removed) {
+            return;
+        }
 
         if (ot != null) {
 
@@ -2205,11 +2216,17 @@ public class FactType extends ParentElement implements Type, ITerm,
         } else if (factTypeClass != null) {
             factTypeClass.remove();
         }
+        removed = true;
+
+//        removeDependentMediators();
+//        removeSourceMediators();
         removeYourself();
+        population.remove();
+        getParent().removeMember(this);
 
     }
 
-    public void removeYourself() {
+    void removeYourself() {
 
         if (derivableConstraint != null) {
             derivableConstraint.remove();
@@ -2229,10 +2246,6 @@ public class FactType extends ParentElement implements Type, ITerm,
             role.remove();
         }
         roles.clear();
-
-        population.remove();
-
-        //super.remove();
 
     }
 
@@ -2306,7 +2319,7 @@ public class FactType extends ParentElement implements Type, ITerm,
     }
 
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         if (member == derivableConstraint) {
             deleteDerivableConstraint();
         } else if (member == defaultBooleanValue) {
@@ -2442,11 +2455,11 @@ public class FactType extends ParentElement implements Type, ITerm,
     }
 
     public Category getCategory() {
-        FactRequirement fact = getFirstFactRequirement();
+        FactRequirement fact = getFactRequirement();
         if (fact == null) {
-            return null;
+            return ((ObjectModel) getParent()).getProject().getDefaultCategory();
         }
-        Category cat = getFirstFactRequirement().getCategory();
+        Category cat = getFactRequirement().getCategory();
         if (cat == null) {
             return ((ObjectModel) getParent()).getProject().getDefaultCategory();
         } else {
@@ -2455,16 +2468,18 @@ public class FactType extends ParentElement implements Type, ITerm,
 
     }
 
-    public FactRequirement getFirstFactRequirement() {
+    public FactRequirement getFactRequirement() {
         for (Source source : sources()) {
-            if (source instanceof FactRequirement) {
-                return ((FactRequirement) source);
+
+            if (source instanceof Tuple) {
+
+                return ((Tuple) source).getFactRequirement();
             }
         }
         if (ot != null) {
             Iterator<ObjectType> it = ot.subtypes();
             while (it.hasNext()) {
-                FactRequirement fr = it.next().getFactType().getFirstFactRequirement();
+                FactRequirement fr = it.next().getFactType().getFactRequirement();
                 if (fr != null) {
                     return fr;
                 }

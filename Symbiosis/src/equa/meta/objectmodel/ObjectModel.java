@@ -98,14 +98,29 @@ public class ObjectModel extends Model implements
     private boolean lightBehavior;
     private CodeClass codeClass;
 
-    public ObjectModel() {
+//    public ObjectModel() {
+//        listenerList = new EventListenerList();
+//        initPublisher();
+//        typeRepository = new TypeRepository();
+//        artificialSingletonFactTypes = new ArrayList<>();
+//        artificialSingletons = new ArrayList<>();
+//        constraintNumberIssue = new NumberIssue();
+//
+//    }
+    
+    /**
+     * creation of object model with the given name; the model contains no fact
+     * getFactTypeCollection
+     */
+    public ObjectModel(Project parent) {
+        super(parent);
+        typeRepository = new TypeRepository();
+        artificialSingletons = new ArrayList<>();
+        artificialSingletonFactTypes = new ArrayList<>();
         listenerList = new EventListenerList();
         initPublisher();
-        typeRepository = new TypeRepository();
-        artificialSingletonFactTypes = new ArrayList<>();
-        artificialSingletons = new ArrayList<>();
         constraintNumberIssue = new NumberIssue();
-
+        lightBehavior = true;
     }
 
     public void addValueTypes(RequirementModel rm) {
@@ -449,21 +464,6 @@ public class ObjectModel extends Model implements
 
         listenerList = new EventListenerList();
         initPublisher();
-    }
-
-    /**
-     * creation of object model with the given name; the model contains no fact
-     * getFactTypeCollection
-     */
-    public ObjectModel(Project parent) {
-        super(parent);
-        typeRepository = new TypeRepository();
-        artificialSingletons = new ArrayList<>();
-        artificialSingletonFactTypes = new ArrayList<>();
-        listenerList = new EventListenerList();
-        initPublisher();
-        constraintNumberIssue = new NumberIssue();
-        lightBehavior = true;
     }
 
     public boolean requiresLightBehavior() {
@@ -1063,7 +1063,7 @@ public class ObjectModel extends Model implements
         }
         if (ft == null) {
             FactType.checkRoleNames(roleNames);
-            ft = new FactType(nameWithCapital, constants, types, roleNames, false, this, source);
+            ft = new FactType(nameWithCapital, constants, types, roleNames, false, this, null);
             this.typeRepository.putFactType(ft);
             //publisher.inform(this, "factType", null, ft);
         } else {
@@ -1072,7 +1072,7 @@ public class ObjectModel extends Model implements
                     + "a FTE");
             } else {
                 ft.checkMatch(types, roleNames, true);
-                ft.addFTE(constants, roleNumbers, source);
+                ft.addFTE(constants, roleNumbers);
             }
         }
         fireListChanged();
@@ -1153,7 +1153,17 @@ public class ObjectModel extends Model implements
         } else {
             ft.remove();
         }
-        typeRepository.removeFactType(ft.getName());
+       
+        System.out.println("types");
+        Iterator it = typeNames();
+        while(it.hasNext()){
+            System.out.print(it.next()+", ");
+        }
+        System.out.println();
+        Project project = getProject();
+        FactRequirement fact = (FactRequirement) project.getRequirementModel().getRequirement("DEF.14");
+        
+
         publisher.inform(this, "removedType", null, ft);
         fireListChanged();
     }
@@ -1216,12 +1226,12 @@ public class ObjectModel extends Model implements
         FactType ft = getFactType(typeName);
         if (ft == null) {
             if (constants == null) { // abstract objecttype
-                ft = new FactType(nameWithCapital, true, this, source);
+                ft = new FactType(nameWithCapital, true, this, null);
             } else if (constants.size() == 1) { // singleton objecttype
-                ft = new FactType(nameWithCapital, constants.get(0), this, source);
+                ft = new FactType(nameWithCapital, constants.get(0), this, null);
             } else { // normal objecttype
                 ft = new FactType(nameWithCapital, constants, types, roleNames,
-                    true, this, source);
+                    true, this, null);
             }
             this.typeRepository.putFactType(ft);
             publisher.inform(this, "newType", null, ft);
@@ -1297,7 +1307,7 @@ public class ObjectModel extends Model implements
         }
 
         FactType cbt;
-        cbt = new FactType(nameWithCapital, br.getSubstitutionType(), this, br.getParent().getFirstFactRequirement());
+        cbt = new FactType(nameWithCapital, br.getSubstitutionType(), this, br.getParent().getFactRequirement());
         typeRepository.putFactType(cbt);
 
         br.getParent().replaceBaseType(br, (ConstrainedBaseType) cbt.getObjectType());
@@ -1355,8 +1365,7 @@ public class ObjectModel extends Model implements
         }
         FactType supertype = getFactType(nameSupertype);
         if (supertype == null) {
-            supertype = new FactType(nameSupertype, true, this, subtype.getFirstFactRequirement());
-            //       supertype.addSource(source);
+            supertype = new FactType(nameSupertype, true, this, subtype);
             typeRepository.putFactType(supertype);
             publisher.inform(this, "newType", null, supertype);
         }
@@ -1475,12 +1484,10 @@ public class ObjectModel extends Model implements
     }
 
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         if (member instanceof FactType) {
             FactType ft = (FactType) member;
             typeRepository.removeFactType(ft.getName());
-            ft.remove();
-            
             publisher.inform(this, "removedType", null, member);
 
             fireListChanged();
@@ -1601,10 +1608,10 @@ public class ObjectModel extends Model implements
     @Override
     public FactType getElementAt(int index) {
         String[] names = typeRepository.getNames();
-        if (0<=index && index< names.length){
+        if (0 <= index && index < names.length) {
             return typeRepository.getFactType(names[index]);
         }
-        
+
 //        Iterator<FactType> it = typesIterator();
 //
 //        int i = 0;

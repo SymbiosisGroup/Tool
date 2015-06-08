@@ -539,7 +539,7 @@ public class EnterRequirementDialog extends JDialog implements IView, WindowList
             }
 
             if (type != selectedType) {
-                projectController.getProject().getRequirementModel().remove(requirementToChange);
+                projectController.getProject().getRequirementModel().removeMember(requirementToChange);
                 requirementToChange = null;
                 addRequirement();
 

@@ -888,7 +888,7 @@ public class ObjectRole extends Role {
     }
 
     @Override
-    public void remove(ModelElement member) {
+    public void removeMember(ModelElement member) {
         //try {
         if (member.equals(addable)) {
 
@@ -915,7 +915,7 @@ public class ObjectRole extends Role {
         } else 
         {
 
-            super.remove(member);
+            super.removeMember(member);
         }
     }
 

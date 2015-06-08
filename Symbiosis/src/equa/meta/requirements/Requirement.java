@@ -20,9 +20,15 @@ import equa.meta.traceability.RemoveRejectedState;
 import equa.meta.traceability.RemovedState;
 import equa.meta.traceability.ReviewState;
 import equa.meta.traceability.Reviewable;
+import equa.meta.traceability.SynchronizationMediator;
+import equa.meta.traceability.SystemInput;
 import equa.project.Project;
 import equa.project.ProjectRole;
 import equa.project.StakeholderRole;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,7 +38,7 @@ import equa.project.StakeholderRole;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "Type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Requirement extends Reviewable
-        implements Comparable<Requirement> {
+    implements Comparable<Requirement> {
 
     private static final long serialVersionUID = 1L;
     @Column(name = "nr")
@@ -64,7 +70,7 @@ public abstract class Requirement extends Reviewable
      * @param parent of requirement, which is the requirements model
      */
     Requirement(int nr, Category cat, String text,
-            ExternalInput source, RequirementModel parent) {
+        ExternalInput source, RequirementModel parent) {
         super(parent, cat, source);
         if (text.isEmpty()) {
             throw new RuntimeException("text of a requirement can not be empty");
@@ -77,8 +83,6 @@ public abstract class Requirement extends Reviewable
         urgency = UrgencyKind.UNDEFINED;
         moscow = MoSCoW.UNDEFINED;
     }
-    
-    
 
     public String getJustification() {
         return getReviewState().getExternalInput().getJustification();
@@ -102,8 +106,6 @@ public abstract class Requirement extends Reviewable
     public void setUrgency(UrgencyKind urgency) {
         this.urgency = urgency;
     }
-    
-    
 
     /**
      * @param impact for this requirement.
@@ -162,7 +164,7 @@ public abstract class Requirement extends Reviewable
      * acceptable
      */
     public abstract void setText(ExternalInput source, String text)
-            throws ChangeNotAllowedException;
+        throws ChangeNotAllowedException;
 
     /**
      *
@@ -226,9 +228,9 @@ public abstract class Requirement extends Reviewable
     public boolean isApprovable(ProjectRole projectRole) {
         ReviewState rs = getReviewState();
         if (getCategory().isOwner(projectRole)
-                && (rs instanceof AddedState
-                || rs instanceof ChangedState
-                || rs instanceof RemovedState)) {
+            && (rs instanceof AddedState
+            || rs instanceof ChangedState
+            || rs instanceof RemovedState)) {
             return true;
         } else {
             return false;
@@ -248,7 +250,7 @@ public abstract class Requirement extends Reviewable
             return true;
         }
         if ((rs instanceof ChangedState)
-                && ei.getFrom().getName().equalsIgnoreCase(projectRole.getName())) {
+            && ei.getFrom().getName().equalsIgnoreCase(projectRole.getName())) {
             return true;
         }
         return false;
@@ -412,6 +414,21 @@ public abstract class Requirement extends Reviewable
             default:
                 Project project = ((RequirementModel) getParent()).getProject();
                 return getCategory().equals(project.getCategory(filter));
+        }
+    }
+
+    protected void removeDependentMediator(SynchronizationMediator dependentMediator) {
+        if (!mediators.contains(dependentMediator)) {
+            System.out.println("remove mediator " + dependentMediator.getSource().getClass());
+        } else {
+            mediators.remove(dependentMediator);
+            if (mediators.isEmpty()) {
+
+                if (!isManuallyCreated()) {
+                    remove();
+                }
+            }
+            setModifiedAtToNow();
         }
     }
 

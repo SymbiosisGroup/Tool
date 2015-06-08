@@ -26,7 +26,7 @@ public abstract class ParentElement extends ModelElement {
         this(null);
     }
 
-    public abstract void remove(ModelElement member);
+    public abstract void removeMember(ModelElement member);
     
     @Override
     public boolean isManuallyCreated() {

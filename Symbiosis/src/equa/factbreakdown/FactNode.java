@@ -123,6 +123,10 @@ public class FactNode extends ParentNode {
             model.setUnconditionallyReady(this);
         }
     }
+    
+    public boolean isPureFact() {
+        return true;
+    }
 
     /**
      * initialization in behalf of parsable object node
