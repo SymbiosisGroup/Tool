@@ -106,6 +106,8 @@ import org.netbeans.spi.wizard.Wizard;
 import org.xml.sax.SAXException;
 import equa.code.Languages;
 import equa.controller.ProjectController;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 
 /**
  * The application's main frame.
@@ -1613,12 +1615,30 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
         } else {
             showSavePrompt();
 
-            JFileChooser chooser = new JFileChooser();
+            // try to get last location
+            File lastLocation = new File("location.txt");
+            String loc = null;
+            if (lastLocation.exists()) {
+                try {
+                    loc = new String(Files.readAllBytes(lastLocation.toPath()), "UTF-8");
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            JFileChooser chooser = new JFileChooser(loc);
             int result = chooser.showOpenDialog(getFrame());
 
             if (result == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
-
+                File dir = file.getParentFile();
+                try {
+                    Files.write(new File("location.txt").toPath(), dir.getAbsolutePath().getBytes("UTF-8"));
+                } catch (IOException ex) {
+                    Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 openProject(file);
             }
         }
