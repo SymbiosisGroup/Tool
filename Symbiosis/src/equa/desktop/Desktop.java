@@ -191,6 +191,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     private JMenuItem propertiesMenuItem;
     private JMenuItem preferencesMenuItem;
 
+
     public Desktop(SingleFrameApplication app) {
         super(app);
         timerShowAutoBox();
