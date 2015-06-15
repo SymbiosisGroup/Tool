@@ -5,6 +5,7 @@ import java.util.List;
 import equa.meta.ChangeNotAllowedException;
 import equa.meta.requirements.RuleRequirement;
 import equa.meta.traceability.Source;
+import java.util.Set;
 
 /**
  *
@@ -38,10 +39,11 @@ public class MandatoryConstraint extends StaticConstraint {
 
     @Override
     public String getName() {
-        if (getFactType().withMoreMandarialConstraints()) {
-            return getId();
-        } else {
-            return getAbbreviationCode();
+//        if (getFactType().withMoreMandarialConstraints()) {
+//            return getId();
+//        } else 
+        {
+            return getAbbreviationCode() ;
         }
     }
 

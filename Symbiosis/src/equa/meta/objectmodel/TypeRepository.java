@@ -157,11 +157,12 @@ public class TypeRepository implements Serializable {
                     if (!candidate.getName().startsWith("_")) {
                         throw new ChangeNotAllowedException("Only the name of registry classes start with an underscore (_)");
                     }
-                } else {
-                    if (candidate.getName().startsWith("_")) {
-                        throw new ChangeNotAllowedException("The name of a registry classes should start with an underscore (_)");
-                    }
                 }
+//                   else {
+//                    if (candidate.getName().startsWith("_")) {
+//                        throw new ChangeNotAllowedException("The name of a registry classes should start with an underscore (_)");
+//                    }
+//                }
                 removeFactType(candidate.getName());
                 candidate.rename(Naming.withCapital(newName));
                 types.put(newNameToLower, candidate);

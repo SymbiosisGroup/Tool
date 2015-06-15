@@ -2739,6 +2739,40 @@ public class FactType extends ParentElement implements Type, ITerm,
         return false;
     }
 
+    boolean overlaps2(FactType ft) {
+        if (this.equals(ft)) {
+            return false;
+        }
+        for (UniquenessConstraint uc : ucs()) {
+            for (UniquenessConstraint ucft : ft.ucs()) {
+                int result = uc.possibleOverlap(ucft);
+                if (result >= 0) {
+                    if (result == 0) {
+                        return getName().compareTo(ft.getName()) < 0;
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    int smallestUC() {
+
+        Set<UniquenessConstraint> ucs = ucs();
+        if (ucs().isEmpty()) {
+            return -1;
+        }
+        int smallest = size();
+        for (UniquenessConstraint uc : ucs) {
+            if (uc.size() < smallest) {
+                smallest = uc.size();
+            }
+        }
+
+        return smallest;
+    }
+
     public IOperation getFactTypeInspection() {
         Role responsibleRole = getResponsibleRole();
         if (responsibleRole == null) {

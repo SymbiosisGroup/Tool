@@ -144,38 +144,29 @@ public class AddObjectTypeMethod extends Method implements IActionOperation {
                 constructorParams.add(p.getName());
             }
 
-//            String name = searchParamName(p);
-//            if (name == null) {
-//                if (p.getType().equals(getParent())) {
-//                    name = l.thisKeyword();
-//                } else {
-//                    if (p.getRelation().isAutoIncr()) {
-//                        name = l.thisKeyword() + l.memberOperator() + l.autoIncr(p.getRelation().fieldName());
-//                    } else {
-//                        throw new RuntimeException("I don't know what to do.");
-//                    }
-//                }
-//            }
-//            constructorParams.add(name);
         }
         list.addLineAtCurrentIndentation(l.createInstance(getReturnType().getType(), TEMP1, concreteOT.getName(), constructorParams.toArray(new String[0])));
+        list.addLineAtCurrentIndentation(l.addCollection(relation.fieldName(), relation.collectionType().getKind(), TEMP1));
+
         Relation inverse = relation.inverse();
-//        if (relation.isSeqRelation() || autoIncr) 
-        {
-            list.addLineAtCurrentIndentation(l.addCollection(relation.fieldName(), relation.collectionType().getKind(), TEMP1));
-            //if a value is added to the collection and the inverse relation is navigable, we have to register.
+        //if a value is added to the collection and the inverse relation is navigable, we have to register.
+//        if (inverse.isNavigable()) {
+//            if (inverse.isSeqRelation() || inverse.isSetRelation()) {
+//                list.addLineAtCurrentIndentation(l.callMethod(relation.name(), inverse.getOperationName(RegisterMethod.NAME), TEMP1));
+//            } else if (inverse.isMapRelation()) {
+//                // TODO
+//            } else if (inverse instanceof BooleanSingletonRelation) {
+//                // wrong : JAVA code, it's to specific
+//                list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator()
+//                    + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
+//            } else {
+//                 list.addLineAtCurrentIndentation(relation.name() + l.memberOperator() + "set" + Naming.withCapital(inverse.name() + "(" + TEMP1 + ")")
+//                + l.endStatement());
+//            }
+//        }
 
-            if (inverse.isNavigable()) {
-                if (inverse.isCollectionReturnType()) {
-                    list.addLineAtCurrentIndentation(l.callMethod(TEMP1, inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()));
-                } else if (inverse instanceof BooleanSingletonRelation) {
-                    // wrong : JAVA code, it's to specific
-                    list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator()
-                        + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
-                } 
-            }
 
-        } 
+
 //        else {
 //            //if a value is added to the collection and the inverse relation is navigable, we have to register.
 //            if (inverse.isNavigable() && inverse.isCollectionReturnType()) {

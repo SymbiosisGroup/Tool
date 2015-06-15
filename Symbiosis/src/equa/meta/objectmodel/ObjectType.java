@@ -1608,18 +1608,37 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
 
         Method addMethod;
 
+//        if (relation.isCreational()) {
+//            concreteObjectType.encapsulateConstructor();
+//            if (relation.isMapRelation()) {
+//                addMethod = new PutMethod(relation, this, concreteObjectType);
+//            } else {
+//                addMethod = new AddObjectTypeMethod(relation, concreteObjectType, this);
+//            }
+//        } else if (relation.isAddable()) {
+//            if (relation.isMapRelation()) {
+//                addMethod = new PutMethod(relation, this, concreteObjectType);
+//            } else {
+//                addMethod = new RegisterMethod(relation, this);
+//            }
+//        } else {
+//            if (relation.isMapRelation()) {
+//                addMethod = new PutMethod(relation, this, concreteObjectType);
+//            } else {
+//                addMethod = new RegisterMethod(relation, this);
+//            }
+//            addMethod.setAccessModifier(AccessModifier.NAMESPACE);
+//        }
+
         if (relation.isCreational()) {
             concreteObjectType.encapsulateConstructor();
+        }
+        
+        if (relation.isAddable()) {
             if (relation.isMapRelation()) {
                 addMethod = new PutMethod(relation, this, concreteObjectType);
             } else {
                 addMethod = new AddObjectTypeMethod(relation, concreteObjectType, this);
-            }
-        } else if (relation.isAddable()) {
-            if (relation.isMapRelation()) {
-                addMethod = new PutMethod(relation, this, concreteObjectType);
-            } else {
-                addMethod = new RegisterMethod(relation, this);
             }
         } else {
             if (relation.isMapRelation()) {
@@ -1629,7 +1648,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             }
             addMethod.setAccessModifier(AccessModifier.NAMESPACE);
         }
-
+        
         codeClass.addOperation(addMethod);
 
         if (relation.isInsertable()) {

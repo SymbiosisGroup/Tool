@@ -76,7 +76,7 @@ public class UniquenessConstraint extends StaticConstraint {
     public String getName() {
         Set<UniquenessConstraint> ucs = getFactType().ucs();
         if (ucs.size() == 1) {
-            return getAbbreviationCode();
+            return getAbbreviationCode() + "1";
         }
 
         int nr = 1;
@@ -173,6 +173,21 @@ public class UniquenessConstraint extends StaticConstraint {
      */
     public boolean implies(UniquenessConstraint uc) {
         return uc.roles.containsAll(roles);
+    }
+    
+    int possibleOverlap(UniquenessConstraint uc) {
+        List<Role> ucroles = new ArrayList<>(uc.roles);
+        for(Role role : roles){
+            Role overlappingRole = null;
+            for (Role ucrole : ucroles){
+                if (role.getSubstitutionType().equals(ucrole.getSubstitutionType())){
+                    overlappingRole = ucrole;
+                }
+            }
+            if (overlappingRole==null) return -1;
+            ucroles.remove(overlappingRole);
+        }
+        return ucroles.size();
     }
 
     @Override

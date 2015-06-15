@@ -51,12 +51,4 @@ public abstract class Constraint extends ModelElement implements ObjectModelReal
         return false;
     }
     
-    @Override
-    public void remove(){
-        for (SynchronizationMediator mediator : this.mediators){
-           mediator.removeForward();
-        }
-        this.mediators.clear();
-        super.remove();
-    }
 }

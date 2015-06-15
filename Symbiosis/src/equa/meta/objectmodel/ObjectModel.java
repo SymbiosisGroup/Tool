@@ -107,7 +107,6 @@ public class ObjectModel extends Model implements
 //        constraintNumberIssue = new NumberIssue();
 //
 //    }
-    
     /**
      * creation of object model with the given name; the model contains no fact
      * getFactTypeCollection
@@ -690,6 +689,7 @@ public class ObjectModel extends Model implements
                         messages.add(new Message("error: " + facttype.getName()
                             + " misses perhaps a responsible role which offers the opportunity to add, insert or remove a fact.\n"
                             + "\tor perhaps you have to change one of the roles into a composition role\n"
+                            + "\tor perhaps one of the roles isn't navigable\n"
                             + "\tor perhaps one of the roles is influenced by system event", true));
                         error = true;
                     }
@@ -742,20 +742,51 @@ public class ObjectModel extends Model implements
         return messages;
     }
 
+//    public ArrayList<Message> scanOverlap() {
+//        ArrayList<Message> messages = new ArrayList<>();
+//        Map<FactType, List<ObjectType>> candidates = candidatesOverlap();
+//        for (FactType ft : candidates.keySet()) {
+//            int ftSize = ft.size();
+//            for (ObjectType ot : candidates.get(ft)) {
+//                if (ftSize > ot.getFactType().size()) {
+//                    messages.add(new Message("Perhaps it is worthwhile "
+//                        + "to merge roles of "
+//                        + ft.getName() + " to " + ot.getName() + ".", false));
+//                } else if (ft.getName().compareTo(ot.getName()) > 0) {
+//                    messages.add(new Message("Perhaps are "
+//                        + ft.getName() + " and " + ot.getName()
+//                        + " synonyms.", false));
+//                }
+//            }
+//        }
+//        return messages;
+//    }
     public ArrayList<Message> scanOverlap() {
         ArrayList<Message> messages = new ArrayList<>();
-        Map<FactType, List<ObjectType>> candidates = candidatesOverlap();
+        Map<FactType, List<FactType>> candidates = candidatesOverlap2();
         for (FactType ft : candidates.keySet()) {
             int ftSize = ft.size();
-            for (ObjectType ot : candidates.get(ft)) {
-                if (ftSize > ot.getFactType().size()) {
-                    messages.add(new Message("Perhaps it is worthwhile "
-                        + "to merge roles of "
-                        + ft.getName() + " to " + ot.getName() + ".", false));
-                } else if (ft.getName().compareTo(ot.getName()) > 0) {
-                    messages.add(new Message("Perhaps are "
-                        + ft.getName() + " and " + ot.getName()
-                        + " synonyms.", false));
+            for (FactType ft2 : candidates.get(ft)) {
+                if (ft.isObjectType()) {
+                    if (ft.size() == ft2.size()) {
+                        messages.add(new Message("Perhaps " + ft.getName() + " and " + ft2.getName() + " are synonyms)", false));
+                    } else if (ft.size() > ft2.size()) {
+                        messages.add(new Message("Perhaps it is worthwhile "
+                            + "to merge and/or objectivate roles of " + ft.getName() + " (see also " + ft2.getName() + ")", false));
+                    } else {
+                        messages.add(new Message("Perhaps it is worthwhile "
+                            + "to merge and/or objectivate roles of " + ft2.getName() + " (see also " + ft.getName() + ")", false));
+                    }
+                } else {
+                    if (ft.size() == ft2.size()) {
+                        messages.add(new Message("Perhaps " + ft.getName() + " and " + ft2.getName() + " are synonyms)", false));
+                    } else if (ft.size() > ft2.size()) {
+                        messages.add(new Message("Perhaps it is worthwhile "
+                            + "to merge and/or objectivate roles of " + ft.getName() + " (see also " + ft2.getName() + ")", false));
+                    } else {
+                        messages.add(new Message("Perhaps it is worthwhile "
+                            + "to merge and/or objectivate roles of " + ft2.getName() + " (see also " + ft.getName() + ")", false));
+                    }
                 }
             }
         }
@@ -774,8 +805,8 @@ public class ObjectModel extends Model implements
         List<FactType> facttypes = new ArrayList<>();
         List<FactType> objecttypes = new ArrayList<>();
         for (FactType ft : getFactTypes()) {
-            if (ft.size() > 1) {
-                if (!ft.isValueType()) {
+            if (!ft.isValueType()) {
+                if (ft.size() > 1) {
                     candidatesOverlap.put(ft, new ArrayList<>());
                     facttypes.add(ft);
                 }
@@ -788,6 +819,28 @@ public class ObjectModel extends Model implements
             for (FactType ot : objecttypes) {
                 if (candidateOverlap.overlaps(ot)) {
                     candidatesOverlap.get(candidateOverlap).add(ot.getObjectType());
+                }
+            }
+        }
+        return candidatesOverlap;
+    }
+
+    Map<FactType, List<FactType>> candidatesOverlap2() {
+        Map<FactType, List<FactType>> candidatesOverlap = new HashMap<>();
+        //List<FactType> candidates = new ArrayList<>();
+        //List<FactType> objecttypes = new ArrayList<>();
+        for (FactType ft : getFactTypes()) {
+            if (!ft.isValueType()) {
+                if (ft.smallestUC() > 1) {
+                    //candidates.add(ft);
+                    candidatesOverlap.put(ft, new ArrayList<>());
+                }
+            }
+        }
+        for (FactType candidate : candidatesOverlap.keySet()) {
+            for (FactType ft : candidatesOverlap.keySet()) {
+                if (ft.overlaps2(candidate)) {
+                    candidatesOverlap.get(candidate).add(ft);
                 }
             }
         }
@@ -1012,17 +1065,18 @@ public class ObjectModel extends Model implements
                 int index = ft.getName().length() - "Registry".length();
                 related = getFactType(ft.getName().substring(0, index) + "Registration");
                 artificialSingletonFactTypes.remove(related);
-
             } else {
                 artificialSingletonFactTypes.remove(ft);
                 int index = ft.getName().length() - "Registration".length();
                 related = getFactType(ft.getName().substring(0, index) + "Registry");
                 artificialSingletons.remove(related);
-            }
-            typeRepository.renameFactType(related.getName().substring(1), related);
-        }
 
-        typeRepository.renameFactType(nameWithCapital, ft);
+            }
+            typeRepository.renameFactType(name, ft);
+            typeRepository.renameFactType(related.getName().substring(1), related);
+        } else {
+            typeRepository.renameFactType(nameWithCapital, ft);
+        }
 
         fireListChanged();
     }
@@ -1152,12 +1206,6 @@ public class ObjectModel extends Model implements
 
         } else {
             ft.remove();
-        }
-       
-        System.out.println("types");
-        Iterator it = typeNames();
-        while(it.hasNext()){
-            System.out.print(it.next()+", ");
         }
 
         publisher.inform(this, "removedType", null, ft);
