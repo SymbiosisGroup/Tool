@@ -678,7 +678,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             if (projectController.getProject().getFile() == null || projectController.getProject().getFile().exists() == false || showDialog) {
                 JFileChooser chooser;
                 if (projectController.getProject().getFile() == null) {
-                    chooser = new JFileChooser();
+                    chooser = new JFileChooser(getLastLocation());
                 } else {
                     chooser = new JFileChooser(projectController.getProject().getFile().getParentFile().getPath());
                 }
@@ -688,6 +688,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 int result = chooser.showSaveDialog(getFrame());
                 if (result == JFileChooser.APPROVE_OPTION) {
                     filename = chooser.getSelectedFile().getPath();
+                    saveLastLocation(chooser.getSelectedFile());
                     if (!filename.endsWith(".sym")) {
                         int indexDot = filename.lastIndexOf(".");
                         if (indexDot >= 0) {
@@ -1616,31 +1617,39 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             showSavePrompt();
 
             // try to get last location
-            File lastLocation = new File("location.txt");
-            String loc = null;
-            if (lastLocation.exists()) {
-                try {
-                    loc = new String(Files.readAllBytes(lastLocation.toPath()), "UTF-8");
-                } catch (UnsupportedEncodingException ex) {
-                    Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
             
-            JFileChooser chooser = new JFileChooser(loc);
+            JFileChooser chooser = new JFileChooser(getLastLocation());
             int result = chooser.showOpenDialog(getFrame());
 
             if (result == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
-                File dir = file.getParentFile();
-                try {
-                    Files.write(new File("location.txt").toPath(), dir.getAbsolutePath().getBytes("UTF-8"));
-                } catch (IOException ex) {
-                    Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                saveLastLocation(file);
                 openProject(file);
             }
+        }
+    }
+    
+    private String getLastLocation() {
+        File lastLocation = new File("location.txt");
+        String loc = null;
+        if (lastLocation.exists()) {
+            try {
+                loc = new String(Files.readAllBytes(lastLocation.toPath()), "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return loc;
+    }
+    
+    private void saveLastLocation(File file) {
+        File dir = file.getParentFile();
+        try {
+            Files.write(new File("location.txt").toPath(), dir.getAbsolutePath().getBytes("UTF-8"));
+        } catch (IOException ex) {
+            Logger.getLogger(Desktop.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
