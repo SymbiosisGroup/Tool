@@ -75,7 +75,7 @@ public class IsRemovableMethod extends Method implements IRelationalOperation {
                     String condition = "";
                     if (fanRelation.isCollectionReturnType()) {
                         // We need to do the contain check.
-                        if (!fanRelation.isComposition()) {
+                        if (!fanRelation.isResponsible()) {
                             List<ActualParam> params = new ArrayList<>();
                             params.add(new This());
                             Relation inverse = fanRelation.inverse();

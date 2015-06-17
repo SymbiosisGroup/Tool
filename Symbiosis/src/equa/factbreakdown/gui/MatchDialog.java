@@ -44,7 +44,7 @@ public class MatchDialog extends javax.swing.JDialog {
     private final ProjectRole currentUser;
 
     public MatchDialog(FactType ft, TypeExpression te, String expression,
-            int mismatchPosition, boolean objectExpression, ProjectRole currentUser, Frame parent) {
+        int mismatchPosition, boolean objectExpression, ProjectRole currentUser, Frame parent) {
         super(parent, true);
         initComponents();
         match = false;
@@ -80,7 +80,6 @@ public class MatchDialog extends javax.swing.JDialog {
         head = pnConstant;
         constants.add(constant);
         pnExpression.add(pnConstant);
-        
 
         originalSequence = new int[size];
 
@@ -89,7 +88,7 @@ public class MatchDialog extends javax.swing.JDialog {
             originalSequence[i] = roleNumber;
             Role role = ft.getRole(roleNumber);
             pnSubstitution = new SubstitutionMatchPanel(roleNumber, role.getRoleName(),
-                    role.getSubstitutionType().getName(), pnConstant);
+                role.getSubstitutionType().getName(), pnConstant);
             if (size > 1) {
                 pnSubstitution.setSwapVisible();
             }
@@ -114,10 +113,10 @@ public class MatchDialog extends javax.swing.JDialog {
             pnExpression.add(pnConstant);
 
         }
-        pnExpression.setLayout(new GridLayout(constants.size()*2-1,1));
+        pnExpression.setLayout(new GridLayout(constants.size() * 2 - 1, 1));
         getContentPane().validate();
-        
-        setSize(500, 100 + (2*size+1)*head.getHeight());
+
+        setSize(500, 100 + (2 * size + 1) * head.getHeight());
         setTitle(ft.getName());
     }
 
@@ -147,7 +146,7 @@ public class MatchDialog extends javax.swing.JDialog {
         String newConstant = panel.getText();
         if (objectExpression && !newConstant.isEmpty()) {
             newConstant = newConstant.substring(0, 1).toLowerCase()
-                    + newConstant.substring(1);
+                + newConstant.substring(1);
         }
         newConstants.add(newConstant);
         if (!newConstant.equals(constants.get(0))) {
@@ -202,7 +201,6 @@ public class MatchDialog extends javax.swing.JDialog {
         return substitutionSequence;
     }
 
-
     public String getExpression() {
 
         StringBuilder expression = new StringBuilder();
@@ -239,7 +237,7 @@ public class MatchDialog extends javax.swing.JDialog {
         }
         return expressionParts;
     }
-    
+
     public void setSubstitutionStrings(List<String> substitutionStrings) {
 
         MatchPanel panel = head.getNext();
@@ -344,7 +342,7 @@ public class MatchDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_btCancelActionPerformed
 
     private void btOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btOkActionPerformed
-        if (checkMatchingConstants()) {
+        /*if (checkMatchingConstants())*/ {
             try {
                 te.setRoleNumbers(getSubstitutionSequence());
                 te.setRoleNames(getRoleNames());
@@ -354,7 +352,7 @@ public class MatchDialog extends javax.swing.JDialog {
                     te.setConstants(newConstants, input);
                 }
 
-                System.out.println("Match ");
+                System.out.println("Match " + te.getParent().getName() + " : " + te.toString());
                 match = true;
                 setVisible(false);
 
@@ -375,17 +373,17 @@ public class MatchDialog extends javax.swing.JDialog {
         return !getExpression().equals(originalExpression);
     }
 
-    private boolean checkMatchingConstants() {
-        ConstantMatchPanel panel = head;
-        boolean allRight = true;
-        while (panel != null) {
-
-            if (panel.getNext() == null) {
-                panel = null;
-            } else {
-                panel = (ConstantMatchPanel) panel.getNext().getNext();
-            }
-        }
-        return allRight;
-    }
+//    private boolean checkMatchingConstants() {
+//        ConstantMatchPanel panel = head;
+//        boolean allRight = true;
+//        while (panel != null) {
+//
+//            if (panel.getNext() == null) {
+//                panel = null;
+//            } else {
+//                panel = (ConstantMatchPanel) panel.getNext().getNext();
+//            }
+//        }
+//        return allRight;
+//    }
 }

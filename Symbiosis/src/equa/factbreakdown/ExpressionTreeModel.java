@@ -26,6 +26,7 @@ import equa.meta.traceability.ExternalInput;
 import equa.project.ProjectRole;
 import equa.util.Naming;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -40,7 +41,7 @@ public class ExpressionTreeModel extends DefaultTreeModel {
     private final ObjectModel om;
 
     public ExpressionTreeModel(ObjectModel objectModel, ProjectRole currentUser,
-            FactRequirement source) {
+        FactRequirement source) {
         super(null);
         this.currentUser = currentUser;
         this.om = objectModel;
@@ -108,17 +109,21 @@ public class ExpressionTreeModel extends DefaultTreeModel {
 //            }
 //        }
 //    }
-    public FactNode createFactRoot(String expression, String typeName)
-            throws MismatchException,
-            ChangeNotAllowedException, DuplicateException {
+    public FactNode createFactRoot(String expression, String typeName, JFrame frame)
+        throws MismatchException,
+        ChangeNotAllowedException, DuplicateException {
         FactType ft = om.getFactType(typeName);
         FactNode factNode = null;
 // TODO: second and third conjunct necessary?
         if (ft != null && ft.getFTE().isParsable()/**
-                 * && !ft.hasAbstractRoles()*
-                 */
-                ) {
+             * && !ft.hasAbstractRoles()*
+             */
+            ) {
             factNode = new FactNode(this, null, expression, ft.getFTE());
+            int result = JOptionPane.showConfirmDialog(frame, factNode.getTextParts(), "Parsing Correct?", JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.NO_OPTION) {
+                factNode = new FactNode(this, null, expression, typeName);
+            }
         } else {
             try {
                 factNode = new FactNode(this, null, expression, typeName);
@@ -133,18 +138,22 @@ public class ExpressionTreeModel extends DefaultTreeModel {
         return factNode;
     }
 
-    public ObjectNode createObjectRoot(String expression, String typeName)
-            throws MismatchException,
-            ChangeNotAllowedException, DuplicateException {
+    public ObjectNode createObjectRoot(String expression, String typeName, JFrame frame)
+        throws MismatchException,
+        ChangeNotAllowedException, DuplicateException {
         FactType ft = om.getFactType(typeName);
         ObjectNode objectNode;
         // TODO: second and third conjunct necessary?
         if (ft != null && ft.isParsable() /**
-                 * && !ft.hasAbstractRoles()*
-                 */
-                ) {
+             * && !ft.hasAbstractRoles()*
+             */
+            ) {
             objectNode = new ObjectNode(this, null, expression,
-                    Naming.withoutCapital(typeName), 0, ft.getObjectType().getOTE());
+                Naming.withoutCapital(typeName), 0, ft.getObjectType().getOTE());
+            int result = JOptionPane.showConfirmDialog(frame, objectNode.getTextParts(), "Parsing Correct?", JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.NO_OPTION) {
+                objectNode = new ObjectNode(this, expression, typeName);
+            }
         } else {
             objectNode = new ObjectNode(this, expression, typeName);
         }
@@ -156,10 +165,10 @@ public class ExpressionTreeModel extends DefaultTreeModel {
     }
 
     public ValueLeaf addValueLeafAt(FactNode parent, int nr, int from, int unto,
-            String typeName, String roleName) throws MismatchException,
-            ChangeNotAllowedException, DuplicateException {
+        String typeName, String roleName) throws MismatchException,
+        ChangeNotAllowedException, DuplicateException {
         ValueLeaf leaf = parent.addValueLeafAt(nr, from, unto, typeName,
-                roleName, -1);
+            roleName, -1);
         fireTreeStructureChanged(createEvent(parent));
         //nodeStructureChanged(parent);
         //roleNumber(parent, nr / 2, roleName != null)
@@ -167,17 +176,17 @@ public class ExpressionTreeModel extends DefaultTreeModel {
     }
 
     public ObjectNode addObjectNodeAt(ParentNode parent, int nr, int from, int unto, String typeName,
-            String roleName) throws MismatchException,
-            ChangeNotAllowedException, DuplicateException {
-        ObjectNode object = parent.addObjectNodeAt(nr, from, unto, typeName, roleName,-1);
+        String roleName) throws MismatchException,
+        ChangeNotAllowedException, DuplicateException {
+        ObjectNode object = parent.addObjectNodeAt(nr, from, unto, typeName, roleName, -1);
         fireTreeStructureChanged(createEvent(parent));
         //nodeStructureChanged(parent);
         return object;
     }
 
     public ObjectNode addObjectNodeAt(ParentNode parent, int nr, int from, int unto, String typeName,
-            String roleName, List<String> values) throws MismatchException,
-            ChangeNotAllowedException, DuplicateException {
+        String roleName, List<String> values) throws MismatchException,
+        ChangeNotAllowedException, DuplicateException {
         ObjectType ot = om.getObjectType(typeName);
         Value value = ot.parse(values, source);
         TextNode textNode = (TextNode) parent.getChildAt(nr);
@@ -186,7 +195,7 @@ public class ExpressionTreeModel extends DefaultTreeModel {
         int fromTrimmed = text.indexOf(textTrimmed, from);
         int untoTrimmed = fromTrimmed + textTrimmed.length();
         ObjectNode object = new ObjectNode(this, null, value, roleName,
-                -1, ot.getOTE());
+            -1, ot.getOTE());
         insertNodeInto(object, parent, nr + 1);
         insertNodeInto(new TextNode(null, text.substring(untoTrimmed)), parent, nr + 2);
         setText(textNode, text.substring(0, fromTrimmed));
@@ -197,13 +206,13 @@ public class ExpressionTreeModel extends DefaultTreeModel {
     }
 
     public CollectionNode addCollectionNodeAt(ParentNode parent, int nr, int from, int unto, String collectionName,
-            String roleName, String begin, String separator, String end, String elementName,
-            String elementRoleName, boolean sequence)
-            throws MismatchException, ChangeNotAllowedException, DuplicateException {
+        String roleName, String begin, String separator, String end, String elementName,
+        String elementRoleName, boolean sequence)
+        throws MismatchException, ChangeNotAllowedException, DuplicateException {
         CollectionNode cn;
         cn = parent.addCollectionNodeAt(nr, from, unto, collectionName, roleName,
-                -1, begin, separator,
-                end, elementName, elementRoleName, sequence);
+            -1, begin, separator,
+            end, elementName, elementRoleName, sequence);
         fireTreeStructureChanged(createEvent(parent));
         return cn;
     }
@@ -220,36 +229,36 @@ public class ExpressionTreeModel extends DefaultTreeModel {
 //        return cn;
 //    }
     public SuperTypeNode addSuperTypeNodeAt(FactNode parent, int nr,
-            String superTypeName, int from, int unto,
-            String roleName, String typeName) throws MismatchException,
-            ChangeNotAllowedException, DuplicateException {
+        String superTypeName, int from, int unto,
+        String roleName, String typeName) throws MismatchException,
+        ChangeNotAllowedException, DuplicateException {
         SuperTypeNode supertypeNode;
         supertypeNode
-                = parent.addSuperTypeNodeAt(superTypeName, nr, from, unto, roleName,
-                        -1, typeName);
+            = parent.addSuperTypeNodeAt(superTypeName, nr, from, unto, roleName,
+                -1, typeName);
         fireTreeStructureChanged(createEvent(supertypeNode));
         //nodeStructureChanged(parent);
         return supertypeNode;
     }
 
-     public SuperTypeNode addSuperTypeNodeAt(FactNode parent, int nr,
-            String superTypeName, int from, int unto,
-            String roleName, String typeName, List<String> values) throws MismatchException,
-            ChangeNotAllowedException, DuplicateException {
+    public SuperTypeNode addSuperTypeNodeAt(FactNode parent, int nr,
+        String superTypeName, int from, int unto,
+        String roleName, String typeName, List<String> values) throws MismatchException,
+        ChangeNotAllowedException, DuplicateException {
         SuperTypeNode supertypeNode;
         ObjectType concreteOT = om.getObjectType(typeName);
         Value value = concreteOT.parse(values, source);
         supertypeNode
-                = parent.addSuperTypeNodeAt(superTypeName, nr, from, unto, roleName,
-                        -1, typeName, value);
+            = parent.addSuperTypeNodeAt(superTypeName, nr, from, unto, roleName,
+                -1, typeName, value);
         fireTreeStructureChanged(createEvent(supertypeNode));
         //nodeStructureChanged(parent);
         return supertypeNode;
     }
-     
+
     public void removeValueNodeAt(ParentNode parent, int nr)
-            throws ChangeNotAllowedException, MismatchException,
-            DuplicateException {
+        throws ChangeNotAllowedException, MismatchException,
+        DuplicateException {
 
         if (parent.isReady()) {
             setReady(parent, false);

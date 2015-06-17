@@ -263,7 +263,6 @@ public class Constructor extends OperationWithParams {
                 if (f.isAutoIncr()) {
                     list.addLineAtCurrentIndentation(l.assignment(l.thisKeyword() + l.memberOperator() + f.getName(), "1"));
                 }
-                System.out.println(f.getName() + " without relation ?");
 
             } else if (r.hasNoDefaultValue()) {
                 if (r.isMandatory()) {
@@ -298,9 +297,11 @@ public class Constructor extends OperationWithParams {
                         Relation inverse = r.inverse();
                         if (inverse != null && inverse.isNavigable() && !r.isCreational() && !inverse.isCreational()) {
                             // register
-                            if (inverse.isCollectionReturnType()) {
-
-                                list.addLineAtCurrentIndentation(l.callMethod(r.fieldName(), inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()) + l.endStatement());
+                            if (inverse.isSetRelation() || inverse.isSeqRelation()) {
+                                list.addLineAtCurrentIndentation(l.callMethod(r.fieldName(), inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword())
+                                    + l.endStatement());
+                            } else if (inverse.isMapRelation()) {
+                                //ToDo
                             } else if (inverse instanceof BooleanSingletonRelation) {
                                 // wrong : JAVA code, it's to specific
                                 list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + r.fieldName() + l.memberOperator()
@@ -504,15 +505,15 @@ public class Constructor extends OperationWithParams {
 
     }
 
-    @Override
-    public boolean isUnspecified() {
-        return false;
-    }
-
-    @Override
-    public void setUnspecified(boolean abstrct) {
-        throw new UnsupportedOperationException("Constructor cannot be abstract.");
-    }
+//    @Override
+//    public boolean isUnspecified() {
+//        return false;
+//    }
+//
+//    @Override
+//    public void setUnspecified(boolean abstrct) {
+//        throw new UnsupportedOperationException("Constructor cannot be abstract.");
+//    }
 
     public boolean adaptName(CodeClass codeClass) {
         return false;
@@ -521,6 +522,11 @@ public class Constructor extends OperationWithParams {
     @Override
     public boolean canTrigger(RoleEvent e) {
         return e.isNeededWhileUpdating();
+    }
+
+    @Override
+    public boolean isFinal() {
+        return false;
     }
 
 }

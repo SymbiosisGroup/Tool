@@ -70,7 +70,7 @@ public class Property extends Operation implements IRelationalOperation {
                     setSetter(false);
                     Relation inverse = relation.inverse();
                     if (inverse != null) {
-                        if (!inverse.isComposition()) //if (target.isCompositionOf(ot)) 
+                        //if (!inverse.isComposition()) //if (target.isCompositionOf(ot)) 
                         {
                             if (inverse.isSettable() || inverse.isAddable()
                                 || inverse.isInsertable() || inverse.isEventSource()

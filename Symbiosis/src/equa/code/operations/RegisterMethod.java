@@ -15,6 +15,7 @@ import equa.code.IndentedList;
 import equa.code.Language;
 import equa.meta.classrelations.BooleanRelation;
 import equa.meta.classrelations.BooleanSingletonRelation;
+import equa.meta.classrelations.FactTypeRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.objectmodel.RoleEvent;
 import equa.meta.objectmodel.ObjectType;
@@ -48,23 +49,50 @@ public class RegisterMethod extends Method implements IRelationalOperation {
         IndentedList list = new IndentedList();
         list.addLinesAtCurrentIndentation(l.operationHeader(this));
         list.addLineAtCurrentIndentation(l.addCollection(relation.fieldName(), relation.collectionType().getKind(), getParams().get(0).getName()));
-        Relation inverse = relation.inverse();
-        if (inverse != null && inverse.isNavigable() && this.getAccess().equals(AccessModifier.PUBLIC)) {
-            ObjectType otInv = (ObjectType) relation.targetType();
-            if (inverse.isCollectionReturnType()) {
-
-                list.addLineAtCurrentIndentation(l.callMethod(getParams().get(0).getName(), inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()) + l.endStatement());
-            } else if (inverse instanceof BooleanSingletonRelation) {
-                // wrong : JAVA code, it's to specific
-                list.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator()
-                    + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
-            } else {
-                // wrong : JAVA code, it's to specific
-                list.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator()
-                    + "set" + Naming.withCapital(inverse.fieldName()) + "(" + l.thisKeyword() + ")" + l.endStatement());
+//        Relation inverse = relation.inverse();
+//        if (inverse != null && inverse.isNavigable() && this.getAccess().equals(AccessModifier.PUBLIC)) {
+//            ObjectType otInv = (ObjectType) relation.targetType();
+//            if (inverse.isCollectionReturnType()) {
+//
+//                list.addLineAtCurrentIndentation(l.callMethod(getParams().get(0).getName(), inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()) + l.endStatement());
+//            } else if (inverse instanceof BooleanSingletonRelation) {
+//                // wrong : JAVA code, it's to specific
+//                list.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator()
+//                    + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
+//            } else {
+//                // wrong : JAVA code, it's to specific
+//                if (!relation.getOwner().isSingleton()) {
+//                    list.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator()
+//                        + "set" + Naming.withCapital(inverse.fieldName()) + "(" + l.thisKeyword() + ")" + l.endStatement());
+//                }
+//            }
+//
+//        }
+         if (getAccess().equals(AccessModifier.PUBLIC) && relation instanceof FactTypeRelation) {
+            Relation inverse = relation.inverse();
+            //if a value is added to the collection and the inverse relation is navigable, we have to register.
+            if (inverse.isNavigable() || relation.targetType().equals(relation.getOwner())) {
+                if (inverse.isSeqRelation() || inverse.isSetRelation()) {
+                    list.addLineAtCurrentIndentation(l.callMethod(getParams().get(0).getName(), inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword())
+                        + l.endStatement());
+                } else if (inverse.isMapRelation()) {
+                    // TODO
+                } else if (inverse instanceof BooleanSingletonRelation) {
+                    // wrong : JAVA code, it's to specific
+                    list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator()
+                        + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
+                } else {
+                    if (!relation.getOwner().isSingleton()) {
+                        list.addLineAtCurrentIndentation(getParams().get(0).getName() + l.memberOperator() + "set" + Naming.withCapital(inverse.name() + "(" + l.thisKeyword() + ")")
+                            + l.endStatement());
+                    }
+                }
             }
-
         }
+        
+        
+        
+        
 //        if (getParent().equals(relation.targetType())) {
 //            if (inverse.isCollectionReturnType()) {
 //                list.addLineAtCurrentIndentation(l.callMethod(getParams().get(0).getName(), getName(), l.thisKeyword()) + l.endStatement());

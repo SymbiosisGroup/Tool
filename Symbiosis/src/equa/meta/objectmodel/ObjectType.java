@@ -1629,12 +1629,8 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
 //            }
 //            addMethod.setAccessModifier(AccessModifier.NAMESPACE);
 //        }
-
         if (relation.isCreational()) {
             concreteObjectType.encapsulateConstructor();
-        }
-        
-        if (relation.isAddable()) {
             if (relation.isMapRelation()) {
                 addMethod = new PutMethod(relation, this, concreteObjectType);
             } else {
@@ -1646,9 +1642,11 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             } else {
                 addMethod = new RegisterMethod(relation, this);
             }
-            addMethod.setAccessModifier(AccessModifier.NAMESPACE);
+            if (!relation.isAddable()) {
+                addMethod.setAccessModifier(AccessModifier.NAMESPACE);
+            }
         }
-        
+
         codeClass.addOperation(addMethod);
 
         if (relation.isInsertable()) {
@@ -1736,15 +1734,17 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             }
         }
 
-        if (withRemove && relation.isCreational()) {
+        if (withRemove && relation.isResponsible()) {
             SubstitutionType target = relation.targetType();
-            if (target instanceof ObjectType) {
+            if (!target.isValueType()) {
                 ObjectType targetObjectType = (ObjectType) target;
                 Set<Relation> contacts = targetObjectType.fans();
 
                 contacts.remove(inverse);
                 if (!contacts.isEmpty()) {
-                    targetObjectType.codeClass.addOperation(new IsRemovableMethod(relation, targetObjectType));
+                    if (!targetObjectType.codeClass.operationPresent("isRemovable")) {
+                        targetObjectType.codeClass.addOperation(new IsRemovableMethod(relation, targetObjectType));
+                    }
                 }
             }
         }
@@ -2068,7 +2068,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         Set<Relation> fans = new HashSet<>();
         for (Relation relation : relations(false, false)) {
             Relation inverse = relation.inverse();
-            if (inverse != null && inverse.isNavigable()) {
+            if (inverse != null && (inverse.isNavigable() || inverse.getOwner().equals(this))) {
                 if (/*inverse.getOwner().getResponsible() != this && */getResponsible() != inverse.getOwner()) {
                     fans.add(inverse);
                 }

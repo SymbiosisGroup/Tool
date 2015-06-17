@@ -101,7 +101,7 @@ public class TreeController {
                         expression = dialog.getExpression();
                     }
                 }
-                root = expressionTreeModel.createObjectRoot(expression, typeName);
+                root = expressionTreeModel.createObjectRoot(expression, typeName, (JFrame) this.getFrame());
             } else {
                 if (ft != null && ft.isObjectType() && ft.getFTE() == null) {
                     // adding fact at known objecttype without FTE
@@ -113,7 +113,7 @@ public class TreeController {
                         expression = dialog.getExpression();
                     }
                 }
-                root = expressionTreeModel.createFactRoot(expression, typeName);
+                root = expressionTreeModel.createFactRoot(expression, typeName, (JFrame)this.getFrame());
             }
             scanSuspiciousNodes(root);
 
@@ -471,7 +471,7 @@ public class TreeController {
 
             try {
                 if (getRoot() == null) {
-                    root = expressionTreeModel.createFactRoot(newExpression, typeName);
+                    root = expressionTreeModel.createFactRoot(newExpression, typeName, (JFrame) this.getFrame());
                     scanSuspiciousNodes(root);
                     //checkObscureValueLeafs(-1);
                 } else {

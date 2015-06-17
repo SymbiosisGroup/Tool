@@ -1022,7 +1022,7 @@ public class Java implements Language {
                             name = param.getName();
                         }
 
-                        list.addString(separator + param.getType().getName() + " " + param.getName());
+                        list.addString(separator + type(param.getType()) + " " + param.getName());
                         separator = ", ";
                     }
                     constructorParams.add(name);

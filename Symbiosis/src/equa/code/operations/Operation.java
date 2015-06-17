@@ -31,7 +31,6 @@ public abstract class Operation extends ModelElement implements IOperation, Comp
     private Escape escape;
     private AccessModifier access;
     private boolean unspecified;
-    
 
     /**
      *
@@ -98,7 +97,7 @@ public abstract class Operation extends ModelElement implements IOperation, Comp
                 return normalResult;
             } else {
                 return "if (self@Pre.count" + Naming.withCapital(relation.name() + "s") + "() = " + lower + " then (self = self@Pre))"
-                        + " else " + normalResult + " endif";
+                    + " else " + normalResult + " endif";
             }
         } else {
             int upper = relation.multiplicityUpper();
@@ -107,7 +106,7 @@ public abstract class Operation extends ModelElement implements IOperation, Comp
                 return normalResult;
             } else {
                 return "if (self@Pre.count" + Naming.withCapital(relation.name()) + "() = " + upper + " then (self = self@Pre))" + " else "
-                        + normalResult + " endif";
+                    + normalResult + " endif";
             }
         }
     }
@@ -119,7 +118,7 @@ public abstract class Operation extends ModelElement implements IOperation, Comp
             result.append("self.collect(").append(property).append(") = self@Pre.collect(").append(property).append(")->");
         } else {
             result.append("self->collect(").append(property).append("(index)) = " + "self@Pre->collect(").append(property)
-                    .append("(index)" + ").");
+                .append("(index)" + ").");
         }
         if (remove) {
             result.append("ex");
@@ -196,7 +195,7 @@ public abstract class Operation extends ModelElement implements IOperation, Comp
     public String getSpec() {
         StringBuilder sb = new StringBuilder();
 
-        if (preSpec != null  && preSpec.operands().hasNext()) {
+        if (preSpec != null && preSpec.operands().hasNext()) {
             sb.append("Pre:\t");
             sb.append(getPreSpec().returnValue());
             sb.append(System.lineSeparator());
@@ -307,7 +306,6 @@ public abstract class Operation extends ModelElement implements IOperation, Comp
     public abstract Set<ImportType> getImports();
 
     //public abstract boolean hasSameNameAndParams(OperationHeader oh);
-
     /**
      *
      * @return the order of the different kinds of behavioral features; used
@@ -344,20 +342,22 @@ public abstract class Operation extends ModelElement implements IOperation, Comp
         return false;
     }
 
-    public boolean isUnspecified() {
-        return unspecified;
-    }
-
-    public void setUnspecified(boolean unspecified) {
-        this.unspecified = unspecified;
-    }
-
+//    public boolean isUnspecified() {
+//        return unspecified;
+//    }
+//
+//    public void setUnspecified(boolean unspecified) {
+//        this.unspecified = unspecified;
+//    }
     public boolean isFinal() {
-        return getCodeClass().hasEditableOperation() && !isUnspecified() && !(this instanceof Constructor);
+        if (getCodeClass().hasEditableOperation()) {
+            return !isEditable() && !isOverridden();
+        } else {
+            return !isOverridden();
+        }
     }
 
     public abstract boolean adaptName(CodeClass codeClass);
-
 
     @Override
     public boolean isManuallyCreated() {
@@ -373,11 +373,31 @@ public abstract class Operation extends ModelElement implements IOperation, Comp
     }
 
     public boolean canTrigger(RoleEvent e) {
-      return false;
-    }
-    
-    public boolean isAbstract(){
         return false;
     }
-    
+
+    public boolean isAbstract() {
+        return false;
+    }
+
+    private boolean isOverridden() {
+        if (getCodeClass().getParent() instanceof ObjectType) {
+            ObjectType ot = (ObjectType) getCodeClass().getParent();
+            for (ObjectType subtype : ot.allSubtypes()) {
+                // provisional solution: check with name is not sufficient
+                // check on param types is missing
+                if (subtype.getCodeClass().operationPresent(getName())) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    boolean isEditable() {
+        return false;
+    }
+
 }

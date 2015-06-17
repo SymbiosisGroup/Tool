@@ -437,7 +437,7 @@ public abstract class Relation implements Comparable<Relation>, Serializable {
         ObjectType target = (ObjectType) targetType();
         ObjectRole creationalRole = target.getCreationalRole();
         return creationalRole != null && creationalRole.getSubstitutionType().equals(getOwner());
-
+        //return isSettable() || isAddable() || isInsertable() || isComposition();
     }
 
     /**

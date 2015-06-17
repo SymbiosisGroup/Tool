@@ -191,5 +191,10 @@ public class ManuallyAddedMethod extends Operation {
 
         return sb.toString();
     }
+   
+    @Override
+    boolean isEditable() {
+        return true;
+    }
 
 }

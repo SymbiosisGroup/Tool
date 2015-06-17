@@ -276,6 +276,15 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
         }
 
     }
+    
+    public boolean operationPresent(String name){
+        for (Operation o : operations) {
+            if (o.getName().toLowerCase().equals(name.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     class OperationIterator implements Iterator<Operation> {
 

@@ -8,6 +8,7 @@ import equa.meta.ChangeNotAllowedException;
 import equa.meta.DuplicateException;
 import equa.meta.MismatchException;
 import equa.meta.objectmodel.BaseType;
+import equa.meta.objectmodel.BaseValue;
 import equa.meta.objectmodel.CollectionType;
 import equa.meta.objectmodel.CollectionTypeExpression;
 import equa.meta.objectmodel.FactType;
@@ -96,7 +97,7 @@ public class FactNode extends ParentNode {
                 ObjectRole objectRole = (ObjectRole) role;
                 ObjectType objectType = objectRole.getSubstitutionType();
                 if (values.get(i) instanceof UnparsableValue) {
-                    en = new ObjectNode(model,values.get(i).toString(),values.get(i).getType().getName());
+                    en = new ObjectNode(model, values.get(i).toString(), values.get(i).getType().getName());
                 } else if (values.get(i) instanceof AbstractValue) {
                     en = new SuperTypeNode(model, null, objectType.getName(),
                         values.get(i).toString(), null, objectRole.getRoleName(), te.getRoleNumber(i));
@@ -123,7 +124,7 @@ public class FactNode extends ParentNode {
             model.setUnconditionallyReady(this);
         }
     }
-    
+
     public boolean isPureFact() {
         return true;
     }
@@ -145,38 +146,46 @@ public class FactNode extends ParentNode {
         Iterator<String> itConstants = te.constants();
 
         model.insertNodeInto(new TextNode(null, itConstants.next()), this, 0);
-
-        Tuple tuple = (Tuple) sv;
         int nodeNr = 1;
-        while (nodeNr < sizeFactType * 2) {
+        if (sv instanceof Tuple) {
+            Tuple tuple = (Tuple) sv;
 
-            int roleNumber = te.getRoleNumber(nodeNr / 2);
-            TupleItem item = tuple.getItem(roleNumber);
-            if (item.getValue() instanceof AbstractValue) {
-                String typeName = item.getValue().getType().getName();
-                model.insertNodeInto(new SuperTypeNode(model, null, typeName, item.getValue().toString(),
-                    null, "", roleNumber), this, nodeNr);
+            while (nodeNr < sizeFactType * 2) {
 
-            } else if (item.getValue() instanceof Tuple) {
-                TypeExpression ote;
-                ote = ((ObjectType) item.getValue().getType()).getOTE();
-                if (ote instanceof CollectionTypeExpression) {
-                    CollectionType ct = (CollectionType) item.getRole().getSubstitutionType();
-                    model.insertNodeInto(new CollectionNode(model, item.getRole().getRoleName(),
-                        roleNumber, (Tuple) item.getValue()), this, nodeNr);
+                int roleNumber = te.getRoleNumber(nodeNr / 2);
+                TupleItem item = tuple.getItem(roleNumber);
+                if (item.getValue() instanceof AbstractValue) {
+                    String typeName = item.getValue().getType().getName();
+                    model.insertNodeInto(new SuperTypeNode(model, null, typeName, item.getValue().toString(),
+                        null, "", roleNumber), this, nodeNr);
+
+                } else if (item.getValue() instanceof Tuple) {
+                    TypeExpression ote;
+                    ote = ((ObjectType) item.getValue().getType()).getOTE();
+                    if (ote instanceof CollectionTypeExpression) {
+                        CollectionType ct = (CollectionType) item.getRole().getSubstitutionType();
+                        model.insertNodeInto(new CollectionNode(model, item.getRole().getRoleName(),
+                            roleNumber, (Tuple) item.getValue()), this, nodeNr);
+                    } else {
+                        model.insertNodeInto(new ObjectNode(model, null, item.getValue(),
+                            item.getRole().getRoleName(), roleNumber,
+                            ote), this, nodeNr);
+                    }
                 } else {
-                    model.insertNodeInto(new ObjectNode(model, null, item.getValue(),
-                        item.getRole().getRoleName(), roleNumber,
-                        ote), this, nodeNr);
+                    model.insertNodeInto(new ValueLeaf(null, item.getValue().toString(),
+                        item.getValue().getType().getName(), item.getRole().getRoleName(), roleNumber), this, nodeNr);
                 }
-            } else {
-                model.insertNodeInto(new ValueLeaf(null, item.getValue().toString(),
-                    item.getValue().getType().getName(), item.getRole().getRoleName(), roleNumber), this, nodeNr);
-            }
-            nodeNr++;
+                nodeNr++;
 
-            model.insertNodeInto(new TextNode(null, itConstants.next()), this, nodeNr);
+                model.insertNodeInto(new TextNode(null, itConstants.next()), this, nodeNr);
+                nodeNr++;
+            }
+        } else {
+            BaseValue bv = (BaseValue) sv;
+            model.insertNodeInto(new ValueLeaf(null, bv.toString(),
+                bv.getType().getName(), te.getParent().getRole(te.getRoleNumber(nodeNr / 2)).detectRoleName(), te.getRoleNumber(nodeNr / 2)), this, nodeNr);
             nodeNr++;
+            model.insertNodeInto(new TextNode(null, itConstants.next()), this, nodeNr);
         }
         setReady(true);
 
@@ -224,6 +233,22 @@ public class FactNode extends ParentNode {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < this.getChildCount(); i++) {
             sb.append(this.getChildAt(i).toString());
+        }
+
+        return sb.toString();
+    }
+
+    public String getTextParts() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.getChildAt(0).toString());
+        String left = " <";
+        String right = " >";
+
+        for (int i = 1; i < this.getChildCount(); i = i + 2) {
+            sb.append(left);
+            sb.append(this.getChildAt(i).toString());
+            sb.append(right);
+            sb.append(this.getChildAt(i + 1).toString());
         }
 
         return sb.toString();
