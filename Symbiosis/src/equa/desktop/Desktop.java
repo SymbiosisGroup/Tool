@@ -1153,7 +1153,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                     return;
                 }
 
-                JFileChooser fileChooser = new JFileChooser();
+                JFileChooser fileChooser = new JFileChooser(getLastLocation());
                 int result = fileChooser.showOpenDialog(getComponent());
                 if (result != JFileChooser.APPROVE_OPTION) {
                     return;
@@ -1791,7 +1791,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
     }//GEN-LAST:event_behaviorAsTextMenuItemActionPerformed
 
     private void requirementsExportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_behaviorAsTextMenuItemActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser(getLastLocation());
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Text", "txt");
         fileChooser.setFileFilter(filter);
         int result = fileChooser.showSaveDialog(getComponent());
