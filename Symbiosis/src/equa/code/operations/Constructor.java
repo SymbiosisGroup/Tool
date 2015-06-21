@@ -294,24 +294,7 @@ public class Constructor extends OperationWithParams {
                         } else {
                             list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + l.assignment(r.fieldName(), searchParamName(r)));
                         }
-                        Relation inverse = r.inverse();
-                        if (inverse != null && inverse.isNavigable() && !r.isCreational() && !inverse.isCreational()) {
-                            // register
-                            if (inverse.isSetRelation() || inverse.isSeqRelation()) {
-                                list.addLineAtCurrentIndentation(l.callMethod(r.fieldName(), inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword())
-                                    + l.endStatement());
-                            } else if (inverse.isMapRelation()) {
-                                //ToDo
-                            } else if (inverse instanceof BooleanSingletonRelation) {
-                                // wrong : JAVA code, it's to specific
-                                list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + r.fieldName() + l.memberOperator()
-                                    + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
-                            } else {
-                                // wrong : JAVA code, it's to specific
-                                list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + r.fieldName() + l.memberOperator()
-                                    + "set" + Naming.withCapital(inverse.fieldName()) + "(" + l.thisKeyword() + ")" + l.endStatement());
-                            }
-                        }
+
                     } else {
                         list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + l.assignment(r.fieldName(), searchParamName(r)));
                     }
@@ -390,6 +373,7 @@ public class Constructor extends OperationWithParams {
 
         }
 
+        
         list.addLinesAtCurrentIndentation(l.bodyClosure());
         return list;
     }
@@ -514,7 +498,6 @@ public class Constructor extends OperationWithParams {
 //    public void setUnspecified(boolean abstrct) {
 //        throw new UnsupportedOperationException("Constructor cannot be abstract.");
 //    }
-
     public boolean adaptName(CodeClass codeClass) {
         return false;
     }

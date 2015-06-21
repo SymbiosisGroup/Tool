@@ -17,6 +17,7 @@ import equa.factbreakdown.ValueNode;
 import equa.meta.ChangeNotAllowedException;
 import equa.meta.DuplicateException;
 import equa.meta.MismatchException;
+import equa.meta.NotParsableException;
 import equa.meta.objectmodel.CollectionType;
 import equa.meta.objectmodel.CollectionTypeExpression;
 import equa.meta.objectmodel.FactType;
@@ -75,12 +76,10 @@ public class TreeController {
 
         // ask for typename of fact root 
         ExpressionTreeRootDialog typeNameDialog = new ExpressionTreeRootDialog((JFrame) this.getFrame(), this, expression);
-       
+
         typeNameDialog.setLocation(screenPosition.x + 200, screenPosition.y);
         typeNameDialog.setVisible(true);
-       
-        
-        
+
         String typeName = typeNameDialog.getTypeName();
         if (typeName.isEmpty()) {
             return;
@@ -113,12 +112,16 @@ public class TreeController {
                         expression = dialog.getExpression();
                     }
                 }
-                root = expressionTreeModel.createFactRoot(expression, typeName, (JFrame)this.getFrame());
+                root = expressionTreeModel.createFactRoot(expression, typeName, (JFrame) this.getFrame());
             }
             scanSuspiciousNodes(root);
 
+        } catch (NotParsableException exc) {
+            JOptionPane.showMessageDialog(frame, exc.getMessage());
+            root = new FactNode(expressionTreeModel, null, expression, typeName);
+            expressionTreeModel.setRoot(root);
         } catch (MismatchException exc) {
-          //  if (ft != null && ft.isParsable()) 
+            //  if (ft != null && ft.isParsable()) 
             {
                 if (typeNameDialog.isObjectType()) {
                     executeMatchDialog("Object type expression " + ft.getName(),
@@ -129,7 +132,7 @@ public class TreeController {
                         ft, ft.getFTE(), expression, exc.getMismatchPosition(),
                         screenPosition, from, unto, typeName, null, null);
                 }
-            } 
+            }
 //            else {
 //                JOptionPane.showMessageDialog(frame, exc.getMessage());
 //            }
@@ -459,7 +462,7 @@ public class TreeController {
         String expression, int mismatchPosition,
         Point p, int from, int unto, String typeName,
         String roleName, String superTypeName) {
-        if (selectedTextNode != null && !(selectedTextNode.getParent() instanceof FactNode)) {
+        if (selectedTextNode != null && !(selectedTextNode.getParent() instanceof ParentNode)) {
             return;
         }
         boolean objectExpression = roleName != null;
@@ -477,36 +480,24 @@ public class TreeController {
                 } else {
                     // sub node
                     expressionTreeModel.replace(selectedTextNode, from, unto, newExpression);
-                    FactNode parentNode = (FactNode) selectedTextNode.getParent();
+                    ParentNode parentNode = (ParentNode) selectedTextNode.getParent();
                     int nr = selectedTextNode.getChildIndex();
                     if (superTypeName == null || superTypeName.isEmpty()) {
                         ObjectNode objectNode = expressionTreeModel.addObjectNodeAt(parentNode,
                             nr, from,
-                            from + newExpression.length(), typeName, roleName, dialog.getExpressionParts()
-                        /*,
-                         dialog.getSubstitutionSequence()*/);
+                            from + newExpression.length(), typeName, roleName, dialog.getExpressionParts());
 
                         ValueNode obscureNode = scanSuspiciousNodes(objectNode);
                         if (obscureNode != null) {
                             expressionTreeModel.removeValueNodeAt(objectNode.getParent(), nr);
                             objectNode = expressionTreeModel.addObjectNodeAt(parentNode,
                                 nr, from,
-                                from + newExpression.length(), typeName, roleName, dialog.getExpressionParts()
-                            /*,
-                             dialog.getSubstitutionSequence()*/);
+                                from + newExpression.length(), typeName, roleName, dialog.getExpressionParts());
                         };
                     } else {
-                        SuperTypeNode supertypeNode = expressionTreeModel.addSuperTypeNodeAt(parentNode,
-                            nr, superTypeName, from,
-                            from + newExpression.length(), roleName, typeName, dialog.getExpressionParts());
+                        ObjectNode objectNode = expressionTreeModel.addSubtypeNodeAt((SuperTypeNode) parentNode.getParent(),
+                            nr, 0, newExpression.length(), typeName, roleName);
 
-//                        ValueNode obscureNode = scanSuspiciousNodes(supertypeNode.getParent());
-//                        if (obscureNode != null) {
-//                            expressionTreeModel.removeValueNodeAt(supertypeNode.getParent(), nr);
-//                            supertypeNode = expressionTreeModel.addSuperTypeNodeAt(parentNode,
-//                                    nr, superTypeName, from,
-//                                    from + newExpression.length(), roleName, typeName);
-//                        }
                     }
                 }
             } catch (MismatchException | ChangeNotAllowedException | DuplicateException ex) {

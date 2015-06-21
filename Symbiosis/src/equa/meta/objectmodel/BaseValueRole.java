@@ -74,7 +74,7 @@ public class BaseValueRole extends Role {
             ProjectRole projectRole = om.getProject().getCurrentUser();
 
             RuleRequirement autoIncrRule = rm.addRuleRequirement(getParent().getCategory(),
-                "Auto increment concerning <" + getRoleName() + "> of <" + getParent().getName() +">",
+                "Auto increment concerning <" + getRoleName() + "> of <" + getParent().getName() + ">",
                 new ExternalInput("", projectRole));
             autoIncr = new AutoIncrConstraint(this, autoIncrRule);
 
@@ -112,7 +112,7 @@ public class BaseValueRole extends Role {
             return;
         }
         Role cp = getParent().counterpart(this);
-        if (cp==null){
+        if (cp == null) {
             throw new ChangeNotAllowedException("Default value makes only sense with respect to binary fact types.");
         }
         if (!cp.isMandatory()) {
@@ -295,7 +295,7 @@ public class BaseValueRole extends Role {
 
     @Override
     public boolean isCandidateAutoIncr() {
-        return bt.equals(BaseType.NATURAL) && getDefaultValueString()==null;
+        return bt.equals(BaseType.NATURAL) && getDefaultValueString() == null;
     }
 
     @Override
@@ -327,11 +327,13 @@ public class BaseValueRole extends Role {
     public boolean isCandidateComposition() {
         return false;
     }
-    
+
     @Override
     public boolean isCandidateDefaultValue() {
-        if (isAutoIncr()) return false;
-        return getParent().counterpart(this)!=null;
+        if (isAutoIncr()) {
+            return false;
+        }
+        return getParent().counterpart(this) != null;
     }
 
     @Override
@@ -401,6 +403,11 @@ public class BaseValueRole extends Role {
 
     @Override
     public boolean isEventSource() {
+        return false;
+    }
+
+    @Override
+    public boolean couldActAsResponsible() {
         return false;
     }
 

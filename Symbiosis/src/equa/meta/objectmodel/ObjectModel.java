@@ -714,12 +714,12 @@ public class ObjectModel extends Model implements
                             + " must have exactly one navigable role.", true));
                         error = true;
                     }
-//                    if (facttype.isDerivable() && navigableRole != null
-//                        && !navigableRole.isMandatory()) {
-//                        messages.add(new Message("error: derivable facttype " + facttype.getName()
-//                            + " should have exactly one navigable mandatory role.", true));
-//                        error = true;
-//                    }
+                    
+                    if (facttype.isDerivable() && navigableRole != null
+                        && !navigableRole.isMandatory()) {
+                        messages.add(new Message("warning: navigable role of derivable facttype " + facttype.getName()
+                            + " is not mandatory.", false));
+                    }
 
                     if (facttype.hasNonNavigableRoleWithSingleUnqueness()) {
                         messages.add(new Message("warning: facttype " + facttype.getName()
@@ -734,6 +734,14 @@ public class ObjectModel extends Model implements
                             + "constraint will not be incorporated within the source code.", false));
 
                     }
+
+                    if (facttype.hasMandatoryMultipleRole()) {
+                        messages.add(new Message("error: facttype " + facttype.getName()
+                            + " contains navigable non-responsible role with mandatory constraint; since"
+                            + " this role misses a single uniqueness constraint, initialisation is problematic.", true));
+                        error = true;
+                    }
+
                 }
 
             }
@@ -1126,7 +1134,7 @@ public class ObjectModel extends Model implements
                     + "a FTE");
             } else {
                 ft.checkMatch(types, roleNames, true);
-                ft.addFTE(constants, roleNumbers);
+                ft.setFTE(constants, roleNumbers);
             }
         }
         fireListChanged();
@@ -1259,7 +1267,7 @@ public class ObjectModel extends Model implements
      */
     public FactType addObjectType(String typeName, List<String> constants,
         List<SubstitutionType> types, List<String> roleNames,
-        List<Integer> roleNumbers, FactRequirement source)
+        List<Integer> roleNumbers, Source source)
         throws MismatchException, ChangeNotAllowedException, DuplicateException {
 
         String nameWithCapital = Naming.restyleWithCapital(typeName);
@@ -1324,7 +1332,7 @@ public class ObjectModel extends Model implements
         List<Integer> roleNumbers, List<Source> sources)
         throws MismatchException, ChangeNotAllowedException, DuplicateException {
         //Create and add the objectType in the method above here
-        FactType ft = this.addObjectType(typeName, constants, types, roleNames, roleNumbers, (FactRequirement) sources.get(0));
+        FactType ft = this.addObjectType(typeName, constants, types, roleNames, roleNumbers, sources.get(0));
 
         //Add the remaining sources to the objecttype.
 //        sources.remove(0);

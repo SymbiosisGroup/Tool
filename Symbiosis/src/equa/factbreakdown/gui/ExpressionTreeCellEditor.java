@@ -48,7 +48,7 @@ import javax.swing.KeyStroke;
  * @author FrankP
  */
 public class ExpressionTreeCellEditor extends AbstractCellEditor
-        implements javax.swing.tree.TreeCellEditor {
+    implements javax.swing.tree.TreeCellEditor {
 
     private static final long serialVersionUID = 1L;
     private JComponent panel;
@@ -76,7 +76,7 @@ public class ExpressionTreeCellEditor extends AbstractCellEditor
      * ***********************************************************************
      */
     public ExpressionTreeCellEditor(TreeController controller,
-            ExpressionTreeModel model, Frame frame) {
+        ExpressionTreeModel model, Frame frame) {
         this.controller = controller;
         this.model = model;
         this.frame = frame;
@@ -126,7 +126,7 @@ public class ExpressionTreeCellEditor extends AbstractCellEditor
                 if (pn.getChildCount() == 1) {
                     if (pn instanceof ObjectNode) {
                         int reply = JOptionPane.showConfirmDialog(frame,
-                                "Do you really want to introduce a singleton object type?");
+                            "Do you really want to introduce a singleton object type?");
                         if (reply != JOptionPane.OK_OPTION) {
                             cbReady.setSelected(pn.isReady());
                             return;
@@ -234,8 +234,8 @@ public class ExpressionTreeCellEditor extends AbstractCellEditor
 
         miReady = new JMenuItem("FactBreakdown Finished");
         miReady.setToolTipText("When you press on this item you are "
-                + "switching between: 'this expression needs further "
-                + "investigation' or 'investigation is closed'.");
+            + "switching between: 'this expression needs further "
+            + "investigation' or 'investigation is closed'.");
         miReady.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -245,7 +245,7 @@ public class ExpressionTreeCellEditor extends AbstractCellEditor
                     if (fn.getChildCount() == 1) {
                         if (fn instanceof ObjectNode) {
                             int reply = JOptionPane.showConfirmDialog(frame,
-                                    "Do you really want to introduce a singleton object type?");
+                                "Do you really want to introduce a singleton object type?");
                             if (reply != JOptionPane.OK_OPTION) {
                                 return;
                             }
@@ -259,7 +259,6 @@ public class ExpressionTreeCellEditor extends AbstractCellEditor
 
                     if (!selectedNode.isReady()) {
                         miReady.setText("FactBreakdown Finished");
-
                     } else {
                         miReady.setText("Further Investigation Needed");
                     }
@@ -274,105 +273,105 @@ public class ExpressionTreeCellEditor extends AbstractCellEditor
 
         miRemove = new JMenuItem("Undo Fact Breakdown");
         miRemove.setToolTipText(
-                "Press this item if you want to remove the subnodes of this value node.");
+            "Press this item if you want to remove the subnodes of this value node.");
         miRemove.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
 
-                        try {
-                            if (valueNode != null && valueNode.getParent() == null) {
+                    try {
+                        if (valueNode != null && valueNode.getParent() == null) {
 
-                                model.removeValueNodeAt((ParentNode) valueNode, -1);
-                                setTextNode();
+                            model.removeValueNodeAt((ParentNode) valueNode, -1);
+                            setTextNode();
 
+                        } else {
+                            if (valueNode.hasReadyParent()) {
+                                throw new ChangeNotAllowedException("Removing isn't allowed "
+                                    + "because parent node is ready;"
+                                    + " please select parent node");
                             } else {
-                                if (valueNode.hasReadyParent()) {
-                                    throw new ChangeNotAllowedException("Removing isn't allowed "
-                                            + "because parent node is ready;"
-                                            + " please select parent node");
-                                } else {
-                                    model.removeValueNodeAt(valueNode.getParent(), valueNode.getChildIndex());
-                                    setTextNode();
-                                }
+                                model.removeValueNodeAt(valueNode.getParent(), valueNode.getChildIndex());
+                                setTextNode();
                             }
-
-                        } catch (ChangeNotAllowedException | MismatchException | DuplicateException ex) {
-
-                            JOptionPane.showMessageDialog(frame, "Removing isn't allowed: " + ex.getMessage());
-
                         }
 
-                        popup.setVisible(false);
-                        stopCellEditing();
+                    } catch (ChangeNotAllowedException | MismatchException | DuplicateException ex) {
+
+                        JOptionPane.showMessageDialog(frame, "Removing isn't allowed: " + ex.getMessage());
+
                     }
-                });
+
+                    popup.setVisible(false);
+                    stopCellEditing();
+                }
+            });
 
         popup.add(miRemove);
         miRoleName = new JMenuItem("Change Rolename");
 
         miRoleName.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        popup.setVisible(false);
-                        ISubstitution substitution = (ISubstitution) valueNode;
-                        String roleName = JOptionPane.showInputDialog(frame, "Change rolename", substitution.getRoleName());
-                        if (roleName != null) {
-                            if (!roleName.isEmpty() && !Naming.isIdentifier(roleName)) {
-                                JOptionPane.showMessageDialog(frame, "Rolename must fullfill the rules "
-                                        + "of an identifier: it must begin with a letter or a underscore (_) and"
-                                        + "may be followed by one or more of: letter, underscore or digit.");
-                                return;
-                            }
-                            model.setRoleName(substitution, roleName);
-
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    popup.setVisible(false);
+                    ISubstitution substitution = (ISubstitution) valueNode;
+                    String roleName = JOptionPane.showInputDialog(frame, "Change rolename", substitution.getRoleName());
+                    if (roleName != null) {
+                        if (!roleName.isEmpty() && !Naming.isIdentifier(roleName)) {
+                            JOptionPane.showMessageDialog(frame, "Rolename must fullfill the rules "
+                                + "of an identifier: it must begin with a letter or a underscore (_) and"
+                                + "may be followed by one or more of: letter, underscore or digit.");
+                            return;
                         }
-                        stopCellEditing();
+                        model.setRoleName(substitution, roleName);
+
                     }
-                });
+                    stopCellEditing();
+                }
+            });
 
         popup.add(miRoleName);
         miTypeName = new JMenuItem("Change Typename");
 
         miTypeName.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        popup.setVisible(false);
-                        String typeName = JOptionPane.showInputDialog(frame, "Change typename", valueNode.getTypeName());
-                        if (typeName != null) {
-                            if (!Naming.isIdentifier(typeName)) {
-                                JOptionPane.showMessageDialog(frame, "Typename must fullfill the rules "
-                                        + "of an identifier: it must begin with a letter or an underscore (_) and"
-                                        + "may be followed by one or more letters, underscores or digits.");
-                                return;
-                            }
-                            model.setTypeName(valueNode, typeName);
-
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    popup.setVisible(false);
+                    String typeName = JOptionPane.showInputDialog(frame, "Change typename", valueNode.getTypeName());
+                    if (typeName != null) {
+                        if (!Naming.isIdentifier(typeName)) {
+                            JOptionPane.showMessageDialog(frame, "Typename must fullfill the rules "
+                                + "of an identifier: it must begin with a letter or an underscore (_) and"
+                                + "may be followed by one or more letters, underscores or digits.");
+                            return;
                         }
-                        stopCellEditing();
+                        model.setTypeName(valueNode, typeName);
+
                     }
-                });
+                    stopCellEditing();
+                }
+            });
 
         popup.add(miTypeName);
         miEditText = new JMenuItem("Change Text");
 
         miEditText.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        popup.setVisible(false);
-                        TextNode textnode = (TextNode) selectedNode;
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    popup.setVisible(false);
+                    TextNode textnode = (TextNode) selectedNode;
 
-                        String text = JOptionPane.showInputDialog(frame, "Change Text", textnode.getText());
-                        if (text != null) {
-                            model.replace(textnode, 0, textnode.getText().length(), text);
+                    String text = JOptionPane.showInputDialog(frame, "Change Text", textnode.getText());
+                    if (text != null) {
+                        model.replace(textnode, 0, textnode.getText().length(), text);
 
-                        }
-                        stopCellEditing();
                     }
-                });
+                    stopCellEditing();
+                }
+            });
         popup.add(miEditText);
 
         miInheritance = new JMenuItem("Change Inheritance");
@@ -382,7 +381,7 @@ public class ExpressionTreeCellEditor extends AbstractCellEditor
             public void actionPerformed(ActionEvent e) {
 
                 InheritanceDialog dialog = new InheritanceDialog(frame, true,
-                        controller.getObjectModel());
+                    controller.getObjectModel());
                 dialog.setVisible(true);
             }
         });
@@ -404,7 +403,7 @@ public class ExpressionTreeCellEditor extends AbstractCellEditor
 
         Point p = panel.getLocationOnScreen();
         controller.executeSubstitutionTypeDialog(p, expression,
-                (TextNode) selectedNode, from, unto);
+            (TextNode) selectedNode, from, unto);
     }
 
     private void setValueNode(ValueNode valueNode) {
@@ -461,11 +460,11 @@ public class ExpressionTreeCellEditor extends AbstractCellEditor
             initPopup(frame);
             initActions();
             setToolTipText(
-                    "<enter> key: Choose Substitution Type; "
-                    + "<right> key: Expands selection with one character; "
-                    + "<left> key: Shrinks selection with one character; "
-                    + "<up> key>: Expands selection with one token to the right; "
-                    + "<down> key: Expands selection with one token to the left");
+                "<enter> key: Choose Substitution Type; "
+                + "<right> key: Expands selection with one character; "
+                + "<left> key: Shrinks selection with one character; "
+                + "<up> key>: Expands selection with one token to the right; "
+                + "<down> key: Expands selection with one token to the left");
 
             addMouseListener(new MouseAdapter() {
                 @Override

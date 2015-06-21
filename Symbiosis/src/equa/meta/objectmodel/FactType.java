@@ -845,7 +845,7 @@ public class FactType extends ParentElement implements Type, ITerm,
      * @param roleNumbers the ranks of the roles in the new FTE
      * @see TypeExpression
      */
-    public void addFTE(List<String> constants, List<Integer> roleNumbers) {
+    public void setFTE(List<String> constants, List<Integer> roleNumbers) {
         if (constants.size() != size() + 1) {
             throw new RuntimeException(("NUMBER OF CONSTANTS DOESN'T MATCH ")
                 + ("SIZE OF FACTTYPE"));
@@ -1744,12 +1744,32 @@ public class FactType extends ParentElement implements Type, ITerm,
     public Role getElementAt(int index) {
         if (0 <= index && index < roles.size()) {
             if (ot == null) {
-                return roles.get(index);
+                return roles.get(fte.getRoleNumber(index));
             } else {
                 return roles.get(ot.getOTE().getRoleNumber(index));
             }
         }
         return null;
+    }
+
+    public Role getRole(String name) {
+        String trimmedName = name.trim();
+        for (Role role : roles) {
+            if (role.detectRoleName().equalsIgnoreCase(trimmedName)) {
+                return role;
+            }
+        }
+        return null;
+    }
+
+    public int getRoleNr(String name) {
+        String trimmedName = name.trim();
+        for (int i = 0; i < roles.size(); i++) {
+            if (roles.get(i).detectRoleName().equalsIgnoreCase(trimmedName)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
@@ -2127,6 +2147,9 @@ public class FactType extends ParentElement implements Type, ITerm,
         for (Role role : roles) {
             // qualifier implies responsible qualified role
             if (role.isResponsible() || role.isQualifier()) {
+                return false;
+            }
+            if (role.couldActAsResponsible()) {
                 return false;
             }
             // binary fact type with one mandatory navigable role is a considered responsible 
@@ -2624,7 +2647,7 @@ public class FactType extends ParentElement implements Type, ITerm,
         return false;
     }
 
-    boolean withMandatorialRoles() {
+    boolean withMandatoryRoles() {
         for (Role role : roles) {
             if (role.isMandatory() && role.isNavigable()) {
                 return true;
@@ -2633,10 +2656,24 @@ public class FactType extends ParentElement implements Type, ITerm,
         return false;
     }
 
-    boolean withMoreMandarialConstraints() {
+    int nrMandatoryConstraint(MandatoryConstraint mc) {
+        int nr = 1;
+        for (Role role : roles) {
+            MandatoryConstraint mc2 = role.getMandatoryConstraint();
+            if (mc2 == mc) {
+                return nr;
+            } else if (mc2 != null) {
+                nr++;
+            }
+        }
+        // is in wezen onmogelijk:
+        return nr;
+    }
+
+    boolean withMoreMandatoryConstraints() {
         int c = 0;
         for (Role role : roles) {
-            if (role.isMandatory()) {
+            if (role.isMandatory() && role.isNavigable()) {
                 c++;
             }
         }
@@ -2851,6 +2888,19 @@ public class FactType extends ParentElement implements Type, ITerm,
         for (Role role : roles) {
             role.removePermissions();
         }
+    }
+
+    boolean hasMandatoryMultipleRole() {
+        for (Role role : roles) {
+            if (!role.isResponsible() && role.isMandatory() && role.isMultiple()) {
+                Role counterpart = counterpart(role);
+                if (counterpart != null && !counterpart.isMandatory()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
     }
 
 }

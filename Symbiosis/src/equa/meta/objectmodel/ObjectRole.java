@@ -523,7 +523,7 @@ public class ObjectRole extends Role {
         if (!hasSingleTarget() || (ot.isValueType() && isMandatory())) {
             return false;
         }
-        return (!this.isMappingRole() && this.isResponsible() || this.isCandidateResponsible())
+        return (!this.isMappingRole() && (this.isResponsible() || this.isCandidateResponsible()))
             && !ot.getFactType().isDerivable();
     }
 
@@ -790,7 +790,7 @@ public class ObjectRole extends Role {
             }
 
             for (RoleEvent event : events) {
-              //  Requirement rule = (Requirement) event.mostRecentSource();
+                //  Requirement rule = (Requirement) event.mostRecentSource();
                 sb.append(event.getAbbreviationCode()).append(" ");
                 eventSource = "";
             }
@@ -883,7 +883,9 @@ public class ObjectRole extends Role {
             if (!counterpart.isNavigable() && isNavigable()) {
                 return true;
             }
+
         }
+
         return false;
     }
 
@@ -912,8 +914,7 @@ public class ObjectRole extends Role {
         } else if (member.equals(defaultValue)) {
 
             defaultValue = null;
-        } else 
-        {
+        } else {
 
             super.removeMember(member);
         }
@@ -997,4 +998,16 @@ public class ObjectRole extends Role {
         return ot.isValueType();
     }
 
+    @Override
+    public boolean couldActAsResponsible() {
+        Role counterpart = getParent().counterpart(this);
+        if (counterpart == null) {
+            return false;
+        }
+        if (isNavigable() && isMandatory() && !counterpart.isMandatory()) {
+            return !counterpart.isResponsible();
+        } else {
+            return false;
+        }
+    }
 }

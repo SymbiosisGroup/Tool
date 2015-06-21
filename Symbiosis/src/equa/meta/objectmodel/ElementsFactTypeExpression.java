@@ -61,14 +61,5 @@ public class ElementsFactTypeExpression extends TypeExpression {
 //
 //        return sb.toString();
 //    }
-    /**
-     * setting of the role name of all roles where this type expression refers
-     * to
-     *
-     * @param roleNames
-     * @throws DuplicateException
-     */
-    @Override
-    public void setRoleNames(List<String> roleNames) throws DuplicateException {
-    }
+   
 }

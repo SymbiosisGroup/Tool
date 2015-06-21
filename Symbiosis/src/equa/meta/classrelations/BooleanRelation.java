@@ -41,13 +41,23 @@ public class BooleanRelation extends Relation {
     }
 
     @Override
+    public boolean isResponsible() {
+        return isSettable() || isAdjustable() || isAddable() || isRemovable() || isInsertable() || isComposition();
+    }
+
+    @Override
+    public boolean couldActAsResponsible() {
+        return false;
+    }
+
+    @Override
     public boolean isCreational() {
         return false;
     }
 
     @Override
     public boolean isNavigable() {
-            return true;
+        return true;
     }
 
     @Override

@@ -1837,7 +1837,8 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 
     private Role getSelectedRole() {
         if (tbRoles.getSelectedRowCount() == 1) {
-            return getSelectedFactType().getRole(tbRoles.getSelectedRow());
+            String roleName = (String) tbRoles.getValueAt(tbRoles.getSelectedRow(),0);
+            return getSelectedFactType().getRole(roleName);
         } else {
             return null;
         }
@@ -1848,7 +1849,8 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         FactType ft = getSelectedFactType();
         for (int i = 0; i < tbRoles.getRowCount(); i++) {
             if (tbRoles.isRowSelected(i)) {
-                roles.add(ft.getRole(i));
+                String roleName = (String) tbRoles.getValueAt(i,0);
+                roles.add(ft.getRole(roleName));
             }
         }
         return roles;
@@ -1873,7 +1875,8 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         FactType ft = getSelectedFactType();
         List<Role> roles = new ArrayList<>();
         for (int nr : numbers) {
-            roles.add(ft.getRole(nr));
+            String roleName = (String) tbRoles.getValueAt(nr,0);
+            roles.add(ft.getRole(roleName));
         }
         Role firstSelectedRole = roles.get(0);
         switchOffRoleMenuItems();

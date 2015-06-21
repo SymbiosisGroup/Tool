@@ -5,6 +5,7 @@ import com.vlsolutions.swing.docking.Dockable;
 import com.vlsolutions.swing.docking.DockableState;
 import com.vlsolutions.swing.docking.DockingDesktop;
 import com.vlsolutions.swing.docking.DockingSelectorDialog;
+import com.vlsolutions.swing.docking.DockingUtilities;
 import com.vlsolutions.swing.docking.RelativeDockablePosition;
 import com.vlsolutions.swing.docking.event.DockableSelectionEvent;
 import com.vlsolutions.swing.docking.event.DockableSelectionListener;
@@ -325,6 +326,8 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             }
         };
         dockingRoot.addDockableSelectionListener(listener);
+        DockingUtilities.findTabbedDockableContainer(requirementConfigurator).setSelectedDockable(requirementConfigurator);
+       
     }
 
     public void showMessage(String message, String trigger) {
@@ -1174,6 +1177,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                         if (cat != null) {
                             project.importReqs(cat, reqs);
                             requirementConfigurator.refresh();
+                            DockingUtilities.findTabbedDockableContainer(requirementConfigurator).setSelectedDockable(requirementConfigurator);
                         }
                     }
                 } catch (MismatchException | IOException exc) {
@@ -1669,6 +1673,8 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             projectController.getProject().setFile(file);
 
             refresh();
+            factBreakdown.clear();
+            
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(getFrame(), ex.getMessage());
         } catch (ClassNotFoundException ex) {

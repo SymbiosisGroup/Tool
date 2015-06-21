@@ -130,6 +130,7 @@ public class SubstitutionMatchPanel extends MatchPanel {
 
         tfRoleName.setText(resourceMap.getString("tfRoleName.text")); // NOI18N
         tfRoleName.setToolTipText(resourceMap.getString("tfRoleName.toolTipText")); // NOI18N
+        tfRoleName.setEnabled(false);
         tfRoleName.setMinimumSize(new java.awt.Dimension(20, 20));
         tfRoleName.setName("tfRoleName"); // NOI18N
         tfRoleName.setPreferredSize(new java.awt.Dimension(74, 15));
@@ -143,6 +144,7 @@ public class SubstitutionMatchPanel extends MatchPanel {
         tfTypeName.setEditable(false);
         tfTypeName.setForeground(resourceMap.getColor("tfTypeName.foreground")); // NOI18N
         tfTypeName.setText(resourceMap.getString("tfTypeName.text")); // NOI18N
+        tfTypeName.setEnabled(false);
         tfTypeName.setName("tfTypeName"); // NOI18N
         tfTypeName.setPreferredSize(new java.awt.Dimension(41, 15));
         pnDefinedRole.add(tfTypeName, java.awt.BorderLayout.CENTER);

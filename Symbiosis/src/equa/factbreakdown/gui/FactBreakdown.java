@@ -20,40 +20,41 @@ import equa.factbreakdown.ExpressionTreeModel;
 import equa.factbreakdown.ParentNode;
 import equa.factbreakdown.ValueNode;
 import equa.meta.requirements.FactRequirement;
+import javax.swing.JTree;
 
 /**
  *
  * @author Simon
  */
 public class FactBreakdown extends DockableTree implements TreeModelListener {
-
+    
     private static final long serialVersionUID = 1L;
     private ProjectController projectController;
     private TreeController treeController;
     private static int row_height;
-
+    
     public FactBreakdown(ProjectController controller) {
         super("Fact Breakdown");
-
+        
         this.projectController = controller;
-
+        
         addValueChangedListener();
         row_height = Node.ROW_HEIGHT;
-
+        
     }
-
+    
     public static void setFontSize(int font_size) {
         row_height = font_size + 12;
     }
-
+    
     public static int getFontSize() {
         return row_height - 12;
     }
-
+    
     public static int getRowHeight() {
         return row_height;
     }
-
+    
     public TreeController getTreeController() {
         return treeController;
     }
@@ -71,7 +72,7 @@ public class FactBreakdown extends DockableTree implements TreeModelListener {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
                 projectController.refreshViews();
-
+                
             }
         });
     }
@@ -87,14 +88,14 @@ public class FactBreakdown extends DockableTree implements TreeModelListener {
         this.setVisible(false);
         String expression = factRequirement.getText();
         ExpressionTreeModel expressionTreeModel = new ExpressionTreeModel(projectController.getProject().getObjectModel(),
-                projectController.getProject().getCurrentUser(), factRequirement);
-
+            projectController.getProject().getCurrentUser(), factRequirement);
+        
         expressionTreeModel.addTreeModelListener(this);
-
+        
         treeController = new TreeController(null, expressionTreeModel);
-
+        
         treeController.executeRootDialog(new Point(100, 200), expression);
-
+        
         ParentNode root = treeController.getRoot();
         if (root != null) {
             expressionTreeModel.setRoot(root, factRequirement);
@@ -107,16 +108,16 @@ public class FactBreakdown extends DockableTree implements TreeModelListener {
         getTree().setSize(500, 700);
         this.setVisible(true);
     }
-
+    
     @Override
     public void treeNodesChanged(TreeModelEvent e) {
     }
-
+    
     @Override
     public void treeNodesInserted(final TreeModelEvent e) {
         if (e.getChildren().length > 0) {
             EventQueue.invokeLater(new Runnable() {
-
+                
                 @Override
                 public void run() {
                     tree.expandPath(new TreePath(e.getPath()).pathByAddingChild(e.getChildren()[0]));
@@ -124,11 +125,11 @@ public class FactBreakdown extends DockableTree implements TreeModelListener {
             });
         }
     }
-
+    
     @Override
     public void treeNodesRemoved(TreeModelEvent e) {
     }
-
+    
     @Override
     public void treeStructureChanged(TreeModelEvent e) {
         TreePath path = e.getTreePath();
@@ -140,12 +141,9 @@ public class FactBreakdown extends DockableTree implements TreeModelListener {
         }
         getTree().scrollPathToVisible(path);
     }
-
+    
     public void clear() {
-//        getTree().removeAll();
-//        getTree().validate();
         
     }
-
-   
+    
 }

@@ -71,7 +71,7 @@ public class RegisterMethod extends Method implements IRelationalOperation {
          if (getAccess().equals(AccessModifier.PUBLIC) && relation instanceof FactTypeRelation) {
             Relation inverse = relation.inverse();
             //if a value is added to the collection and the inverse relation is navigable, we have to register.
-            if (inverse.isNavigable() || relation.targetType().equals(relation.getOwner())) {
+            if (inverse.isNavigable()) {
                 if (inverse.isSeqRelation() || inverse.isSetRelation()) {
                     list.addLineAtCurrentIndentation(l.callMethod(getParams().get(0).getName(), inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword())
                         + l.endStatement());
@@ -90,9 +90,7 @@ public class RegisterMethod extends Method implements IRelationalOperation {
             }
         }
         
-        
-        
-        
+
 //        if (getParent().equals(relation.targetType())) {
 //            if (inverse.isCollectionReturnType()) {
 //                list.addLineAtCurrentIndentation(l.callMethod(getParams().get(0).getName(), getName(), l.thisKeyword()) + l.endStatement());

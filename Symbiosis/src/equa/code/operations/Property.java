@@ -72,8 +72,7 @@ public class Property extends Operation implements IRelationalOperation {
                     if (inverse != null) {
                         //if (!inverse.isComposition()) //if (target.isCompositionOf(ot)) 
                         {
-                            if (inverse.isSettable() || inverse.isAddable()
-                                || inverse.isInsertable() || inverse.isEventSource()
+                            if (inverse.isResponsible()
                                 || (inverse.isPartOfId() && !relation.isMandatory())) {
                                 setSetter(true);
                                 setAccessSetter(AccessModifier.NAMESPACE);

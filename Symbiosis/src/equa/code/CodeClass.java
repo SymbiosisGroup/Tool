@@ -598,7 +598,7 @@ public class CodeClass extends ParentElement implements ListModel<Operation>, Se
     public boolean hasEditableOperation() {
         if (getParent() instanceof ObjectType) {
             ObjectType ot = (ObjectType) getParent();
-            return !ot.algorithmsMap().isEmpty();
+            return ot.hasEditableOperation();
         } else {
             return false;
         }

@@ -348,6 +348,24 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         return algs;
     }
 
+    public boolean hasEditableOperation() {
+        for (Algorithm algorithm : algorithms.values()){
+            if (algorithm.getCode()!=null) return true;
+        }
+        
+        if (!supertypes.isEmpty()){
+            ObjectType superType = supertypes.iterator().next();
+            for (Entry<OperationHeader, Algorithm> entry : superType.algorithmsMap().entrySet()) {
+                if (entry.getValue().getCode() == null) {
+                    return true;
+                }
+            }
+            return !superType.abstractAlgorithms().isEmpty();
+        }
+        return false;
+        
+    }
+
     public Collection<Algorithm> algorithms() {
         return algorithmsMap().values();
     }
@@ -944,6 +962,10 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
         if (separator != null && !separator.isEmpty()) {
             int end = expression.indexOf(separator);
             if (end > 0) {
+                if (expression.substring(end + 1).indexOf(separator) >= 0) {
+                    throw new NotParsableException(getOTE(), "OTE separator of " + getName()
+                        + "(" + separator + ") is more than one time present in: [" + expression + "]", end);
+                }
                 concreteObjectExpression = expression.substring(0, end);
             }
         }
@@ -1631,10 +1653,18 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
 //        }
         if (relation.isCreational()) {
             concreteObjectType.encapsulateConstructor();
+        }
+        if (relation.isCreational()) {
             if (relation.isMapRelation()) {
                 addMethod = new PutMethod(relation, this, concreteObjectType);
             } else {
                 addMethod = new AddObjectTypeMethod(relation, concreteObjectType, this);
+            }
+        } else if (relation.isResponsible() || relation.couldActAsResponsible()) {
+            if (relation.isMapRelation()) {
+                addMethod = new PutMethod(relation, this, concreteObjectType);
+            } else {
+                addMethod = new RegisterMethod(relation, this);
             }
         } else {
             if (relation.isMapRelation()) {
@@ -1642,9 +1672,9 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             } else {
                 addMethod = new RegisterMethod(relation, this);
             }
-            if (!relation.isAddable()) {
-                addMethod.setAccessModifier(AccessModifier.NAMESPACE);
-            }
+
+            addMethod.setAccessModifier(AccessModifier.NAMESPACE);
+
         }
 
         codeClass.addOperation(addMethod);

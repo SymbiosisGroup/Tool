@@ -417,9 +417,10 @@ public abstract class Relation implements Comparable<Relation>, Serializable {
      *
      * @return true if this relation is responsible for changes, otherwise false
      */
-    public boolean isResponsible() {
-        return isSettable() || isAdjustable() || isAddable() || isRemovable() || isInsertable() || isComposition();
-    }
+    public abstract boolean isResponsible();
+    
+    public abstract boolean couldActAsResponsible();
+
 
     public boolean hasMutablePermission() {
         FactType ft = role.getParent();
@@ -430,16 +431,27 @@ public abstract class Relation implements Comparable<Relation>, Serializable {
         return ft.getMutablePermission() != null;
     }
 
-    public boolean isCreational() {
+//    public boolean isCreational() {
+//        if (targetType() instanceof BaseType) {
+//            return false;
+//        }
+//        ObjectType target = (ObjectType) targetType();
+//        ObjectRole creationalRole = target.getCreationalRole();
+//        return creationalRole != null && creationalRole.getSubstitutionType().equals(getOwner());
+//        //return isSettable() || isAddable() || isInsertable() || isComposition();
+//    }
+
+     public boolean isCreational() {
         if (targetType() instanceof BaseType) {
             return false;
         }
-        ObjectType target = (ObjectType) targetType();
-        ObjectRole creationalRole = target.getCreationalRole();
-        return creationalRole != null && creationalRole.getSubstitutionType().equals(getOwner());
-        //return isSettable() || isAddable() || isInsertable() || isComposition();
+        if (isComposition()) return true;
+        if (isSettable() || isAddable() || isInsertable()){
+            Relation inverse = inverse();
+            if (inverse!=null && inverse.isMandatory()) return true;
+        }
+        return false;
     }
-
     /**
      *
      * @return fact type parent of the role of this relation.

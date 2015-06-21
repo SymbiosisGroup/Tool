@@ -65,6 +65,8 @@ public class FactNode extends ParentNode {
      * @param expression
      * @param te.isParsable()
      * @throws MismatchException if one of the constants doesn't match
+     * @throws equa.meta.ChangeNotAllowedException
+     * @throws equa.meta.OtherOptionsException
      */
     public FactNode(ExpressionTreeModel model, ParentNode parent, String expression,
         TypeExpression te) throws MismatchException, ChangeNotAllowedException {
@@ -90,23 +92,23 @@ public class FactNode extends ParentNode {
             Role role = ft.getRole(te.getRoleNumber(i));
             ExpressionNode en;
             if (role.getSubstitutionType() instanceof BaseType) {
-                en = new ValueLeaf(null, values.get(i).toString(),
+                en = new ValueLeaf(null, values.get(te.getRoleNumber(i)).toString(),
                     role.getSubstitutionType().getName(), role.getRoleName(),
                     te.getRoleNumber(i));
             } else {
                 ObjectRole objectRole = (ObjectRole) role;
                 ObjectType objectType = objectRole.getSubstitutionType();
-                if (values.get(i) instanceof UnparsableValue) {
-                    en = new ObjectNode(model, values.get(i).toString(), values.get(i).getType().getName());
-                } else if (values.get(i) instanceof AbstractValue) {
+                if (values.get(te.getRoleNumber(i)) instanceof UnparsableValue) {
+                    en = new ObjectNode(model, values.get(te.getRoleNumber(i)).toString(), values.get(te.getRoleNumber(i)).getType().getName());
+                } else if (values.get(te.getRoleNumber(i)) instanceof AbstractValue) {
                     en = new SuperTypeNode(model, null, objectType.getName(),
-                        values.get(i).toString(), null, objectRole.getRoleName(), te.getRoleNumber(i));
+                        values.get(te.getRoleNumber(i)).toString(), null, objectRole.getRoleName(), te.getRoleNumber(i));
                     ready = false;
                 } else if (role.getSubstitutionType() instanceof CollectionType) {
                     en = new CollectionNode(model, role.getRoleName(),
-                        te.getRoleNumber(i), (Tuple) values.get(i));
+                        te.getRoleNumber(i), (Tuple) values.get(te.getRoleNumber(i)));
                 } else {
-                    en = new ObjectNode(model, null, values.get(i), role.getRoleName(), te.getRoleNumber(i), objectType.getOTE());
+                    en = new ObjectNode(model, null, values.get(te.getRoleNumber(i)), role.getRoleName(), te.getRoleNumber(i), objectType.getOTE());
                 }
             }
             nodes[2 * i + 1] = en;
@@ -241,8 +243,8 @@ public class FactNode extends ParentNode {
     public String getTextParts() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getChildAt(0).toString());
-        String left = " <";
-        String right = " >";
+        String left = "<";
+        String right = ">";
 
         for (int i = 1; i < this.getChildCount(); i = i + 2) {
             sb.append(left);
@@ -447,9 +449,13 @@ public class FactNode extends ParentNode {
         ObjectModel om = getExpressionTreeModel().getObjectModel();
         FactType ft = om.getFactType(getTypeName());
         if (ft == null) {
-            om.addFactType(getTypeName(), constants, getDefinedTypes(roleNumbers), roleNames, roleNumbers, getExpressionTreeModel().getSource());
+            ft = om.addFactType(getTypeName(), constants, getDefinedTypes(roleNumbers), roleNames, roleNumbers, getExpressionTreeModel().getSource());
         }
 
+        if (ft.getFTE() == null) {
+            ft.setFTE(this.getConstants(), this.getRoleNumbers());
+        }
+        
         om.addFact(this);
     }
 

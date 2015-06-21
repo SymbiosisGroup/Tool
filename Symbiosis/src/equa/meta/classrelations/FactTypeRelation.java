@@ -103,6 +103,16 @@ public class FactTypeRelation extends Relation {
     }
 
     @Override
+    public boolean isResponsible() {
+        return role.isResponsible();
+    }
+    
+    @Override
+    public boolean couldActAsResponsible() {
+        return role.couldActAsResponsible();
+    }
+
+    @Override
     public boolean isSettable() {
         return role.isSettable() && role.hasSingleTarget();
     }

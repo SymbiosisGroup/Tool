@@ -149,45 +149,29 @@ public class AddObjectTypeMethod extends Method implements IActionOperation {
         list.addLineAtCurrentIndentation(l.createInstance(getReturnType().getType(), TEMP1, concreteOT.getName(), constructorParams.toArray(new String[0])));
         list.addLineAtCurrentIndentation(l.addCollection(relation.fieldName(), relation.collectionType().getKind(), TEMP1));
 
-        if (relation instanceof FactTypeRelation) {
-            Relation inverse = relation.inverse();
-            //if a value is added to the collection and the inverse relation is navigable, we have to register.
-            if (inverse.isNavigable()) {
-                if (inverse.isSeqRelation() || inverse.isSetRelation()) {
-                    list.addLineAtCurrentIndentation(l.callMethod(TEMP1, inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword())
+          
+        // registering at the other hand side needed?
+        for (Param param : getParams()) {
+            Relation r = param.getRelation();
+            Relation inverse = r.inverse();
+            if (inverse != null && inverse.isNavigable() &&  !inverse.isResponsible()) {
+                // register
+                if (inverse.isSetRelation() || inverse.isSeqRelation()) {
+                    list.addLineAtCurrentIndentation(l.callMethod(param.getName(), inverse.getOperationName(RegisterMethod.NAME), TEMP1)
                         + l.endStatement());
                 } else if (inverse.isMapRelation()) {
-                    // TODO
+                    //ToDo
                 } else if (inverse instanceof BooleanSingletonRelation) {
                     // wrong : JAVA code, it's to specific
-                    list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator()
-                        + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
+//                    list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + r.fieldName() + l.memberOperator()
+//                        + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
                 } else {
-                    if (!relation.getOwner().isSingleton()) {
-                        list.addLineAtCurrentIndentation(TEMP1 + l.memberOperator() + "set" + Naming.withCapital(inverse.name() + "(" + l.thisKeyword() + ")")
-                            + l.endStatement());
-                    }
+                    // wrong : JAVA code, it's to specific
+                    list.addLineAtCurrentIndentation(param.getName() + l.memberOperator()
+                        + "set" + Naming.withCapital(inverse.fieldName()) + "(" + TEMP1 + ")" + l.endStatement());
                 }
             }
         }
-
-//        else {
-//            //if a value is added to the collection and the inverse relation is navigable, we have to register.
-//            if (inverse.isNavigable() && inverse.isCollectionReturnType()) {
-//                list.addLineAtCurrentIndentation(l.callMethod(TEMP1, inverse.getOperationName(RegisterMethod.NAME), l.thisKeyword()));
-//            } else if (inverse instanceof BooleanRelation) {
-//                // wrong : JAVA code, it's to specific
-//                list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator()
-//                    + "set" + Naming.withCapital(inverse.fieldName()) + "(true)" + l.endStatement());
-//            } else {
-//                // wrong : JAVA code, it's to specific
-//                list.addLineAtCurrentIndentation(l.thisKeyword() + l.memberOperator() + relation.fieldName() + l.memberOperator()
-//                    + "set" + Naming.withCapital(inverse.fieldName()) + "(" + l.thisKeyword() + ")" + l.endStatement());
-//            }
-//            //we add the item
-//            list.addLineAtCurrentIndentation(l.addCollection(relation.fieldName(), relation.collectionType().getKind(), TEMP1));
-//
-//        }
         list.addLinesAtCurrentIndentation(l.postProcessing(this));
         list.addLineAtCurrentIndentation(l.returnStatement(TEMP1));
         list.addLinesAtCurrentIndentation(l.bodyClosure());

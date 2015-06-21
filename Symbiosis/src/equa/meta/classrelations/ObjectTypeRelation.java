@@ -59,6 +59,16 @@ public class ObjectTypeRelation extends Relation {
     }
 
     @Override
+    public boolean isResponsible() {
+        return role.isResponsible();
+    }
+
+    @Override
+    public boolean couldActAsResponsible() {
+        return false;
+    }
+
+    @Override
     public boolean isSettable() {
         return !hasMultipleTarget() && role.isSettable();
     }

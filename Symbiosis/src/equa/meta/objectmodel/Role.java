@@ -901,6 +901,12 @@ public abstract class Role extends ParentElement implements Serializable, Publis
      */
     public abstract boolean isResponsible();
     
+    /**
+     * 
+     * @return true if this role could act as responsible object
+     */
+    public abstract boolean couldActAsResponsible();
+    
     public abstract boolean isEventSource();
 
     abstract boolean isBoolean();

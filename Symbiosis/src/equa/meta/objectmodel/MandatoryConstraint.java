@@ -39,12 +39,7 @@ public class MandatoryConstraint extends StaticConstraint {
 
     @Override
     public String getName() {
-//        if (getFactType().withMoreMandarialConstraints()) {
-//            return getId();
-//        } else 
-        {
-            return getAbbreviationCode() ;
-        }
+        return getAbbreviationCode() + getFactType().nrMandatoryConstraint(this);
     }
 
     public Role getRole() {

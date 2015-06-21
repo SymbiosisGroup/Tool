@@ -42,10 +42,12 @@ public class MatchDialog extends javax.swing.JDialog {
     private final ConstantMatchPanel head;
     private final boolean objectExpression;
     private final ProjectRole currentUser;
+    private final FactType ft;
 
     public MatchDialog(FactType ft, TypeExpression te, String expression,
         int mismatchPosition, boolean objectExpression, ProjectRole currentUser, Frame parent) {
         super(parent, true);
+        this.ft = ft;
         initComponents();
         match = false;
 
@@ -194,9 +196,8 @@ public class MatchDialog extends javax.swing.JDialog {
         List<Integer> substitutionSequence = new ArrayList<>(size);
         SubstitutionMatchPanel panel = (SubstitutionMatchPanel) head.getNext();
         while (panel != null) {
-            substitutionSequence.add(panel.getRoleNumber());
+            substitutionSequence.add(ft.getRoleNr(panel.getRoleName()));
             panel = (SubstitutionMatchPanel) panel.getNext().getNext();
-
         }
         return substitutionSequence;
     }
@@ -345,7 +346,7 @@ public class MatchDialog extends javax.swing.JDialog {
         /*if (checkMatchingConstants())*/ {
             try {
                 te.setRoleNumbers(getSubstitutionSequence());
-                te.setRoleNames(getRoleNames());
+                //te.setRoleNames(getRoleNames());
                 List<String> newConstants = getConstants();
                 if (newConstants != null) {
                     ExternalInput input = new ExternalInput("modification caused by textual mismatch with other fact", currentUser);
@@ -356,7 +357,7 @@ public class MatchDialog extends javax.swing.JDialog {
                 match = true;
                 setVisible(false);
 
-            } catch (DuplicateException | ChangeNotAllowedException ex) {
+            } catch (ChangeNotAllowedException ex) {
                 JOptionPane.showMessageDialog(getParent(), ex.getMessage());
             }
         }

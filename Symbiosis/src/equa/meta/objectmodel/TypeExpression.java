@@ -602,18 +602,6 @@ public class TypeExpression implements Serializable, Cloneable {
 
     }
 
-    /**
-     * setting of the role name of all roles where this type expression refers
-     * to
-     *
-     * @param roleNames
-     * @throws DuplicateException
-     */
-    public void setRoleNames(List<String> roleNames) throws DuplicateException {
-        List<String> rns = new ArrayList<>(roleNames);
-        parent.setRoleNames(rns);
-    }
-
     void checkParsingDifficult() {
         setConstants(constants);
     }

@@ -96,7 +96,7 @@ public class EditTypeExpressionDialog extends javax.swing.JDialog {
             from++;
         }
         int until = length;
-        while (until >= 0 & text.charAt(until-1) == RIGHT) {
+        while (until >= 0 & text.charAt(until - 1) == RIGHT) {
             until--;
         }
 
@@ -113,10 +113,19 @@ public class EditTypeExpressionDialog extends javax.swing.JDialog {
 //            newRoles.add(roles.get(indexOf(panel)));
 //        }
         for (JPanel panel : pnRoles) {
-            int roleNr = Integer.parseInt(panel.getName());
-            newRoles.add(roles.get(roleNr));
+            String roleName = panel.getName();
+            newRoles.add(getRole(roleName));
         }
         return newRoles;
+    }
+
+    private Role getRole(String name) {
+        for (Role role : roles) {
+            if (role.detectRoleName().equalsIgnoreCase(name)) {
+                return role;
+            }
+        }
+        return null;
     }
 
     /**
@@ -171,8 +180,14 @@ public class EditTypeExpressionDialog extends javax.swing.JDialog {
 
         List<Integer> roleNumbers = new ArrayList<>(pnRoles.length);
 
-        for (JPanel pnRole : pnRoles) {
-            roleNumbers.add(Integer.parseInt(pnRole.getName()));
+        if (ft == null) {
+            for (int i=0; i<roleNumbers.size(); i++){
+                roleNumbers.add(i);
+            }
+        } else {
+            for (JPanel pnRole : pnRoles) {
+                roleNumbers.add(ft.getRoleNr(pnRole.getName()));
+            }
         }
 
         if (te != null) {
@@ -239,9 +254,10 @@ public class EditTypeExpressionDialog extends javax.swing.JDialog {
             JPanel rolePanel = new JPanel();
             pnRoles[i] = rolePanel;
             rolePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-            JLabel label = new JLabel(role.getRoleName()
+            String roleName = role.detectRoleName();
+            JLabel label = new JLabel(roleName
                 + " : " + role.getSubstitutionType().getName());
-            rolePanel.setName(i + "");
+            rolePanel.setName(roleName);
             rolePanel.add(label);
             final JButton btMove = new JButton("move");
             rolePanel.add(btMove);

@@ -1528,20 +1528,21 @@ public class Java implements Language {
             int endOfComment;
             if (remaining.substring(nextComment).startsWith("/*")) {
                 lengthSeparator = 2;
-                endOfComment = remaining.indexOf("*/");
+                endOfComment = remaining.substring(nextComment+2).indexOf("*/");
                 if (!extendWithoutComment(endOfComment, sb, remaining, nextComment)) {
                     return "";
                 }
-            } else {
+            } else { //remaining starts with //
                 lengthSeparator = System.lineSeparator().length();
-                endOfComment = remaining.indexOf(System.lineSeparator());
+                endOfComment = remaining.substring(nextComment+2).indexOf(System.lineSeparator());
                 if (!extendWithoutComment(endOfComment, sb, remaining, nextComment)) {
                     return "";
                 }
             }
-            remaining = remaining.substring(endOfComment + lengthSeparator);
+            remaining = remaining.substring(nextComment + 2 + endOfComment + lengthSeparator);
             nextComment = nextComment(remaining);
         }
+        sb.append(remaining);
         return sb.toString();
     }
 

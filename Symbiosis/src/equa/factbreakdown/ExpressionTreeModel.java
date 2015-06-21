@@ -28,6 +28,7 @@ import equa.util.Naming;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.tree.TreeNode;
 
 /**
  *
@@ -57,7 +58,13 @@ public class ExpressionTreeModel extends DefaultTreeModel {
         this.source = source;
     }
 
-    private TreeModelEvent createEvent(ValueNode vn) {
+    @Override
+    public void setRoot(TreeNode root) {
+        super.setRoot(root);
+        fireTreeStructureChanged(createEvent((ParentNode) root));
+    }
+
+    public TreeModelEvent createEvent(ValueNode vn) {
         LinkedList<Object> pathFromNode = new LinkedList<>();
         ExpressionNode child = vn;
         pathFromNode.add(child);
@@ -133,7 +140,7 @@ public class ExpressionTreeModel extends DefaultTreeModel {
         }
 
         setRoot(factNode);
-        fireTreeStructureChanged(createEvent(factNode));
+
         //nodeStructureChanged(root);
         return factNode;
     }
@@ -159,7 +166,7 @@ public class ExpressionTreeModel extends DefaultTreeModel {
         }
 
         setRoot(objectNode);
-        fireTreeStructureChanged(createEvent(objectNode));
+        //fireTreeStructureChanged(createEvent(objectNode));
         //nodeStructureChanged(root);
         return objectNode;
     }
@@ -176,6 +183,15 @@ public class ExpressionTreeModel extends DefaultTreeModel {
     }
 
     public ObjectNode addObjectNodeAt(ParentNode parent, int nr, int from, int unto, String typeName,
+        String roleName) throws MismatchException,
+        ChangeNotAllowedException, DuplicateException {
+        ObjectNode object = parent.addObjectNodeAt(nr, from, unto, typeName, roleName, -1);
+        fireTreeStructureChanged(createEvent(parent));
+        //nodeStructureChanged(parent);
+        return object;
+    }
+
+    public ObjectNode addSubtypeNodeAt(SuperTypeNode parent, int nr, int from, int unto, String typeName,
         String roleName) throws MismatchException,
         ChangeNotAllowedException, DuplicateException {
         ObjectNode object = parent.addObjectNodeAt(nr, from, unto, typeName, roleName, -1);
@@ -241,21 +257,18 @@ public class ExpressionTreeModel extends DefaultTreeModel {
         return supertypeNode;
     }
 
-    public SuperTypeNode addSuperTypeNodeAt(FactNode parent, int nr,
-        String superTypeName, int from, int unto,
-        String roleName, String typeName, List<String> values) throws MismatchException,
-        ChangeNotAllowedException, DuplicateException {
-        SuperTypeNode supertypeNode;
-        ObjectType concreteOT = om.getObjectType(typeName);
-        Value value = concreteOT.parse(values, source);
-        supertypeNode
-            = parent.addSuperTypeNodeAt(superTypeName, nr, from, unto, roleName,
-                -1, typeName, value);
-        fireTreeStructureChanged(createEvent(supertypeNode));
-        //nodeStructureChanged(parent);
-        return supertypeNode;
-    }
-
+//    public ObjectNode addObjectTypeNodeAt(SuperTypeNode parent, int nr,
+//        String superTypeName1, int from, int unto,
+//        String roleName, String typeName, List<String> values) throws MismatchException,
+//        ChangeNotAllowedException, DuplicateException {
+//        ObjectNode objectNode;
+//        ObjectType concreteOT = om.getObjectType(typeName);
+//        Value value = concreteOT.parse(values, source);
+//        objectNode = parent.addObjectNodeAt( nr, from, unto, typeName, roleName,0);
+//        fireTreeStructureChanged(createEvent(objectNode));
+//        //nodeStructureChanged(parent);
+//        return objectNode;
+//    }
     public void removeValueNodeAt(ParentNode parent, int nr)
         throws ChangeNotAllowedException, MismatchException,
         DuplicateException {
@@ -319,16 +332,8 @@ public class ExpressionTreeModel extends DefaultTreeModel {
     }
 
     public void setReady(ExpressionNode node, boolean makeReady) {
-//        if (makeReady) {
-//            if (!node.allValueSubNodesAreReady()) {
-//                return;
-//            }
-//        }
-        if (node.setReady(makeReady)) {
-            nodeChanged(node);
-        } else {
-        }
-
+        node.setReady(makeReady);
+        nodeChanged(node);
     }
 
     public void setUnconditionallyReady(ParentNode parentNode) {

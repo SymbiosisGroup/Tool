@@ -68,7 +68,7 @@ public class AddBaseTypeMethod extends Method implements IActionOperation {
         sb.append("s");
         setPostSpec(new InformalPredicate(sb.toString()));
 
-        BooleanCall containsCall = new BooleanCall((IBooleanOperation) getCodeClass().getOperation("contains"), true);
+        BooleanCall containsCall = new BooleanCall((IBooleanOperation) getCodeClass().getOperation("contains",relation), true);
         IPredicate escapeResult = new InformalPredicate(self() + " stays unchanged");
         IBooleanOperation maxCount = (IBooleanOperation) getCodeClass().getOperation("maxCount", relation);
         if (maxCount != null) {

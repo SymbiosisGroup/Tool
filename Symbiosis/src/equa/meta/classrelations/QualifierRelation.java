@@ -36,6 +36,16 @@ public class QualifierRelation extends Relation {
     }
 
     @Override
+    public boolean isResponsible() {
+        return false;
+    }
+
+    @Override
+    public boolean couldActAsResponsible() {
+        return false;
+    }
+
+    @Override
     public boolean isFinal() {
         return false;
     }

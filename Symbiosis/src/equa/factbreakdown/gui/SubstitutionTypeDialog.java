@@ -215,11 +215,14 @@ public class SubstitutionTypeDialog extends JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroupCollection = new javax.swing.ButtonGroup();
-        jPanel1 = new javax.swing.JPanel();
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        pnButtons = new javax.swing.JPanel();
+        btReset = new javax.swing.JButton();
         btOK = new javax.swing.JButton();
         btCancel = new javax.swing.JButton();
-        btReset = new javax.swing.JButton();
+        pnType = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        taExpression = new javax.swing.JTextArea();
         lbTypeName = new javax.swing.JLabel();
         tfTypeName = new javax.swing.JTextField();
         lbRoleName = new javax.swing.JLabel();
@@ -228,42 +231,39 @@ public class SubstitutionTypeDialog extends JDialog {
         lsBaseTypes = new javax.swing.JList();
         spObjectTypes = new javax.swing.JScrollPane();
         lsFactTypes = new javax.swing.JList();
-        tfSupertypeName = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        taExpression = new javax.swing.JTextArea();
-        pnRadioButtons = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        rbSingle = new javax.swing.JRadioButton();
+        tfSupertypeName = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        pnCollection = new javax.swing.JPanel();
+        pnRadioButtons = new javax.swing.JPanel();
         rbList = new javax.swing.JRadioButton();
         rbSet = new javax.swing.JRadioButton();
+        rbSingle = new javax.swing.JRadioButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         taElementInfo = new javax.swing.JTextArea();
-        jLabel2 = new javax.swing.JLabel();
-
-        jPanel1.setName("jPanel1"); // NOI18N
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setBounds(new java.awt.Rectangle(0, 23, 500, 0));
         setName("Form"); // NOI18N
-        setResizable(false);
-        setSize(new java.awt.Dimension(400, 0));
+        setPreferredSize(new java.awt.Dimension(600, 576));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
 
+        pnButtons.setName("pnButtons"); // NOI18N
+        pnButtons.setPreferredSize(new java.awt.Dimension(606, 50));
+
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance().getContext().getResourceMap(SubstitutionTypeDialog.class);
+        btReset.setText(resourceMap.getString("btReset.text")); // NOI18N
+        btReset.setName("btReset"); // NOI18N
+        btReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btResetActionPerformed(evt);
+            }
+        });
+
         btOK.setText(resourceMap.getString("btOK.text")); // NOI18N
         btOK.setName("btOK"); // NOI18N
         btOK.addActionListener(new java.awt.event.ActionListener() {
@@ -280,13 +280,47 @@ public class SubstitutionTypeDialog extends JDialog {
             }
         });
 
-        btReset.setText(resourceMap.getString("btReset.text")); // NOI18N
-        btReset.setName("btReset"); // NOI18N
-        btReset.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btResetActionPerformed(evt);
-            }
-        });
+        javax.swing.GroupLayout pnButtonsLayout = new javax.swing.GroupLayout(pnButtons);
+        pnButtons.setLayout(pnButtonsLayout);
+        pnButtonsLayout.setHorizontalGroup(
+            pnButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnButtonsLayout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(btOK)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btReset)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btCancel)
+                .addContainerGap(246, Short.MAX_VALUE))
+        );
+        pnButtonsLayout.setVerticalGroup(
+            pnButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnButtonsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btOK)
+                    .addComponent(btReset)
+                    .addComponent(btCancel))
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+
+        getContentPane().add(pnButtons, java.awt.BorderLayout.SOUTH);
+
+        pnType.setName("pnType"); // NOI18N
+        pnType.setPreferredSize(new java.awt.Dimension(606, 550));
+
+        jScrollPane1.setName("jScrollPane1"); // NOI18N
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(600, 100));
+
+        taExpression.setEditable(false);
+        taExpression.setColumns(20);
+        taExpression.setLineWrap(true);
+        taExpression.setRows(5);
+        taExpression.setWrapStyleWord(true);
+        taExpression.setMinimumSize(new java.awt.Dimension(100, 100));
+        taExpression.setName("taExpression"); // NOI18N
+        taExpression.setPreferredSize(new java.awt.Dimension(600, 100));
+        jScrollPane1.setViewportView(taExpression);
 
         lbTypeName.setText(resourceMap.getString("lbTypeName.text")); // NOI18N
         lbTypeName.setName("lbTypeName"); // NOI18N
@@ -360,6 +394,10 @@ public class SubstitutionTypeDialog extends JDialog {
         });
         spObjectTypes.setViewportView(lsFactTypes);
 
+        jLabel1.setForeground(resourceMap.getColor("jLabel1.foreground")); // NOI18N
+        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+        jLabel1.setName("jLabel1"); // NOI18N
+
         tfSupertypeName.setName("tfSupertypeName"); // NOI18N
         tfSupertypeName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -367,40 +405,37 @@ public class SubstitutionTypeDialog extends JDialog {
             }
         });
 
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
+        jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
+        jLabel3.setName("jLabel3"); // NOI18N
 
-        taExpression.setEditable(false);
-        taExpression.setColumns(20);
-        taExpression.setLineWrap(true);
-        taExpression.setRows(5);
-        taExpression.setWrapStyleWord(true);
-        taExpression.setName("taExpression"); // NOI18N
-        jScrollPane1.setViewportView(taExpression);
+        pnCollection.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("pnCollection.border.title"))); // NOI18N
+        pnCollection.setMaximumSize(new java.awt.Dimension(0, 0));
+        pnCollection.setName("pnCollection"); // NOI18N
+        pnCollection.setPreferredSize(new java.awt.Dimension(300, 100));
 
         pnRadioButtons.setName("pnRadioButtons"); // NOI18N
         pnRadioButtons.setLayout(new java.awt.BorderLayout());
 
-        jLabel1.setForeground(resourceMap.getColor("jLabel1.foreground")); // NOI18N
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
-        jLabel1.setName("jLabel1"); // NOI18N
-
-        buttonGroupCollection.add(rbSingle);
-        rbSingle.setForeground(resourceMap.getColor("rbSingle.foreground")); // NOI18N
-        rbSingle.setText(resourceMap.getString("rbSingle.text")); // NOI18N
-        rbSingle.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        rbSingle.setName("rbSingle"); // NOI18N
-
-        buttonGroupCollection.add(rbList);
-        rbList.setForeground(resourceMap.getColor("rbSingle.foreground")); // NOI18N
+        buttonGroup1.add(rbList);
+        rbList.setForeground(resourceMap.getColor("jLabel2.foreground")); // NOI18N
         rbList.setText(resourceMap.getString("rbList.text")); // NOI18N
         rbList.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         rbList.setName("rbList"); // NOI18N
+        pnRadioButtons.add(rbList, java.awt.BorderLayout.CENTER);
 
-        buttonGroupCollection.add(rbSet);
-        rbSet.setForeground(resourceMap.getColor("rbSingle.foreground")); // NOI18N
+        buttonGroup1.add(rbSet);
+        rbSet.setForeground(resourceMap.getColor("jLabel2.foreground")); // NOI18N
         rbSet.setText(resourceMap.getString("rbSet.text")); // NOI18N
         rbSet.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         rbSet.setName("rbSet"); // NOI18N
+        pnRadioButtons.add(rbSet, java.awt.BorderLayout.PAGE_START);
+
+        buttonGroup1.add(rbSingle);
+        rbSingle.setForeground(resourceMap.getColor("jLabel2.foreground")); // NOI18N
+        rbSingle.setText(resourceMap.getString("rbSingle.text")); // NOI18N
+        rbSingle.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        rbSingle.setName("rbSingle"); // NOI18N
+        pnRadioButtons.add(rbSingle, java.awt.BorderLayout.PAGE_END);
 
         jScrollPane2.setName("jScrollPane2"); // NOI18N
 
@@ -417,97 +452,84 @@ public class SubstitutionTypeDialog extends JDialog {
         });
         jScrollPane2.setViewportView(taElementInfo);
 
-        jLabel2.setForeground(resourceMap.getColor("jLabel2.foreground")); // NOI18N
-        jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
-        jLabel2.setName("jLabel2"); // NOI18N
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(pnRadioButtons, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(spBaseTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(lbTypeName)
-                                        .addComponent(lbRoleName)
-                                        .addComponent(jLabel1))))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel2)))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btOK)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btReset)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btCancel))
-                            .addComponent(tfRoleName, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(spObjectTypes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-                            .addComponent(tfTypeName, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tfSupertypeName)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(rbSingle)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(rbList)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(rbSet))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
+        javax.swing.GroupLayout pnCollectionLayout = new javax.swing.GroupLayout(pnCollection);
+        pnCollection.setLayout(pnCollectionLayout);
+        pnCollectionLayout.setHorizontalGroup(
+            pnCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnCollectionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(pnRadioButtons, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(44, Short.MAX_VALUE))
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(4, 4, 4)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rbSet)
-                    .addComponent(rbList)
-                    .addComponent(rbSingle, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pnRadioButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
+        pnCollectionLayout.setVerticalGroup(
+            pnCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnCollectionLayout.createSequentialGroup()
+                .addGroup(pnCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(pnRadioButtons, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout pnTypeLayout = new javax.swing.GroupLayout(pnType);
+        pnType.setLayout(pnTypeLayout);
+        pnTypeLayout.setHorizontalGroup(
+            pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnTypeLayout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnTypeLayout.createSequentialGroup()
+                        .addComponent(spBaseTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jLabel2)))
+                        .addComponent(spObjectTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnTypeLayout.createSequentialGroup()
+                        .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(tfSupertypeName, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
+                            .addComponent(tfTypeName)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbTypeName)
+                            .addComponent(jLabel3)))
+                    .addGroup(pnTypeLayout.createSequentialGroup()
+                        .addComponent(tfRoleName, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbRoleName, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))))
+            .addGroup(pnTypeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(pnCollection, javax.swing.GroupLayout.PREFERRED_SIZE, 506, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        pnTypeLayout.setVerticalGroup(
+            pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnTypeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(pnCollection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfSupertypeName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
-                .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(tfTypeName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lbTypeName))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spObjectTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(spBaseTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfTypeName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbTypeName))
+                .addGap(8, 8, 8)
+                .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(spObjectTypes)
+                    .addComponent(spBaseTypes, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfRoleName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbRoleName))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btCancel)
-                    .addComponent(btReset)
-                    .addComponent(btOK))
-                .addGap(11, 11, 11))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        getContentPane().add(pnType, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -523,6 +545,33 @@ public class SubstitutionTypeDialog extends JDialog {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         resetDialog();
     }//GEN-LAST:event_formWindowClosing
+
+    private void taElementInfoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taElementInfoMouseClicked
+        initCollectionControls();
+    }//GEN-LAST:event_taElementInfoMouseClicked
+
+    /**
+     * Resets the dialog components.
+     * <p>
+     * This event is fired when the user clicked btReset.</p>
+     *
+     * @see JButton
+     */
+    private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btResetActionPerformed
+        resetDialog();
+    }//GEN-LAST:event_btResetActionPerformed
+
+    /**
+     * Closes the dialog and ignores any changes made.
+     * <p>
+     * This event is fired when the user clicked btCancel.</p>
+     *
+     * @see JButton
+     */
+    private void btCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelActionPerformed
+        resetDialog();
+        setVisible(false);
+    }//GEN-LAST:event_btCancelActionPerformed
 
     /**
      * Closes the dialog and continues the decomposition.
@@ -608,28 +657,9 @@ public class SubstitutionTypeDialog extends JDialog {
         setVisible(false);
     }//GEN-LAST:event_btOKActionPerformed
 
-    /**
-     * Resets the dialog components.
-     * <p>
-     * This event is fired when the user clicked btReset.</p>
-     *
-     * @see JButton
-     */
-    private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btResetActionPerformed
-        resetDialog();
-    }//GEN-LAST:event_btResetActionPerformed
-
-    /**
-     * Closes the dialog and ignores any changes made.
-     * <p>
-     * This event is fired when the user clicked btCancel.</p>
-     *
-     * @see JButton
-     */
-    private void btCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelActionPerformed
-        resetDialog();
-        setVisible(false);
-    }//GEN-LAST:event_btCancelActionPerformed
+    private void tfSupertypeNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfSupertypeNameActionPerformed
+        tfRoleName.requestFocus();
+    }//GEN-LAST:event_tfSupertypeNameActionPerformed
 
     /**
      * Replaces tfTypeName's text with the selected object type name.
@@ -641,15 +671,26 @@ public class SubstitutionTypeDialog extends JDialog {
     private void lsFactTypesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lsFactTypesValueChanged
         if (!evt.getValueIsAdjusting() && lsFactTypes.getSelectedValue() != null) {
             lsBaseTypes.clearSelection();
-//            if (btSupertype.getText().equals("Cancel Super Type")) {
-//                supertypeName = ((FactType) lsObjectTypes.getSelectedValue()).getName();
-//            } else {
-            FactType ft = (FactType) lsFactTypes.getSelectedValue();
-            String objectTypeName = ft.getName();
-            setType(objectTypeName, supertypeName, true);
-//            }
+            //            if (btSupertype.getText().equals("Cancel Super Type")) {
+                //                supertypeName = ((FactType) lsObjectTypes.getSelectedValue()).getName();
+                //            } else {
+                FactType ft = (FactType) lsFactTypes.getSelectedValue();
+                String objectTypeName = ft.getName();
+                setType(objectTypeName, supertypeName, true);
+                //            }
         }
     }//GEN-LAST:event_lsFactTypesValueChanged
+
+    /**
+     * Sets the focus to tfRoleName, and select all text in tfRoleName.
+     * <p>
+     * This event is fired when the user releases the mouse on lsBaseTypes or
+     * lsObjectTypes.</p>
+     */
+    private void listMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listMouseReleased
+        tfRoleName.requestFocus();
+        tfRoleName.selectAll();
+    }//GEN-LAST:event_listMouseReleased
 
     /**
      * Replaces tfTypeName's text with the selected base type name.
@@ -666,32 +707,13 @@ public class SubstitutionTypeDialog extends JDialog {
         }
     }//GEN-LAST:event_lsBaseTypesValueChanged
 
-    /**
-     * Sets the focus to tfRoleName, and select all text in tfRoleName.
-     * <p>
-     * This event is fired when the user releases the mouse on lsBaseTypes or
-     * lsObjectTypes.</p>
-     */
-    private void listMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listMouseReleased
-        tfRoleName.requestFocus();
-        tfRoleName.selectAll();
-    }//GEN-LAST:event_listMouseReleased
-
-    private void tfSupertypeNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfSupertypeNameActionPerformed
-        tfRoleName.requestFocus();
-    }//GEN-LAST:event_tfSupertypeNameActionPerformed
-
-    private void tfTypeNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfTypeNameActionPerformed
-        tfRoleName.requestFocus();
-    }//GEN-LAST:event_tfTypeNameActionPerformed
-
     private void tfRoleNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfRoleNameActionPerformed
         btOKActionPerformed(evt);
     }//GEN-LAST:event_tfRoleNameActionPerformed
 
-    private void taElementInfoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taElementInfoMouseClicked
-        initCollectionControls();
-    }//GEN-LAST:event_taElementInfoMouseClicked
+    private void tfTypeNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfTypeNameActionPerformed
+        tfRoleName.requestFocus();
+    }//GEN-LAST:event_tfTypeNameActionPerformed
 
     private void tfTypeNameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfTypeNameFocusGained
         lsBaseTypes.clearSelection();
@@ -886,17 +908,19 @@ public class SubstitutionTypeDialog extends JDialog {
     private javax.swing.JButton btCancel;
     private javax.swing.JButton btOK;
     private javax.swing.JButton btReset;
-    private javax.swing.ButtonGroup buttonGroupCollection;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lbRoleName;
     private javax.swing.JLabel lbTypeName;
     private javax.swing.JList lsBaseTypes;
     private javax.swing.JList lsFactTypes;
+    private javax.swing.JPanel pnButtons;
+    private javax.swing.JPanel pnCollection;
     private javax.swing.JPanel pnRadioButtons;
+    private javax.swing.JPanel pnType;
     private javax.swing.JRadioButton rbList;
     private javax.swing.JRadioButton rbSet;
     private javax.swing.JRadioButton rbSingle;
