@@ -714,9 +714,9 @@ public class ObjectModel extends Model implements
                             + " must have exactly one navigable role.", true));
                         error = true;
                     }
-                    
+
                     if (facttype.isDerivable() && navigableRole != null
-                        && !navigableRole.isMandatory()) {
+                        && !navigableRole.isMandatory() && facttype.nonQualifierSize() > 1) {
                         messages.add(new Message("warning: navigable role of derivable facttype " + facttype.getName()
                             + " is not mandatory.", false));
                     }

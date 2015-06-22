@@ -343,17 +343,22 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             return new HashMap<>(algorithms);
         }
         Map<OperationHeader, Algorithm> algs = new HashMap<>(algorithms);
-        algs.putAll(abstractAlgorithms());
-
+        for (Entry<OperationHeader, Algorithm> entry : abstractAlgorithms().entrySet()) {
+            if (!algs.containsKey(entry.getKey())) {
+                algs.put(entry.getKey(), entry.getValue());
+            }
+        }
         return algs;
     }
 
     public boolean hasEditableOperation() {
-        for (Algorithm algorithm : algorithms.values()){
-            if (algorithm.getCode()!=null) return true;
+        for (Algorithm algorithm : algorithms.values()) {
+            if (algorithm.getCode() != null) {
+                return true;
+            }
         }
-        
-        if (!supertypes.isEmpty()){
+
+        if (!supertypes.isEmpty()) {
             ObjectType superType = supertypes.iterator().next();
             for (Entry<OperationHeader, Algorithm> entry : superType.algorithmsMap().entrySet()) {
                 if (entry.getValue().getCode() == null) {
@@ -363,7 +368,7 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             return !superType.abstractAlgorithms().isEmpty();
         }
         return false;
-        
+
     }
 
     public Collection<Algorithm> algorithms() {
