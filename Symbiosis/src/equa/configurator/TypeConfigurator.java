@@ -875,12 +875,12 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         if (ft != null) {
             try {
                 int dialogButton = JOptionPane.YES_NO_OPTION;
-            int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm", dialogButton);
-            if (dialogResult == JOptionPane.YES_OPTION){
-                om.removeFactType(ft);
-                reliableClasses = false;
-                refresh();
-            }
+                int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm", dialogButton);
+                if (dialogResult == JOptionPane.YES_OPTION) {
+                    om.removeFactType(ft);
+                    reliableClasses = false;
+                    refresh();
+                }
             } catch (ChangeNotAllowedException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage());
             }
@@ -966,7 +966,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             for (UniquenessConstraint uc : ucs) {
 
                 uc.remove();
-                
+
             }
             ft.removePermissions();
             reliableClasses = false;
@@ -1737,7 +1737,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
             return;
         }
 
-        if (ft.isMutable()) {
+        if (ft.getMutablePermission() != null) {
             ft.deleteMutable();
         } else {
             try {
@@ -1837,7 +1837,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
 
     private Role getSelectedRole() {
         if (tbRoles.getSelectedRowCount() == 1) {
-            String roleName = (String) tbRoles.getValueAt(tbRoles.getSelectedRow(),0);
+            String roleName = (String) tbRoles.getValueAt(tbRoles.getSelectedRow(), 0);
             return getSelectedFactType().getRole(roleName);
         } else {
             return null;
@@ -1849,7 +1849,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         FactType ft = getSelectedFactType();
         for (int i = 0; i < tbRoles.getRowCount(); i++) {
             if (tbRoles.isRowSelected(i)) {
-                String roleName = (String) tbRoles.getValueAt(i,0);
+                String roleName = (String) tbRoles.getValueAt(i, 0);
                 roles.add(ft.getRole(roleName));
             }
         }
@@ -1875,7 +1875,7 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         FactType ft = getSelectedFactType();
         List<Role> roles = new ArrayList<>();
         for (int nr : numbers) {
-            String roleName = (String) tbRoles.getValueAt(nr,0);
+            String roleName = (String) tbRoles.getValueAt(nr, 0);
             roles.add(ft.getRole(roleName));
         }
         Role firstSelectedRole = roles.get(0);
@@ -2272,7 +2272,6 @@ public class TypeConfigurator extends javax.swing.JPanel implements Dockable {
         header.setToolTipText("FT = Pure Fact Type; OT = Concrete Object Type; AT = Abstract Object Type; "
             + "SG = Singleton Object Type; VT = Value Type; CB = Constrained Base Type; "
             + "SQ = Sequence Type; ST = Set Type");
-
 
     }
 

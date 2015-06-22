@@ -469,7 +469,7 @@ public class FactType extends ParentElement implements Type, ITerm,
     }
 
     public boolean isMutable() {
-        return !isValueType() && hasMutableRole() && mutable != null;
+        return !isValueType() && (hasMutableRole() || mutable != null);
     }
 
     public MutablePermission getMutablePermission() {
