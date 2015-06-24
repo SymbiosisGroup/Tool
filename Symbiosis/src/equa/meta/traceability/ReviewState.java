@@ -93,6 +93,8 @@ public abstract class ReviewState implements Serializable {
     /**
      * stakeholder rejects proposed change in state but if partiocipant isn't
      * owner or his delegate, exception will be thrown
+     * @param source
+     * @throws equa.meta.ChangeNotAllowedException
      */
     public abstract void reject(ExternalInput source) throws ChangeNotAllowedException;
 
@@ -150,6 +152,8 @@ public abstract class ReviewState implements Serializable {
         return externalInput;
     }
     
-    
+    public String getJustification() {
+        return "no justification";
+    }
 
 }

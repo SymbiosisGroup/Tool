@@ -216,6 +216,13 @@ public class SubstitutionTypeDialog extends JDialog {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        pnCollection = new javax.swing.JPanel();
+        pnRadioButtons = new javax.swing.JPanel();
+        rbList = new javax.swing.JRadioButton();
+        rbSet = new javax.swing.JRadioButton();
+        rbSingle = new javax.swing.JRadioButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        taElementInfo = new javax.swing.JTextArea();
         pnButtons = new javax.swing.JPanel();
         btReset = new javax.swing.JButton();
         btOK = new javax.swing.JButton();
@@ -234,28 +241,84 @@ public class SubstitutionTypeDialog extends JDialog {
         jLabel1 = new javax.swing.JLabel();
         tfSupertypeName = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        pnCollection = new javax.swing.JPanel();
-        pnRadioButtons = new javax.swing.JPanel();
-        rbList = new javax.swing.JRadioButton();
-        rbSet = new javax.swing.JRadioButton();
-        rbSingle = new javax.swing.JRadioButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        taElementInfo = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBounds(new java.awt.Rectangle(0, 23, 500, 0));
         setName("Form"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(600, 576));
+        setPreferredSize(new java.awt.Dimension(510, 570));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
 
-        pnButtons.setName("pnButtons"); // NOI18N
-        pnButtons.setPreferredSize(new java.awt.Dimension(606, 50));
-
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance().getContext().getResourceMap(SubstitutionTypeDialog.class);
+        pnCollection.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("pnCollection.border.title"))); // NOI18N
+        pnCollection.setMaximumSize(new java.awt.Dimension(0, 0));
+        pnCollection.setName("pnCollection"); // NOI18N
+        pnCollection.setPreferredSize(new java.awt.Dimension(550, 100));
+
+        pnRadioButtons.setName("pnRadioButtons"); // NOI18N
+        pnRadioButtons.setLayout(new java.awt.BorderLayout());
+
+        buttonGroup1.add(rbList);
+        rbList.setText(resourceMap.getString("rbList.text")); // NOI18N
+        rbList.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        rbList.setName("rbList"); // NOI18N
+        pnRadioButtons.add(rbList, java.awt.BorderLayout.CENTER);
+
+        buttonGroup1.add(rbSet);
+        rbSet.setText(resourceMap.getString("rbSet.text")); // NOI18N
+        rbSet.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        rbSet.setName("rbSet"); // NOI18N
+        pnRadioButtons.add(rbSet, java.awt.BorderLayout.PAGE_START);
+
+        buttonGroup1.add(rbSingle);
+        rbSingle.setText(resourceMap.getString("rbSingle.text")); // NOI18N
+        rbSingle.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        rbSingle.setName("rbSingle"); // NOI18N
+        pnRadioButtons.add(rbSingle, java.awt.BorderLayout.PAGE_END);
+
+        jScrollPane2.setName("jScrollPane2"); // NOI18N
+
+        taElementInfo.setEditable(false);
+        taElementInfo.setColumns(20);
+        taElementInfo.setLineWrap(true);
+        taElementInfo.setRows(5);
+        taElementInfo.setWrapStyleWord(true);
+        taElementInfo.setName("taElementInfo"); // NOI18N
+        taElementInfo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                taElementInfoMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(taElementInfo);
+
+        javax.swing.GroupLayout pnCollectionLayout = new javax.swing.GroupLayout(pnCollection);
+        pnCollection.setLayout(pnCollectionLayout);
+        pnCollectionLayout.setHorizontalGroup(
+            pnCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnCollectionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(pnRadioButtons, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(50, Short.MAX_VALUE))
+        );
+        pnCollectionLayout.setVerticalGroup(
+            pnCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnCollectionLayout.createSequentialGroup()
+                .addGroup(pnCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(pnRadioButtons, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        getContentPane().add(pnCollection, java.awt.BorderLayout.PAGE_START);
+
+        pnButtons.setName("pnButtons"); // NOI18N
+        pnButtons.setPreferredSize(new java.awt.Dimension(550, 50));
+
         btReset.setText(resourceMap.getString("btReset.text")); // NOI18N
         btReset.setName("btReset"); // NOI18N
         btReset.addActionListener(new java.awt.event.ActionListener() {
@@ -307,7 +370,7 @@ public class SubstitutionTypeDialog extends JDialog {
         getContentPane().add(pnButtons, java.awt.BorderLayout.SOUTH);
 
         pnType.setName("pnType"); // NOI18N
-        pnType.setPreferredSize(new java.awt.Dimension(606, 550));
+        pnType.setPreferredSize(new java.awt.Dimension(550, 450));
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
         jScrollPane1.setPreferredSize(new java.awt.Dimension(600, 100));
@@ -408,86 +471,23 @@ public class SubstitutionTypeDialog extends JDialog {
         jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
         jLabel3.setName("jLabel3"); // NOI18N
 
-        pnCollection.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("pnCollection.border.title"))); // NOI18N
-        pnCollection.setMaximumSize(new java.awt.Dimension(0, 0));
-        pnCollection.setName("pnCollection"); // NOI18N
-        pnCollection.setPreferredSize(new java.awt.Dimension(300, 100));
-
-        pnRadioButtons.setName("pnRadioButtons"); // NOI18N
-        pnRadioButtons.setLayout(new java.awt.BorderLayout());
-
-        buttonGroup1.add(rbList);
-        rbList.setForeground(resourceMap.getColor("jLabel2.foreground")); // NOI18N
-        rbList.setText(resourceMap.getString("rbList.text")); // NOI18N
-        rbList.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        rbList.setName("rbList"); // NOI18N
-        pnRadioButtons.add(rbList, java.awt.BorderLayout.CENTER);
-
-        buttonGroup1.add(rbSet);
-        rbSet.setForeground(resourceMap.getColor("jLabel2.foreground")); // NOI18N
-        rbSet.setText(resourceMap.getString("rbSet.text")); // NOI18N
-        rbSet.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        rbSet.setName("rbSet"); // NOI18N
-        pnRadioButtons.add(rbSet, java.awt.BorderLayout.PAGE_START);
-
-        buttonGroup1.add(rbSingle);
-        rbSingle.setForeground(resourceMap.getColor("jLabel2.foreground")); // NOI18N
-        rbSingle.setText(resourceMap.getString("rbSingle.text")); // NOI18N
-        rbSingle.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        rbSingle.setName("rbSingle"); // NOI18N
-        pnRadioButtons.add(rbSingle, java.awt.BorderLayout.PAGE_END);
-
-        jScrollPane2.setName("jScrollPane2"); // NOI18N
-
-        taElementInfo.setEditable(false);
-        taElementInfo.setColumns(20);
-        taElementInfo.setLineWrap(true);
-        taElementInfo.setRows(5);
-        taElementInfo.setWrapStyleWord(true);
-        taElementInfo.setName("taElementInfo"); // NOI18N
-        taElementInfo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                taElementInfoMouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(taElementInfo);
-
-        javax.swing.GroupLayout pnCollectionLayout = new javax.swing.GroupLayout(pnCollection);
-        pnCollection.setLayout(pnCollectionLayout);
-        pnCollectionLayout.setHorizontalGroup(
-            pnCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnCollectionLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(pnRadioButtons, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(44, Short.MAX_VALUE))
-        );
-        pnCollectionLayout.setVerticalGroup(
-            pnCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnCollectionLayout.createSequentialGroup()
-                .addGroup(pnCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(pnRadioButtons, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
         javax.swing.GroupLayout pnTypeLayout = new javax.swing.GroupLayout(pnType);
         pnType.setLayout(pnTypeLayout);
         pnTypeLayout.setHorizontalGroup(
             pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnTypeLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addContainerGap()
                 .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnTypeLayout.createSequentialGroup()
                         .addComponent(spBaseTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(spObjectTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnTypeLayout.createSequentialGroup()
-                        .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(tfSupertypeName, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
-                            .addComponent(tfTypeName)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(tfSupertypeName, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
+                                .addComponent(tfTypeName))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -496,17 +496,13 @@ public class SubstitutionTypeDialog extends JDialog {
                     .addGroup(pnTypeLayout.createSequentialGroup()
                         .addComponent(tfRoleName, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbRoleName, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))))
-            .addGroup(pnTypeLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pnCollection, javax.swing.GroupLayout.PREFERRED_SIZE, 506, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lbRoleName, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
         pnTypeLayout.setVerticalGroup(
             pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnTypeLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pnCollection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -521,12 +517,12 @@ public class SubstitutionTypeDialog extends JDialog {
                 .addGap(8, 8, 8)
                 .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(spObjectTypes)
-                    .addComponent(spBaseTypes, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE))
+                    .addComponent(spBaseTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfRoleName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbRoleName))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(108, Short.MAX_VALUE))
         );
 
         getContentPane().add(pnType, java.awt.BorderLayout.CENTER);

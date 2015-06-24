@@ -170,7 +170,7 @@ public class DerivableConstraint extends StaticConstraint {
 
     @Override
     public String getRequirementText() {
-        return ((Requirement) this.creationSource()).getText();
+        return ((RuleRequirement) this.creationSource()).getOriginalText();
     }
 
     @Override

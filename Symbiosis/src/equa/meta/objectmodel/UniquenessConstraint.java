@@ -174,17 +174,19 @@ public class UniquenessConstraint extends StaticConstraint {
     public boolean implies(UniquenessConstraint uc) {
         return uc.roles.containsAll(roles);
     }
-    
+
     int possibleOverlap(UniquenessConstraint uc) {
         List<Role> ucroles = new ArrayList<>(uc.roles);
-        for(Role role : roles){
+        for (Role role : roles) {
             Role overlappingRole = null;
-            for (Role ucrole : ucroles){
-                if (role.getSubstitutionType().equals(ucrole.getSubstitutionType())){
+            for (Role ucrole : ucroles) {
+                if (role.getSubstitutionType().equals(ucrole.getSubstitutionType())) {
                     overlappingRole = ucrole;
                 }
             }
-            if (overlappingRole==null) return -1;
+            if (overlappingRole == null) {
+                return -1;
+            }
             ucroles.remove(overlappingRole);
         }
         return ucroles.size();
@@ -286,19 +288,10 @@ public class UniquenessConstraint extends StaticConstraint {
     public String getRequirementText() {
         StringBuilder sb = new StringBuilder();
         FactType ft = getFactType();
-        if (roles.size() == ft.getSize()) {
-            if (ft.isValueType()) {
-                sb.append("A value of ");
-                sb.append("\"" + ft.getObjectType().getOTE().toString() + "\"");
-            } else if (ft.isObjectType()) {
-                sb.append("Every ");
-                sb.append("\"" + ft.getName() + ":" + ft.getObjectType().getOTE().toString() + "\"");
-            } else {
-                sb.append("Every fact about ");
-                sb.append(ft.getFactTypeString());
-            }
-
-            sb.append(" is uniquely determined by the ");
+        if (ft.isObjectType()) {
+            sb.append("Every ");
+            sb.append("<" + ft.getName() + ">");
+            sb.append(" is uniquely identified by ");
 
             if (ft.isCollectionType()) {
                 CollectionType ct = (CollectionType) ft.getObjectType();
@@ -323,32 +316,29 @@ public class UniquenessConstraint extends StaticConstraint {
             }
 
             if (roles.size() == 1) {
-                sb.append("value on ");
-                sb.append("<").append(roles.get(0).detectRoleName()).append(">");
+                sb.append("<").append(roles.get(0).getNamePlusType()).append(">");
             } else {
-                sb.append("combined value on ");
-                sb.append("<").append(roles.get(0).detectRoleName());
+                sb.append("the combination of ");
+                sb.append("<").append(roles.get(0).getNamePlusType());
                 for (int i = 1; i < roles.size(); i++) {
-                    sb.append(",").append(roles.get(i).detectRoleName());
+                    sb.append(", ").append(roles.get(i).getNamePlusType());
                 }
                 sb.append(">");
             }
         } else {
-            sb.append("Two different facts about ");
+            sb.append("Facts about ");
             sb.append(ft.getFactTypeString());
-            sb.append(" with an equal ");
+            sb.append(" are unique on ");
             if (roles.size() == 1) {
-                sb.append("value on ");
                 sb.append("<").append(roles.get(0).detectRoleName()).append(">");
             } else {
-                sb.append("combined value on ");
+                sb.append(" the combination of ");
                 sb.append("<").append(roles.get(0).detectRoleName());
                 for (int i = 1; i < roles.size(); i++) {
-                    sb.append(",").append(roles.get(i).detectRoleName());
+                    sb.append(", ").append(roles.get(i).detectRoleName());
                 }
                 sb.append(">");
             }
-            sb.append(" are not allowed");
         }
 
         sb.append(".");

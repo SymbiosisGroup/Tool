@@ -570,11 +570,12 @@ public class ObjectRole extends Role {
             } else if (((ObjectRole) counterpart).composition) {
                 return false;
             } else {
-                if (!counterpart.isMandatory() || counterpart.isMultiple()) {
+                if (counterpart.isMandatory() && !counterpart.isMultiple()) {
+                    return true;
+                } else {
                     return false;
                 }
             }
-            return true;
         } else {
             return !getSubstitutionType().isValueType() && getParent().isObjectType();
         }

@@ -75,6 +75,15 @@ public class RuleRequirement extends Requirement {
 
     @Override
     public String getText() {
+        for (ModelElement dependent : dependents()) {
+            if (dependent instanceof Constraint) {
+                Constraint constraint = (Constraint) dependent;
+                if (constraint.isRealized()) {
+                    return constraint.getRequirementText();
+                }
+            }
+        }
+        
 //        for (ModelElement modelElement : dependents()) {
 //            if (modelElement instanceof ObjectModelRealization) {
 //                if (modelElement instanceof DerivableConstraint ||
@@ -84,6 +93,10 @@ public class RuleRequirement extends Requirement {
 //                return ((ObjectModelRealization) modelElement).getRequirementText();
 //            }
 //        }
+        return text;
+    }
+    
+    public String getOriginalText(){
         return text;
     }
 

@@ -37,6 +37,7 @@ public class ChangeRejectedState extends ReviewState {
         setReviewImpact(Impact.SERIOUS);
     }
 
+    @Override
     public String getJustification() {
         return rejection.getJustification();
     }

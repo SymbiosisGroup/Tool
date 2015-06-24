@@ -655,8 +655,9 @@ public class Project implements Serializable, Publisher {
         if (cat == null) {
             cat = getDefaultCategory();
         }
-        List<String> reqsOfKind = reqs.get("@action");
-
+        List<String> reqsOfKind;
+        
+        reqsOfKind = reqs.get("@action");
         for (String text : reqsOfKind) {
             (rm.addActionRequirement(cat,
                 text, new ExternalInput("", cat.getOwner()))).setManuallyCreated(true);

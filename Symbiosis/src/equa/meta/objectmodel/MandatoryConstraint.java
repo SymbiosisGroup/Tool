@@ -98,9 +98,10 @@ public class MandatoryConstraint extends StaticConstraint {
     @Override
     public String getRequirementText() {
         StringBuilder sb = new StringBuilder();
+        if (role==null) return "non existing mc";
         sb.append("Every ");
         sb.append("<");
-        sb.append(role.getSubstitutionType().getName());
+        sb.append(role.detectRoleName());
         sb.append(">");
         sb.append(" cannot exist without a fact about ");
         sb.append(getFactType().getFactTypeString()).append(".");

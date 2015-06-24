@@ -122,10 +122,7 @@ public class ExpressionTreeModel extends DefaultTreeModel {
         FactType ft = om.getFactType(typeName);
         FactNode factNode = null;
 // TODO: second and third conjunct necessary?
-        if (ft != null && ft.getFTE().isParsable()/**
-             * && !ft.hasAbstractRoles()*
-             */
-            ) {
+        if (ft != null && ft.getFTE() != null && ft.getFTE().isParsable()) {
             factNode = new FactNode(this, null, expression, ft.getFTE());
             int result = JOptionPane.showConfirmDialog(frame, factNode.getTextParts(), "Parsing Correct?", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.NO_OPTION) {

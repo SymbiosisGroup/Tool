@@ -90,10 +90,12 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
     private JMenuItem mntmRejectRequirement;
     private JMenuItem mntmRemoveRequirement;
     private JMenuItem mntmRollbackRequirement;
+    private JMenuItem mntmJustification;
     private JMenuItem mntmDecompose;
     private JMenuItem mntmActionRuleAssignment;
     private JMenuItem mntmEventRuleAssignment;
     private JMenuItem mntmInitializeAssignment;
+
     private JScrollPane spRequirements;
     private JScrollPane spCategories;
 
@@ -563,6 +565,20 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
             }
         });
         requirementPopupMenu.add(mntmRollbackRequirement);
+
+        mntmJustification = new JMenuItem("Justification Last Review");
+        mntmJustification.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Requirement req = getSelectedRequirement();
+                if (req == null) {
+                    return;
+                }
+                JOptionPane.showMessageDialog(null, req.getReviewState().getJustification(), "Justification",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        requirementPopupMenu.add(mntmJustification);
     }
 
     public void initPrefs(GraphicalPrefs prefs) {
@@ -658,7 +674,8 @@ public class RequirementConfigurator extends JPanel implements IView, Dockable, 
                 Requirement r = filteredRequirements.get(selectedRows[i]);
                 if (r.getCategory().isOwner(projectController.getCurrentUser())) {
                     try {
-                        r.getReviewState().reject(new ExternalInput("No comment", projectController.getCurrentUser()));
+                        String justification = JOptionPane.showInputDialog(this, "Justification of the rejection of " + r.getText());
+                        r.getReviewState().reject(new ExternalInput(justification, projectController.getCurrentUser()));
                     } catch (ChangeNotAllowedException e) {
                         JOptionPane.showMessageDialog(this, e.getMessage());
                     }

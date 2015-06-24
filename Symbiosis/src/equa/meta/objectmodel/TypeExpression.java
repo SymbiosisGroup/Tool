@@ -515,7 +515,7 @@ public class TypeExpression implements Serializable, Cloneable {
         for (int i = 1; i < constants.size(); i++) {
             sb.append("<");
             Role r = parent.getRole(roleNumbers.get(i - 1));
-            sb.append(r.getNamePlusType());
+            sb.append(r.detectRoleName());
             sb.append(">");
             sb.append(constants.get(i));
         }

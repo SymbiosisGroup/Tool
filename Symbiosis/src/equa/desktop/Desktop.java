@@ -109,6 +109,7 @@ import equa.code.Languages;
 import equa.controller.ProjectController;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.util.GregorianCalendar;
 
 /**
  * The application's main frame.
@@ -1805,6 +1806,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 Project project = projectController.getProject();
                 out.println("@comment");
                 out.println("Name of Project: " + project.getName());
+                out.println("Date time: " + (new GregorianCalendar().getTime()).toString());
 
                 RequirementModel rm = project.getRequirementModel();
                 Iterator<Requirement> itReqs = rm.requirements();
@@ -1812,7 +1814,8 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
 
                 while (itReqs.hasNext()) {
                     Requirement req = itReqs.next();
-                    if (req.isManuallyCreated()) {
+  //                  if (req.isManuallyCreated()) 
+                    {
                         if (!req.getCategory().equals(Category.SYSTEM)) {
                             out.println("@" + req.getReqType() + "\t" + req.getId());
                             out.println(req.getText());

@@ -561,22 +561,33 @@ public class ObjectModel extends Model implements
                                     if (responsible == null || !responsible.equals(inverse.getOwner())) {
 
                                         if (!target.isRemovable()) {
-                                            StringBuilder messageText = new StringBuilder();
-                                            messageText.append("Error: " + target.getName() + " isn't removable ");
-                                            ObjectType targetResponsible = target.getResponsible();
-                                            if (targetResponsible != null) {
-                                                messageText.append("(at : ").append(targetResponsible.getName()).append(")");
-                                            }
-                                            messageText.append(" while ").append(ft.getName()).
-                                                append(", in contrary, is removable; hint:  \n\t" + "a) make the relation compositional or \n\tb) make the relation from ").
-                                                append(target.getName()).append(" to ").append(ft.getName()).
-                                                append(" non navigable or \n\tc) reduce the relation from ").
-                                                append(ft.getName()).append(" to ").append(target.getName()).
-                                                append(" to a relation to its id (in other words, consider to deobjectify the "
-                                                    + "corresponding role).");
+                                            if (!relation.isMandatory()) {
+                                                StringBuilder messageText = new StringBuilder();
+                                                messageText.append("Warning: mandatory related " + target.getName() + " isn't removable ");
+                                                ObjectType targetResponsible = target.getResponsible();
+                                                if (targetResponsible != null) {
+                                                    messageText.append("(at : ").append(targetResponsible.getName()).append(")");
+                                                }
 
-                                            messages.add(new Message(messageText.toString(), true));
-                                            withoutErrors = false;
+                                                messages.add(new Message(messageText.toString(), false)); 
+                                            } else {
+                                                StringBuilder messageText = new StringBuilder();
+                                                messageText.append("Error: " + target.getName() + " isn't removable ");
+                                                ObjectType targetResponsible = target.getResponsible();
+                                                if (targetResponsible != null) {
+                                                    messageText.append("(at : ").append(targetResponsible.getName()).append(")");
+                                                }
+                                                messageText.append(" while ").append(ft.getName()).
+                                                    append(", in contrary, is removable; hint:  \n\t" + "a) make the relation compositional or \n\tb) make the relation from ").
+                                                    append(target.getName()).append(" to ").append(ft.getName()).
+                                                    append(" non navigable or \n\tc) reduce the relation from ").
+                                                    append(ft.getName()).append(" to ").append(target.getName()).
+                                                    append(" to a relation to its id (in other words, consider to deobjectify the "
+                                                        + "corresponding role).");
+
+                                                messages.add(new Message(messageText.toString(), true));
+                                                withoutErrors = false;
+                                            }
                                         }
                                     }
                                 }
