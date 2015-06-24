@@ -577,7 +577,15 @@ public class ObjectRole extends Role {
                 }
             }
         } else {
-            return !getSubstitutionType().isValueType() && getParent().isObjectType();
+            // identification of object type with single uniqueness 
+            // neglect qualifiers
+            if (getSubstitutionType().isValueType()) {
+                return false;
+            } else if (getParent().isObjectType()) {
+                return !this.isMultipleQualified();
+            } else {
+                return false;
+            }
         }
     }
 
