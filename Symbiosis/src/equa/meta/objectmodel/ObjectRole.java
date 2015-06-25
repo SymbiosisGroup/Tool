@@ -582,7 +582,7 @@ public class ObjectRole extends Role {
             if (getSubstitutionType().isValueType()) {
                 return false;
             } else if (getParent().isObjectType()) {
-                return !this.isMultipleQualified();
+                return !getParent().isCollectionType();
             } else {
                 return false;
             }
