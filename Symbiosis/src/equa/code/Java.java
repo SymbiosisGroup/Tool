@@ -1594,6 +1594,7 @@ public class Java implements Language {
     }
 
     IndentedList getDocumentation(String sourcecode) {
+        sourcecode = sourcecode.replaceAll("\r", "");
         int start = sourcecode.indexOf(docStart());
         if (start == -1) {
             return new IndentedList();
@@ -1607,7 +1608,7 @@ public class Java implements Language {
                 IndentedList list = new IndentedList();
                 list.addLineAtCurrentIndentation(docStart());
                 while (start == 0) {
-                    start = sourcecode.indexOf(System.lineSeparator());
+                    start = sourcecode.indexOf("\n");
                     list.addLineAtCurrentIndentation(docLine(sourcecode.substring(2, start)));
                     sourcecode = sourcecode.substring(start + 2).trim();
                     start = sourcecode.indexOf("* ");
