@@ -1322,6 +1322,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
                 miValueTypesActionPerformed(evt);
             }
         });
+        miValueTypes.setEnabled(false);
         objectMenu.add(miValueTypes);
 
         jSeparator5.setName("jSeparator5"); // NOI18N
