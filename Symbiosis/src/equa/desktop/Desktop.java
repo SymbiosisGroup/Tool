@@ -1413,7 +1413,7 @@ public final class Desktop extends FrameView implements PropertyListener, IView,
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ObjectModel om = projectController.getProject().getObjectModel();
-                JFileChooser fileChooser = new JFileChooser();
+                JFileChooser fileChooser = new JFileChooser(getLastLocation());
                 fileChooser.setFileFilter(new ImplFilter());
                 fileChooser.setMultiSelectionEnabled(true);
                 int action = fileChooser.showOpenDialog(Desktop.this.getFrame());
