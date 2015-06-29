@@ -1833,4 +1833,16 @@ public class ObjectModel extends Model implements
         return false;
     }
 
+    
+    public boolean hasManuallyAddedAlgorithm(){
+        for (FactType ft : getFactTypes()){
+            if (ft.isObjectType()){
+                ObjectType ot = ft.getObjectType();
+                if (ot.hasManuallyAddedAlgorithm()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

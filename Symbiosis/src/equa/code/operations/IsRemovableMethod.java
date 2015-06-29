@@ -33,12 +33,12 @@ public class IsRemovableMethod extends Method implements IRelationalOperation {
 
     public static final long serialVersionUID = 1L;
 
-    private final Relation composition;
+    private final Relation relation;
     public final static String NAME = "isRemovable";
 
-    public IsRemovableMethod(Relation composition, ObjectType ot) {
+    public IsRemovableMethod(Relation relation, ObjectType ot) {
         super(ot, NAME, null, ot.getCodeClass());
-        this.composition = composition;
+        this.relation = relation;
         List<Param> params = new ArrayList<Param>();
         // ObjectType parent = relation.getOwner();
         // params.add(new Param("parent",parent,relation));
@@ -50,7 +50,7 @@ public class IsRemovableMethod extends Method implements IRelationalOperation {
     @Override
     public void initSpec() {
         returnType.setSpec("null if this object and all his compositional childs are removable,\n\t"
-            + "otherwise the name of a property of a Fan-class,\n\t" + "except " + composition.getOwner().getName()
+            + "otherwise the name of a property of a Fan-class,\n\t" + "except " + relation.getOwner().getName()
             + ", which equals or includes this " + self() + "\n\tor one his compositional childs now\n\t"
             + "NB: Fan of X ::= a class with a navigable association from Fan to X (Fan != X)");
     }
@@ -67,31 +67,35 @@ public class IsRemovableMethod extends Method implements IRelationalOperation {
         IndentedList list = new IndentedList();
         list.addLinesAtCurrentIndentation(l.operationHeader(this));
         for (Relation fanRelation : ((ObjectType) getParent()).fans()) {
-            if (!(fanRelation instanceof ObjectTypeRelation)) {
+             Relation inverse = fanRelation.inverse();
+        //    if (!(fanRelation instanceof ObjectTypeRelation) && !fanRelation.isComposition()) 
+            if (!inverse.isComposition())
+            {
                 IndentedList ifTrue = new IndentedList();
                 ifTrue.addLineAtCurrentIndentation(l.returnStatement(l.stringSymbol() + fanRelation.getOwner().getName() + "." + fanRelation.name() + l.stringSymbol()));
-                // We have to ignore the parent.
-                if (!composition.getOwner().equals(fanRelation.getOwner().getResponsible())) {
+                // We have to ignore the parent 
+                if (!relation.getOwner().equals(fanRelation.getOwner().getResponsible())) {
                     String condition = "";
                     if (fanRelation.isCollectionReturnType()) {
                         // We need to do the contain check.
                         if (!fanRelation.isResponsible()) {
                             List<ActualParam> params = new ArrayList<>();
                             params.add(new This());
-                            Relation inverse = fanRelation.inverse();
-                            if (inverse.isCollectionReturnType()) {
-                                condition = l.negate(l.isEmpty(inverse.fieldName()));
-                            } else {
-                                Param otherObject = new Param(inverse.fieldName(), inverse.targetType(), inverse);
+                           
+                            {
+                                if (inverse.isCollectionReturnType()) {
+                                    condition = l.negate(l.isEmpty(inverse.fieldName()));
+                                } else {
+                                    Param otherObject = new Param(inverse.fieldName(), inverse.targetType(), inverse);
 
-                                condition = new Call(fanRelation.getOperation(ContainsMethod.NAME), params).setCalled(otherObject)
-                                    .expressIn(l);
+                                    condition = new Call(fanRelation.getOperation(ContainsMethod.NAME), params).setCalled(otherObject)
+                                        .expressIn(l);
+                                }
+                                list.addLinesAtCurrentIndentation(l.ifStatement(condition, ifTrue));
                             }
-                            list.addLinesAtCurrentIndentation(l.ifStatement(condition, ifTrue));
                         }
                     } else {
 
-                        Relation inverse = fanRelation.inverse();
                         if (!inverse.isCollectionReturnType()) {
                             // We have a relation to a single OT so we check if it is
                             // null (or true)
@@ -145,7 +149,7 @@ public class IsRemovableMethod extends Method implements IRelationalOperation {
 
     @Override
     public Relation getRelation() {
-        return composition;
+        return relation;
     }
 
     @Override

@@ -63,9 +63,15 @@ public class Algorithm extends ModelElement implements Serializable {
     }
 
     public void setCode(IndentedList code, Source source) {
-        Source oldSource = sources().get(0);
-        addSource(source);
-        removeSource(oldSource);
+
+        if (sources().isEmpty()) {
+            addSource(source);
+        } else {
+            Source oldSource = sources().get(0);
+            addSource(source);
+            removeSource(oldSource);
+
+        }
         this.code = code;
     }
 

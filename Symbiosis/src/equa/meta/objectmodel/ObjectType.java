@@ -59,6 +59,7 @@ import equa.code.operations.InsertBaseTypeMethod;
 import equa.code.operations.InsertObjectTypeMethod;
 import equa.code.operations.IsDefinedMethod;
 import equa.code.operations.IsRemovableMethod;
+import equa.code.operations.ManuallyAddedMethod;
 import equa.code.operations.MaxCountMethod;
 import equa.code.operations.Method;
 import equa.code.operations.MinCountMethod;
@@ -367,6 +368,19 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
             }
             return !superType.abstractAlgorithms().isEmpty();
         }
+        return false;
+
+    }
+
+    public boolean hasManuallyAddedAlgorithm() {
+        Iterator<Operation> it = getCodeClass().getOperations(true);
+        while (it.hasNext()) {
+            Operation op = it.next();
+            if (op instanceof ManuallyAddedMethod) {
+                return true;
+            }
+        }
+
         return false;
 
     }
@@ -1415,8 +1429,10 @@ public class ObjectType extends ParentElement implements SubstitutionType, Seria
                         if (!relation.isSeqAutoIncrRelation()) {
                             property = new IndexedProperty(relation, this);
                             codeClass.addOperation(property);
+                        } else {
+                            property = new Property(relation, this);
+                            codeClass.addOperation(property);
                         }
-
                     } else {
                         property = new Property(relation, this);
                         codeClass.addOperation(property);

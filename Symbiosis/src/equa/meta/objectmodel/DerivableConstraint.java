@@ -11,11 +11,14 @@ import equa.code.operations.CT;
 import equa.code.operations.CollectionKind;
 import equa.code.operations.IBooleanOperation;
 import equa.code.operations.Param;
+import equa.code.operations.Property;
 import equa.code.operations.STorCT;
 import equa.meta.ChangeNotAllowedException;
 import equa.meta.classrelations.BooleanRelation;
+import equa.meta.classrelations.BooleanSingletonRelation;
 import equa.meta.classrelations.FactTypeRelation;
 import equa.meta.classrelations.IdRelation;
+import equa.meta.classrelations.ObjectTypeRelation;
 import equa.meta.classrelations.QualifierRelation;
 import equa.meta.classrelations.Relation;
 import equa.meta.requirements.Requirement;
@@ -54,30 +57,46 @@ public class DerivableConstraint extends StaticConstraint {
         if (text.equals(getSpec())) {
         } else {
             ((Requirement) this.creationSource()).setText(source, text);
+            initOH();
         }
     }
 
     public String getSpec() {
-        StringBuilder returnSpec = new StringBuilder();
-        ObjectRole role = getFactType().getNavigableRole();
+        ObjectRole role = getFactType().getResponsibleRole();
         if (role == null) {
             return "error (undefined navigable role)";
         }
-
-        returnSpec.append(((Requirement) this.creationSource()).getText()).append("\"");
-
-        if (!role.isMandatory() && !role.isMultiple()) {
-            Role cp = getFactType().counterpart(role);
-            if (cp != null) {
-                String undefined = cp.getSubstitutionType().getUndefinedString();
-                if (undefined != null) {
-                    returnSpec.append("; the value could be undefined, " + "in that case ").append(undefined).append(" will be returned");
-                }
+        Relation relation;
+        if (role.getParent().isClass()) {
+            relation = new ObjectTypeRelation(role.getSubstitutionType(), role);
+        } else if (role.getParent().nonQualifierSize() == 1) {
+            relation = new BooleanRelation(role.getSubstitutionType(), role);
+        } else {
+            Role counterpart = role.getParent().counterpart(role);
+            if (counterpart != null && !role.isMandatory() && !counterpart.isCreational() && counterpart.getSubstitutionType().isSingleton()) {
+                relation = new BooleanSingletonRelation(role.getSubstitutionType(), role);
+            } else {
+                relation = new FactTypeRelation(role.getSubstitutionType(), role);
             }
         }
 
-        return returnSpec.toString();
-
+        Property property = role.getSubstitutionType().getCodeClass().getProperty(relation);
+        if (property == null) {
+            StringBuilder returnSpec = new StringBuilder();
+            returnSpec.append(((Requirement) this.creationSource()).getText()).append("\"");
+            if (!role.isMandatory() && !role.isMultiple()) {
+                Role cp = getFactType().counterpart(role);
+                if (cp != null) {
+                    String undefined = cp.getSubstitutionType().getUndefinedString();
+                    if (undefined != null) {
+                        returnSpec.append("; the value could be undefined, " + "in that case ").append(undefined).append(" will be returned");
+                    }
+                }
+            }
+            return returnSpec.toString();
+        } else {
+            return property.getSpec();
+        }
     }
 
     public OperationHeader getOperationHeader() {
@@ -126,7 +145,7 @@ public class DerivableConstraint extends StaticConstraint {
         IndentedList api;
         api = new IndentedList();
         api.addLineAtCurrentIndentation(Language.JAVA.docStart());
-        api.addLineAtCurrentIndentation(Language.JAVA.docLine("Returns:\t" + getSpec()));
+        api.addLineAtCurrentIndentation(Language.JAVA.docLine(getSpec()));
         api.addLineAtCurrentIndentation(Language.JAVA.docEnd());
 
         oh = new DerivableOH(ft);
@@ -138,7 +157,7 @@ public class DerivableConstraint extends StaticConstraint {
         }
 
         Algorithm alg = ot.addAlgorithm(oh, code, api, false, Language.JAVA, sources().get(0));
-        
+
     }
 
     /**

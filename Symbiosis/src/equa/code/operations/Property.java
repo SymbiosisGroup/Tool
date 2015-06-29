@@ -45,7 +45,7 @@ public class Property extends Operation implements IRelationalOperation {
         this.getter = new GetOrSet();
         this.setter = new GetOrSet();
         this.value = new Param(relation.name(), relation.targetType(), relation);
-        if (relation.isSetRelation()) {
+        if (relation.isSetRelation() || relation.isSeqAutoIncrRelation()) {
             name = relation.getPluralName();
             returnType = new ReturnType(new CT(CollectionKind.LIST, relation.targetType()));
             setSetter(false);
@@ -359,7 +359,7 @@ public class Property extends Operation implements IRelationalOperation {
         if (!relation.isMandatory() && !relation.hasMultipleTarget() && !relation.targetType().isSingleton()) {
             if (relation.targetType().getUndefinedString() == null && !relation.targetType().equals(BaseType.BOOLEAN)) {
                 IBooleanOperation isdefined = (IBooleanOperation) ((ObjectType) getParent()).getCodeClass().getOperation("isDefined", relation);
-                BooleanCall undefinedCall = ((BooleanCall) isdefined.call()).withNegation();
+                BooleanCall undefinedCall = (BooleanCall) isdefined.call();
                 setPreSpec(undefinedCall);
             } else if (!relation.targetType().equals(BaseType.BOOLEAN)) {
                 returnSpec.append("; @result could be undefined, " + "in that case ").append(relation.targetType().getUndefinedString()).append(" will be returned");
